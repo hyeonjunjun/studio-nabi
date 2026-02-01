@@ -1,31 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #F2F0E9;
+    /* Ecru / Paper */
+    --foreground: #0D0D0D;
+    /* Deep Ink */
+    --accent: #D4AF37;
+    /* Gold Accent */
+    --soft-border: rgba(13, 13, 13, 0.05);
+    --selection-bg: #0D0D0D;
+    --selection-color: #F2F0E9;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  height: 100%;
-  width: 100%;
+html {
+    /* Using Lenis for smooth scrolling, so we remove CSS smooth scroll */
+    scroll-behavior: auto !important;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    color: var(--foreground);
+    background: var(--background);
+    font-family: 'Fraunces', serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    line-height: 1.6;
+    /* Relaxed leading for readability */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    letter-spacing: -0.02em;
+    /* Less aggressive tracking */
+    line-height: 1.1;
+    /* Safe heading leading */
+    text-transform: uppercase;
+}
+
+/* Robust Container Centering */
+.container {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1400px;
+    /* Standard premium width */
+    padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1.5rem;
+    }
+}
+
+/* Advanced Multi-Layer Grain Overlay */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+body::before {
+    opacity: 0.04;
+    background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+    filter: contrast(150%) brightness(100%);
+}
+
+body::after {
+    opacity: 0.02;
+    background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+    filter: contrast(200%) brightness(80%) invert(100%);
+    animation: grain-shift 8s steps(10) infinite;
+}
+
+@keyframes grain-shift {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    10% {
+        transform: translate(-5%, -5%);
+    }
+
+    20% {
+        transform: translate(-10%, 5%);
+    }
+
+    30% {
+        transform: translate(5%, -10%);
+    }
+
+    40% {
+        transform: translate(-5%, 15%);
+    }
+
+    50% {
+        transform: translate(-15%, -5%);
+    }
+
+    60% {
+        transform: translate(15%, 0);
+    }
+
+    70% {
+        transform: translate(0, 10%);
+    }
+
+    80% {
+        transform: translate(-10%, 0);
+    }
+
+    90% {
+        transform: translate(10%, 5%);
+    }
+}
+
+.glass {
+    background: rgba(242, 240, 233, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--soft-border);
+}
+
+.text-gradient {
+    background: linear-gradient(to bottom right, var(--foreground), #333);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(13, 13, 13, 0.1);
+    border-radius: 0;
+}
+
+::selection {
+    background: var(--selection-bg);
+    color: var(--selection-color);
+}
+
+/* Custom Lenis Classes */
+.lenis-stopped {
+    overflow: hidden;
+}
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
 }
