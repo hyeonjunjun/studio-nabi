@@ -1,133 +1,88 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-
-const LOGS = [
-    "INITIALIZING_CORE...",
-    "LOADING_ASSETS [IMG_01, IMG_02]...",
-    "VERIFYING_INTEGRITY...",
-    "ESTABLISHING_SECURE_CONNECTION...",
-    "HKJSTUDIO_SYSTEMS_ONLINE.",
-    "RENDERING_CONTEXT...",
-    "MOUNTING_DOM...",
-    "READY."
-];
+import { motion } from "framer-motion";
 
 export default function Preloader({ onComplete }: { onComplete: () => void }) {
     const [count, setCount] = useState(0);
-    const [logIndex, setLogIndex] = useState(0);
 
     useEffect(() => {
-        let current = 0;
+        const duration = 2000;
+        const steps = 100;
+        const intervalTime = duration / steps;
 
-        // COUNTER LOGIC
-        const updateCounter = () => {
-            const remaining = 100 - current;
-            const step = Math.max(1, Math.ceil(remaining / 8));
-            const next = current + step;
+        const timer = setInterval(() => {
+            setCount((prev) => {
+                if (prev >= 100) {
+                    clearInterval(timer);
+                    setTimeout(onComplete, 500);
+                    return 100;
+                }
+                return prev + 1;
+            });
+        }, intervalTime);
 
-            if (next >= 100) {
-                current = 100;
-                setCount(100);
-                setTimeout(onComplete, 800);
-                return;
-            }
-            current = next;
-            setCount(current);
-            const delay = Math.random() * 50 + (next > 80 ? 100 : 30);
-            setTimeout(updateCounter, delay);
-        };
-
-        const initialDelay = setTimeout(updateCounter, 500);
-
-        // LOG LOGIC
-        const logInterval = setInterval(() => {
-            setLogIndex(prev => (prev < LOGS.length - 1 ? prev + 1 : prev));
-        }, 300);
-
-        return () => {
-            clearTimeout(initialDelay);
-            clearInterval(logInterval);
-        };
+        return () => clearInterval(timer);
     }, [onComplete]);
 
     return (
         <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-            className="fixed inset-0 w-full h-full z-[9999] bg-[#050505] text-[#EDEDED] font-mono cursor-wait overflow-hidden touch-none"
+            className="fixed inset-0 z-50 bg-[#050505] text-[#EDEDED] grid grid-cols-2 overflow-hidden"
+            exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
-            {/* BACKGROUND GRID (Denser) */}
-            <div className="absolute inset-0 grid grid-cols-12 pointer-events-none opacity-20">
-                {Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} className="border-r border-[#262626] h-full" />
-                ))}
-                {/* Horizontal Lines */}
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                    <div className="border-b border-[#262626] w-full h-[33%]" />
-                    <div className="border-b border-[#262626] w-full h-[33%]" />
-                </div>
-            </div>
-
-            {/* CROSSHAIR CENTER */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-                <div className="w-[1px] h-32 bg-[#EDEDED]" />
-                <div className="h-[1px] w-32 bg-[#EDEDED] absolute" />
-                <div className="w-64 h-64 border border-[#262626] rounded-full absolute" />
-            </div>
-
-            {/* MARQUEE TOP */}
-            <div className="absolute top-0 w-full overflow-hidden py-2 border-b border-[#262626] bg-[#050505] z-20">
-                <div className="whitespace-nowrap animate-marquee text-[9px] uppercase tracking-widest text-[#525252]">
-                    {Array(10).fill("HKJSTUDIO — DIGITAL PRODUCT AGENCY — SEOUL — ").map((item, i) => (
-                        <span key={i} className="mx-4">{item}</span>
-                    ))}
-                </div>
-            </div>
-
-            {/* 4-CORNER CONTENT LAYER */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-between p-8 md:p-12 pt-20">
-
-                {/* TOP STATUS ROW */}
-                <div className="flex justify-between items-start">
-                    <div className="uppercase tracking-widest text-[10px] text-[#EDEDED]">
-                        HKJSTUDIO [V.26]<br />
-                        <span className="text-[#525252]">EST. 2026</span>
-                    </div>
-                    <div className="uppercase tracking-widest text-[10px] text-[#525252] text-right">
-                        [SYS: ONLINE]<br />
-                        LAT: 37.56
+            {/* LEFT COLUMN - DATA */}
+            <div className="h-full border-r border-[#262626] p-8 md:p-12 flex flex-col justify-between font-mono text-[10px] uppercase tracking-wider relative">
+                {/* TOP */}
+                <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-[#FFD700] inline-block" /> {/* Yellow Dot */}
+                        <span>[STATUS:ACTIVE]</span>
                     </div>
                 </div>
 
-                {/* CENTER CONSOLE LOG */}
-                <div className="absolute left-12 bottom-32 md:bottom-12 md:left-1/2 md:-translate-x-1/2 w-64 h-24 overflow-hidden text-[9px] text-[#525252] leading-relaxed hidden md:block">
-                    {LOGS.slice(0, logIndex + 1).map((log, i) => (
-                        <div key={i} className="opacity-70">
-                            <span className="text-[#333]">&gt;</span> {log}
-                        </div>
-                    ))}
-                    <div className="animate-pulse">_</div>
-                </div>
-
-                {/* BOTTOM ROW */}
-                <div className="flex justify-between items-end">
-                    {/* CAPABILITIES */}
-                    <div className="font-mono text-[9px] text-[#525252] leading-relaxed uppercase">
-                        <span className="text-[#333]">// CAPABILITIES</span><br />
-                        [ "STRATEGY", "SYSTEMS", "ENGINEERING" ]
-                    </div>
-
-                    {/* COUNTER */}
+                {/* MIDDLE */}
+                <div className="flex flex-col gap-12">
                     <div>
-                        <h1 className="text-[15vw] leading-[0.8] tracking-tighter font-sans font-medium text-[#EDEDED]">
-                            {Math.floor(count)}<span className="text-[#262626] text-[4vw] align-top relative top-4">%</span>
-                        </h1>
+                        <div className="opacity-50 mb-2">©CWM — FW25</div>
+                    </div>
+
+                    <div className="flex gap-12">
+                        <div>
+                            <div className="opacity-50 mb-1">PRJCT BY</div>
+                            <div>HKJSTUDIO</div>
+                        </div>
+                        <div>
+                            <div className="opacity-50 mb-1">[L] VN.US</div>
+                        </div>
                     </div>
                 </div>
 
+                {/* BOTTOM */}
+                <div className="flex justify-between items-end">
+                    <div className="flex flex-col gap-1">
+                        <div>// SITE.LOADING</div>
+                        <div className="flex gap-4 opacity-50">
+                            <span>[F] SCRIPTS() &#123;</span>
+                        </div>
+                        <div className="pl-4 opacity-50">INITLENIS();</div>
+                        <div className="pl-4 opacity-50">INITNA...</div>
+                    </div>
+                </div>
             </div>
+
+            {/* RIGHT COLUMN - COUNTER */}
+            <div className="h-full p-8 md:p-12 flex items-end justify-start relative">
+                <div className="relative">
+                    <h1 className="text-[15vw] md:text-[20vw] leading-[0.8] font-bold font-sans tracking-tighter mix-blend-difference">
+                        {count}%
+                    </h1>
+                </div>
+
+                {/* Decorative Grid Lines on Right */}
+                <div className="absolute right-0 top-0 h-full w-px bg-[#262626] opacity-30" />
+                <div className="absolute right-12 top-0 h-full w-px bg-[#262626] opacity-30 hidden md:block" />
+            </div>
+
         </motion.div>
     );
 }

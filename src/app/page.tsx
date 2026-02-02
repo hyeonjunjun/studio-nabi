@@ -2,59 +2,31 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import ArchiveGrid from "@/components/ArchiveGrid";
-import StickyFooter from "@/components/StickyFooter";
 import Preloader from "@/components/Preloader";
-import SmoothScroll from "@/components/SmoothScroll";
-import CustomCursor from "@/components/CustomCursor";
+import AmbientBackground from "@/components/AmbientBackground";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-mono selection:bg-[#EDEDED] selection:text-[#050505]">
-      <CustomCursor />
-
-      {/* PRELOADER */}
+    <div className="relative w-full min-h-screen text-[#EDEDED] font-sans">
       <AnimatePresence mode="wait">
-        {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
+        {!preloaderComplete && (
+          <Preloader onComplete={() => setPreloaderComplete(true)} />
+        )}
       </AnimatePresence>
 
-      {!isLoading && (
-        <SmoothScroll>
-          {/* GRID LINES BACKGROUND */}
-          <div className="fixed inset-0 w-full h-full pointer-events-none z-0 max-w-[1920px] mx-auto border-x border-[#262626] opacity-30">
-            <div className="grid grid-cols-12 h-full">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className={`border-r border-[#262626] h-full ${i === 11 ? "border-r-0" : ""}`} />
-              ))}
-            </div>
-          </div>
+      <AmbientBackground />
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <Header />
-
-            {/* CANVAS WRAPPER (z-10) */}
-            <main className="relative z-10 w-full flex flex-col bg-[#050505] mb-[100vh]">
-              <HeroSection />
-
-              <div id="archive" className="">
-                <ArchiveGrid />
-              </div>
-            </main>
-
-            {/* REVEAL FOOTER (z-0) */}
-            <StickyFooter />
-
-          </motion.div>
-        </SmoothScroll>
-      )}
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: preloaderComplete ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="relative z-10"
+      >
+        <HeroSection />
+      </motion.main>
     </div>
   );
 }
