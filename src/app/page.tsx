@@ -62,7 +62,7 @@ export default function Home() {
   }, [selectedProject, isMenuOpen]);
 
   return (
-    <div className="relative w-full min-h-screen bg-black text-white font-serif selection:bg-[#FEF3C7] selection:text-black">
+    <div className="relative w-full min-h-screen bg-transparent text-white font-serif selection:bg-[#FEF3C7] selection:text-black">
       <AnimatePresence mode="wait">
         {!preloaderComplete && (
           <Preloader onComplete={() => setPreloaderComplete(true)} />

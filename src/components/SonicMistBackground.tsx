@@ -15,8 +15,8 @@ const FogShader = () => {
             uMouse: { value: new THREE.Vector2(0, 0) },
             uAudioPulse: { value: 0 },
             uColor1: { value: new THREE.Color("#050505") }, // Darkest (Base)
-            uColor2: { value: new THREE.Color("#0c0c0c") }, // Mid
-            uColor3: { value: new THREE.Color("#1a1a1a") }, // Highlight
+            uColor2: { value: new THREE.Color("#1a1a1a") }, // Mid
+            uColor3: { value: new THREE.Color("#2a2a2a") }, // Highlight
         }),
         []
     );
@@ -55,13 +55,13 @@ const FogShader = () => {
 
 export default function SonicMistBackground() {
     return (
-        <div className="fixed inset-0 -z-10 w-full h-full pointer-events-none bg-[#050505]">
+        <div className="absolute inset-0 z-0 w-full h-full pointer-events-none bg-[#050505]">
             <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 2]}>
                 <FogShader />
             </Canvas>
 
             {/* SONIC SYMBOLISM: FREQUENCY LINES */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-20 overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center opacity-40 overflow-hidden">
                 <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="none">
                     <defs>
                         <linearGradient id="sonicGradient" x1="0%" y1="0%" x2="100%" y2="0%">

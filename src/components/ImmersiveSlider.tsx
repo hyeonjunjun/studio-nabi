@@ -39,28 +39,26 @@ export default function ImmersiveSlider({ onProjectClick, isPaused, className = 
                 onClick={() => !isPaused && onProjectClick(activeProject)}
                 data-cursor-label="( View )"
             >
-                <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                <AnimatePresence mode="popLayout" initial={false}>
                     <motion.div
                         key={activeProject.id}
-                        custom={direction}
                         initial={{
                             opacity: 0,
-                            x: direction > 0 ? "20%" : direction < 0 ? "-20%" : 0,
-                            scale: 1.1
+                            scale: 1.1,
+                            filter: "blur(40px) brightness(1.5)",
                         }}
                         animate={{
                             opacity: 1,
-                            x: 0,
                             scale: 1,
-                            filter: isPaused ? "blur(30px)" : "blur(0px)"
+                            filter: isPaused ? "blur(30px) brightness(1)" : "blur(0px) brightness(1)"
                         }}
                         exit={{
                             opacity: 0,
-                            x: direction > 0 ? "-20%" : direction < 0 ? "20%" : 0,
-                            scale: 0.95
+                            scale: 1.05,
+                            filter: "blur(60px) brightness(0.8)",
                         }}
                         transition={{
-                            duration: 0.8,
+                            duration: 1.2,
                             ease: [0.22, 1, 0.36, 1]
                         }}
                         className="absolute inset-0 w-full h-full"

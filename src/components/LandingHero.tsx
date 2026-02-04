@@ -15,7 +15,7 @@ export default function LandingHero() {
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
     return (
-        <section ref={containerRef} className="relative w-full h-screen overflow-hidden bg-[#050505] text-white">
+        <section ref={containerRef} className="relative w-full h-screen overflow-hidden bg-transparent text-white">
             {/* 3D Background - Parallax */}
             <motion.div style={{ y }} className="absolute inset-0 z-0">
                 <SonicMistBackground />
