@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import Preloader from "../components/Preloader";
-import ImmersiveSlider from "../components/ImmersiveSlider";
+import TechnicalGrid from "../components/TechnicalGrid";
 import LandingHero from "../components/LandingHero";
 import Philosophy from "../components/Philosophy";
 import Ethos from "../components/Ethos";
@@ -15,45 +15,14 @@ import ProjectMenu from "../components/ProjectMenu";
 import ProjectDetail from "../components/ProjectDetail";
 import { Project, PROJECTS } from "../constants/projects";
 
-import SonicMistBackground from "../components/SonicMistBackground";
+import ParticleSacredGeometry from "../components/ParticleSacredGeometry";
 
 export default function Home() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Hard Reset to Hero on Reload
-  useEffect(() => {
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
-    window.scrollTo(0, 0);
-  }, []);
 
-  // SCROLL LOGIC FOR WORK SECTION
-  const workContainerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: workContainerRef,
-    offset: ["start start", "end end"]
-  });
-
-  // Map scroll progress (0 to 1) to project index (0 to Length-1)
-  // CLAMPED to 0.75: This means we reach the last project at 75% scroll, 
-  // giving it a long "dwell time" (25% of scroll) before the section ends.
-  const rawIndex = useTransform(scrollYProgress, [0, 0.75], [0, PROJECTS.length - 1]);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  // Sync motion value to state for rendering
-  useEffect(() => {
-    const unsubscribe = rawIndex.on("change", (latest) => {
-      setActiveIndex(Math.round(latest));
-    });
-    return () => unsubscribe();
-  }, [rawIndex]);
-
-  // Work Section Fade Logic - Anchored at start and end
-  const workOpacity = useTransform(scrollYProgress, [0, 0.02, 0.98, 1], [1, 1, 1, 1]);
-  const workScale = useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [1, 1, 1, 1]);
 
   // Body Scroll Lock when Project Open
   useEffect(() => {
@@ -66,7 +35,7 @@ export default function Home() {
 
   return (
     <div className="relative w-full min-h-screen bg-transparent text-black font-serif selection:bg-[#FEF3C7] selection:text-black">
-      <SonicMistBackground />
+      <ParticleSacredGeometry />
 
       <AnimatePresence mode="wait">
         {!preloaderComplete && (
@@ -118,20 +87,8 @@ export default function Home() {
           <Ethos />
         </SectionFade>
 
-        {/* SECTION 3: WORK (Sticky Buffer) */}
-        <motion.div
-          ref={workContainerRef}
-          style={{ opacity: workOpacity, scale: workScale }}
-          className="relative w-full h-[500vh]"
-        >
-          <div className="sticky top-0 h-screen overflow-hidden">
-            <ImmersiveSlider
-              isPaused={!!selectedProject || isMenuOpen}
-              onProjectClick={(project: Project) => setSelectedProject(project)}
-              activeIndex={activeIndex}
-            />
-          </div>
-        </motion.div>
+        {/* SECTION 3: WORK (Technical Grid) */}
+        <TechnicalGrid onProjectClick={(p) => setSelectedProject(p)} />
 
         {/* SECTION 4: FOOTER */}
         <SectionFade className="w-full">

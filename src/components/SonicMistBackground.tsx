@@ -1,195 +1,211 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useRef, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
-import { Float, Environment, PerspectiveCamera } from "@react-three/drei";
-import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
+import { Environment, ContactShadows, SoftShadows } from "@react-three/drei";
 
-// --- GHIBLI PUFFY CLOUDS ---
-// Using layered spheres with varying opacity to create volume
-function Cloud({ position, scale, opacity = 0.8, speed = 0.1 }: { position: [number, number, number], scale: number, opacity?: number, speed?: number }) {
-    const groupRef = useRef<THREE.Group>(null);
-    const initialPos = useRef(new THREE.Vector3(...position));
+// --- CONFIGURATION ---
+// Easily tweakable values for "open design"
+const PHYSICS = {
+    gravity: -9.8,
+    damping: 0.99, // Air resistance
+    wireLength: 3.5,
+    sphereRadius: 0.8,
+    mass: 5,
+    stiffness: 0.1, // Mouse drag interaction spring
+};
 
-    useFrame((state) => {
-        const time = state.clock.getElapsedTime();
-        if (groupRef.current) {
-            // Slow horizontal drift
-            groupRef.current.position.x = initialPos.current.x + Math.sin(time * speed) * 2;
-            // Subtle vertical bobbing
-            groupRef.current.position.y = initialPos.current.y + Math.cos(time * speed * 0.5) * 0.5;
+const COLORS = {
+    background: "#e8e6e1", // Warm Beige
+    sphere: "#ffffff", // Chrome
+    wire: "#2a2a2a", // Dark Grey
+};
+
+// --- PENDULUM COMPONENT ---
+function Pendulum() {
+    const { size, viewport, mouse } = useThree();
+    const sphereRef = useRef<THREE.Mesh>(null);
+    const lineRef = useRef<THREE.Mesh>(null);
+
+    // Physics State (Verlet Integration)
+    // We store these in refs to avoid React re-renders on every frame
+    const pos = useRef(new THREE.Vector3(0, -PHYSICS.wireLength, 0));
+    const oldPos = useRef(new THREE.Vector3(0, -PHYSICS.wireLength, 0));
+    const acc = useRef(new THREE.Vector3(0, 0, 0));
+    const isDragging = useRef(false);
+
+    // Mouse Interaction Handlers
+    const handlePointerDown = (e: any) => {
+        e.stopPropagation();
+        isDragging.current = true;
+        document.body.style.cursor = "grabbing";
+    };
+
+    const handlePointerUp = () => {
+        isDragging.current = false;
+        document.body.style.cursor = "default";
+    };
+
+    const handlePointerOver = () => {
+        document.body.style.cursor = "grab";
+    };
+
+    const handlePointerOut = () => {
+        if (!isDragging.current) document.body.style.cursor = "default";
+    };
+
+    // Global pointer up listener
+    useEffect(() => {
+        window.addEventListener("pointerup", handlePointerUp);
+        return () => window.removeEventListener("pointerup", handlePointerUp);
+    }, []);
+
+    useFrame((state, delta) => {
+        // Clamp delta to avoid explosion on tab switch
+        const dt = Math.min(delta, 0.05);
+
+        // 1. ACCUMULATE FORCES
+        // Gravity
+        acc.current.set(0, PHYSICS.gravity, 0);
+
+        // Dragging Force (Mouse Spring)
+        if (isDragging.current) {
+            // Convert mouse (screen space) to 3D space at the sphere's depth
+            // Simple approximation: Mouse X/Y maps to Viewport X/Y
+            const targetX = (state.mouse.x * viewport.width) / 2;
+            const targetY = (state.mouse.y * viewport.height) / 2;
+            const targetZ = 0; // Pull towards screen plane
+
+            const dragForce = new THREE.Vector3(targetX, targetY, targetZ).sub(pos.current);
+            // Strong pull to follow mouse
+            acc.current.add(dragForce.multiplyScalar(300));
+
+            // Add some damping so it doesn't oscillate wildly while holding
+            oldPos.current.lerp(pos.current, 0.1);
+        }
+
+        // 2. VERLET INTEGRATION (Pos = 2*Pos - OldPos + Acc*dt^2)
+        const velocity = pos.current.clone().sub(oldPos.current);
+
+        // Apply Damping (Friction)
+        velocity.multiplyScalar(PHYSICS.damping);
+
+        const newPos = pos.current.clone().add(velocity).add(acc.current.multiplyScalar(dt * dt));
+
+        oldPos.current.copy(pos.current);
+        pos.current.copy(newPos);
+
+        // 3. CONSTRAINTS (The Wire)
+        // Pivot point at top of screen
+        const pivot = new THREE.Vector3(0, 3, 0);
+        const dist = pos.current.distanceTo(pivot);
+
+        // Rigid constraint: Pull back to wire length
+        if (dist > PHYSICS.wireLength) {
+            const correction = pos.current.clone().sub(pivot).normalize().multiplyScalar(PHYSICS.wireLength);
+            pos.current.copy(pivot.clone().add(correction));
+        }
+
+        // 4. UPDATE VISUALS
+        if (sphereRef.current) {
+            sphereRef.current.position.copy(pos.current);
+            sphereRef.current.rotation.x -= velocity.z * 5;
+            sphereRef.current.rotation.z += velocity.x * 5;
+        }
+
+        // Update Wire (Cylinder)
+        if (lineRef.current) {
+            const pivot = new THREE.Vector3(0, 3, 0);
+            const spherePos = pos.current.clone();
+
+            // 1. Position: Midpoint
+            const mid = new THREE.Vector3().addVectors(pivot, spherePos).multiplyScalar(0.5);
+            lineRef.current.position.copy(mid);
+
+            // 2. Orientation: LookAt Sphere
+            lineRef.current.lookAt(spherePos);
+            // Cylinder stands on Y by default, so we rotate 90 deg on X to point it? 
+            // Actually, lookAt points Z towards target. Cylinder is Y-up.
+            // We need to rotate X by 90deg to align Y-axis with Z-axis?
+            // Easier: Standard lookAt points +Z.
+            lineRef.current.rotateX(Math.PI / 2);
+
+            // 3. Height (Length)
+            const len = pivot.distanceTo(spherePos);
+            lineRef.current.scale.y = len;
         }
     });
 
-    // Create a "cluster" of spheres for a puffy cumulus look
-    const puffs = useMemo(() => {
-        return [
-            { pos: [0, 0, 0], s: 1 },
-            { pos: [0.7, 0.3, -0.2], s: 0.85 },
-            { pos: [-0.7, -0.2, 0.2], s: 0.75 },
-            { pos: [0.4, -0.5, 0.3], s: 0.65 },
-            { pos: [-0.5, 0.5, -0.3], s: 0.55 },
-            { pos: [1.2, -0.1, -0.1], s: 0.6 },
-            { pos: [-1.1, 0.2, 0.1], s: 0.5 },
-        ];
-    }, []);
-
     return (
-        <group ref={groupRef} position={position} scale={scale}>
-            {puffs.map((p, i) => (
-                <mesh key={i} position={p.pos as [number, number, number]} scale={p.s}>
-                    <sphereGeometry args={[1, 32, 32]} />
-                    <meshBasicMaterial
-                        color="#ffffff"
-                        transparent
-                        opacity={opacity}
-                        depthWrite={false}
-                    />
-                </mesh>
-            ))}
-        </group>
-    );
-}
+        <group>
+            {/* The Wire (Cylinder) */}
+            <mesh ref={lineRef as any} castShadow receiveShadow>
+                <cylinderGeometry args={[0.015, 0.015, 1, 8]} />
+                <meshStandardMaterial color={COLORS.wire} metalness={0.5} roughness={0.5} />
+            </mesh>
 
-// --- SUN-GLINT PARTICLES (Ghibli Sparkle) ---
-function SunGlint() {
-    const count = 40;
-    const meshRef = useRef<THREE.InstancedMesh>(null);
-    const particles = useMemo(() => {
-        return Array.from({ length: count }, () => ({
-            pos: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 15, Math.random() * 5],
-            vel: [(Math.random() - 0.5) * 0.002, Math.random() * 0.002 + 0.001, 0],
-            phase: Math.random() * Math.PI * 2,
-            size: Math.random() * 0.03 + 0.01
-        }));
-    }, []);
+            {/* The Heavy Sphere */}
+            <mesh
+                ref={sphereRef}
+                position={[0, -PHYSICS.wireLength, 0]}
+                castShadow
+                receiveShadow
+                onPointerDown={handlePointerDown}
+                onPointerOver={handlePointerOver}
+                onPointerOut={handlePointerOut}
+            >
+                <sphereGeometry args={[PHYSICS.sphereRadius, 64, 64]} />
+                <meshStandardMaterial
+                    color={COLORS.sphere}
+                    metalness={0.9}
+                    roughness={0.1}
+                    envMapIntensity={1.5}
+                />
+            </mesh>
 
-    const dummy = useMemo(() => new THREE.Object3D(), []);
-
-    useFrame((state) => {
-        const time = state.clock.getElapsedTime();
-        particles.forEach((p, i) => {
-            p.pos[0] += p.vel[0];
-            p.pos[1] += p.vel[1];
-
-            if (p.pos[1] > 10) p.pos[1] = -10;
-            if (p.pos[0] > 10) p.pos[0] = -10;
-            if (p.pos[0] < -10) p.pos[0] = 10;
-
-            const scale = p.size * (1 + Math.sin(time * 2 + p.phase) * 0.5);
-            dummy.position.set(p.pos[0], p.pos[1], p.pos[2]);
-            dummy.scale.setScalar(scale);
-            dummy.updateMatrix();
-            meshRef.current?.setMatrixAt(i, dummy.matrix);
-        });
-        if (meshRef.current) meshRef.current.instanceMatrix.needsUpdate = true;
-    });
-
-    return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-            <sphereGeometry args={[1, 4, 4]} />
-            <meshBasicMaterial color="#fffae6" transparent opacity={0.6} />
-        </instancedMesh>
-    );
-}
-
-// --- MEADOW BLOOMS (Soft Focal Plane with "Summer Breeze") ---
-function MeadowBloom({ color, position, scale, opacity = 0.2 }: { color: string, position: [number, number, number], scale: number, opacity?: number }) {
-    const meshRef = useRef<THREE.Mesh>(null);
-    const initialPos = useRef(new THREE.Vector3(...position));
-
-    useFrame((state) => {
-        const time = state.clock.getElapsedTime();
-        if (meshRef.current) {
-            // Swaying breeze motion
-            meshRef.current.position.x = initialPos.current.x + Math.sin(time * 0.4 + position[1]) * 0.3;
-            meshRef.current.position.y = initialPos.current.y + Math.cos(time * 0.3 + position[0]) * 0.2;
-        }
-    });
-
-    return (
-        <mesh ref={meshRef} position={position} scale={scale}>
-            <sphereGeometry args={[1, 16, 16]} />
-            <meshBasicMaterial color={color} transparent opacity={opacity} depthWrite={false} />
-        </mesh>
-    );
-}
-
-// --- VIBRANT GHIBLI SKY ---
-function GhibliSky() {
-    return (
-        <mesh scale={[100, 100, 1]} position={[0, 0, -20]}>
-            <planeGeometry args={[1, 1]} />
-            <shaderMaterial
-                vertexShader={`
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `}
-                fragmentShader={`
-                    varying vec2 vUv;
-                    void main() {
-                        vec3 top = vec3(0.0, 0.47, 0.85); // Vibrant Ghibli Blue
-                        vec3 middle = vec3(0.35, 0.72, 0.96); // Summer Sky
-                        vec3 bottom = vec3(0.9, 0.98, 1.0); // Horizon White
-                        
-                        vec3 color;
-                        if (vUv.y > 0.5) {
-                            color = mix(middle, top, (vUv.y - 0.5) * 2.0);
-                        } else {
-                            color = mix(bottom, middle, vUv.y * 2.0);
-                        }
-                        
-                        gl_FragColor = vec4(color, 1.0);
-                    }
-                `}
+            {/* Shadow catcher */}
+            <ContactShadows
+                position={[0, -4.5, 0]}
+                opacity={0.4}
+                scale={20}
+                blur={2.5}
+                far={10}
+                resolution={512}
+                color="#000000"
             />
-        </mesh>
+        </group>
     );
 }
 
 export default function SonicMistBackground() {
     return (
-        <div className="fixed inset-0 z-0 w-full h-full pointer-events-none overflow-hidden bg-[#e0f2fe]">
+        <div className="fixed inset-0 z-0 w-full h-full bg-[#e8e6e1]">
             <Canvas
+                shadows
                 dpr={[1, 2]}
-                gl={{ antialias: true, alpha: false }}
+                camera={{ position: [0, 0, 10], fov: 45 }}
+                gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
             >
-                <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={40} />
-                <GhibliSky />
+                {/* --- LIGHTING (The Sunset Room) --- */}
+                <ambientLight intensity={0.5} />
+                <directionalLight
+                    position={[5, 5, 5]}
+                    intensity={2}
+                    castShadow
+                    shadow-mapSize={[1024, 1024]}
+                    color="#ffdcb4" // Warm sunset
+                />
+                <Environment preset="sunset" />
 
-                {/* FAR CLOUDS */}
-                <Cloud position={[8, 3, -15]} scale={4} opacity={0.4} speed={0.05} />
-                <Cloud position={[-10, 4, -12]} scale={5} opacity={0.3} speed={0.04} />
+                {/* --- PHYSICS OBJECT --- */}
+                <Pendulum />
 
-                {/* MAIN PUFFY CLOUDS */}
-                <Cloud position={[-6, 2, -6]} scale={3.5} opacity={0.8} speed={0.12} />
-                <Cloud position={[7, 3, -8]} scale={4.5} opacity={0.75} speed={0.1} />
-                <Cloud position={[0, -1, -10]} scale={7} opacity={0.45} speed={0.07} />
-                <Cloud position={[-12, -2, -14]} scale={6} opacity={0.3} speed={0.05} />
-
-                {/* MEADOW BLOOMS (Foreground depth) */}
-                <MeadowBloom color="#fb923c" position={[-8, -5, 2]} scale={3.5} opacity={0.2} />
-                <MeadowBloom color="#f472b6" position={[9, -6, 1]} scale={4.5} opacity={0.15} />
-                <MeadowBloom color="#facc15" position={[-3, -7, 4]} scale={2.5} opacity={0.18} />
-                <MeadowBloom color="#fb923c" position={[4, -5, 5]} scale={3} opacity={0.12} />
-                <MeadowBloom color="#f472b6" position={[-10, 2, 3]} scale={5} opacity={0.05} />
-
-                <SunGlint />
-
-                <EffectComposer>
-                    <Bloom intensity={0.6} luminanceThreshold={0.8} mipmapBlur />
-                    <Noise opacity={0.01} />
-                    <Vignette eskil={false} offset={0.1} darkness={0.2} />
-                </EffectComposer>
+                {/* --- POST FX (Optional, keeping it clean for now) --- */}
             </Canvas>
 
-            {/* ATMOSPHERIC OVERLAY */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/5 via-transparent to-white/5 pointer-events-none" />
-            <div className="absolute inset-0 backdrop-blur-[2px] opacity-[0.05] pointer-events-none" />
+            {/* Vignette Overlay for "Room" feel */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.1)_100%)]" />
         </div>
     );
 }

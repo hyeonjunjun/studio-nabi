@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
-import InertialScroll from "@/components/InertialScroll";
+import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 
 
@@ -35,9 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable}`}>
         <CustomCursor />
-        <InertialScroll>
+        <SmoothScroll>
           {children}
-        </InertialScroll>
+        </SmoothScroll>
       </body>
     </html>
   );
