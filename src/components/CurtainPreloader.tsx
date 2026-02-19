@@ -84,7 +84,7 @@ export default function CurtainPreloader() {
                     >
                         {/* STUDIO — slides in from left */}
                         <motion.div
-                            className="font-mono text-[11px] tracking-[0.5em] uppercase text-ink-muted flex overflow-hidden"
+                            className="font-pixel text-[11px] tracking-[0.3em] uppercase text-ink-muted flex overflow-hidden"
                             variants={studioVariants}
                             initial="hidden"
                             animate="visible"
@@ -120,7 +120,7 @@ export default function CurtainPreloader() {
 
                         {/* Subtitle */}
                         <motion.p
-                            className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mt-6"
+                            className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint mt-6"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1.4, duration: 0.6 }}

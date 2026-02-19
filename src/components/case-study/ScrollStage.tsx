@@ -76,7 +76,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     >
                         <motion.p
                             layoutId={`project-index-${project.id}`}
-                            className="font-mono text-[10px] tracking-[0.3em] uppercase text-ink-faint mb-4"
+                            className="font-pixel text-[10px] tracking-[0.3em] uppercase text-ink-faint mb-4"
                         >
                             Nᵒ {project.id}
                         </motion.p>
@@ -87,11 +87,11 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                             {project.title}
                         </motion.h1>
                         <div className="flex items-center justify-center gap-8 mt-6">
-                            <span className="font-mono text-[10px] tracking-[0.2em] text-ink-muted">
+                            <span className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted">
                                 {project.client}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-ink-faint" />
-                            <span className="font-mono text-[10px] tracking-[0.2em] text-ink-muted tabular-nums">
+                            <span className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted tabular-nums">
                                 {project.year}
                             </span>
                         </div>
@@ -104,7 +104,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     style={{ opacity: briefOpacity, y: briefY }}
                 >
                     <div className="max-w-2xl text-center">
-                        <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
                             {project.editorial.subhead}
                         </p>
                         <h2 className="font-display italic text-[clamp(1.8rem,4vw,3.5rem)] leading-[1.1] text-ink mb-8">
@@ -122,16 +122,16 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     style={{ opacity: processOpacity, y: processY }}
                 >
                     <div className="max-w-xl text-center">
-                        <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8">
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8">
                             Design Decisions
                         </p>
                         <div className="flex flex-col gap-6">
                             <div className="border border-ink/[0.06] rounded-lg p-6">
-                                <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-ink-faint">Grid System</span>
+                                <span className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint">Grid System</span>
                                 <p className="font-sans text-lg text-ink mt-2">{project.schematic.grid}</p>
                             </div>
                             <div className="border border-ink/[0.06] rounded-lg p-6">
-                                <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-ink-faint">Typography</span>
+                                <span className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint">Typography</span>
                                 <p className="font-sans text-lg text-ink mt-2">{project.schematic.typography}</p>
                             </div>
                         </div>
@@ -144,7 +144,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     style={{ opacity: systemOpacity, y: systemY }}
                 >
                     <div className="max-w-md">
-                        <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8 text-center">
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8 text-center">
                             Technical Specification
                         </p>
                         <div className="grid grid-cols-1 gap-3">
@@ -156,7 +156,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     transition={{ delay: i * 0.1 }}
                                 >
-                                    <span className="font-mono text-[10px] tracking-[0.15em] text-ink-faint">
+                                    <span className="font-pixel text-[10px] tracking-[0.15em] text-ink-faint">
                                         {String(i + 1).padStart(2, "0")}
                                     </span>
                                     <span className="font-sans text-[15px] text-ink">
@@ -174,7 +174,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     style={{ opacity: paletteOpacity }}
                 >
                     <div className="text-center">
-                        <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-10">
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-10">
                             Color System
                         </p>
                         <div className="flex items-center gap-4 justify-center">
@@ -190,7 +190,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                                         className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-ink/[0.06] shadow-sm"
                                         style={{ backgroundColor: color }}
                                     />
-                                    <span className="font-mono text-[8px] tracking-[0.2em] text-ink-faint uppercase">
+                                    <span className="font-pixel text-[8px] tracking-[0.2em] text-ink-faint uppercase">
                                         {color}
                                     </span>
                                 </motion.div>
@@ -205,7 +205,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                     style={{ opacity: closeOpacity, y: closeY }}
                 >
                     <div className="text-center">
-                        <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
                             Next Specimen
                         </p>
                         <Link
@@ -215,14 +215,14 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                             <h3 className="font-display text-[clamp(1.5rem,4vw,3rem)] leading-[1.05] text-ink group-hover:text-ink-muted transition-colors duration-500">
                                 {nextProject.title}
                             </h3>
-                            <p className="font-mono text-[10px] tracking-[0.2em] text-ink-muted mt-3">
+                            <p className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted mt-3">
                                 {nextProject.client} · {nextProject.year}
                             </p>
                         </Link>
                         <div className="mt-10">
                             <Link
                                 href="/"
-                                className="font-mono text-[9px] tracking-[0.3em] uppercase text-ink-faint hover:text-ink transition-colors duration-300"
+                                className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint hover:text-ink transition-colors duration-300"
                             >
                                 ← Return to Index
                             </Link>

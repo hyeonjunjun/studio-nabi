@@ -4,60 +4,85 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /**
- * CursorDot — Butterfly Edition
- * ──────────────────────────────
- * A custom cursor with a trailing butterfly (나비) SVG that follows
- * the mouse with spring physics. The butterfly rotates toward the
- * movement direction, wings "flap" via a CSS animation, and it
- * grows when hovering interactive elements.
+ * CursorDot — Pixel Butterfly Edition
+ * ─────────────────────────────────────
+ * A Nothing-inspired pixel art butterfly that follows the cursor.
+ * Rendered via CSS box-shadow (each "pixel" = a 2px shadow offset).
+ * Two-frame wing flap animation toggles every 400ms.
+ * Spring-physics follow + directional rotation.
  * Hidden on touch devices.
  */
 
-function ButterflyIcon({ size = 24 }: { size?: number }) {
-    return (
-        <svg
-            width={size}
-            height={size}
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="butterfly-svg"
-        >
-            {/* Left wing */}
-            <path
-                className="butterfly-wing-left"
-                d="M16 16C14 12 10 6 6 8C2 10 4 16 8 18C10 19 14 18 16 16Z"
-                fill="currentColor"
-                opacity="0.7"
-            />
-            {/* Right wing */}
-            <path
-                className="butterfly-wing-right"
-                d="M16 16C18 12 22 6 26 8C30 10 28 16 24 18C22 19 18 18 16 16Z"
-                fill="currentColor"
-                opacity="0.7"
-            />
-            {/* Lower left wing */}
-            <path
-                className="butterfly-wing-left"
-                d="M16 16C14 18 9 22 7 20C5 18 8 14 12 14C14 14 15 15 16 16Z"
-                fill="currentColor"
-                opacity="0.5"
-            />
-            {/* Lower right wing */}
-            <path
-                className="butterfly-wing-right"
-                d="M16 16C18 18 23 22 25 20C27 18 24 14 20 14C18 14 17 15 16 16Z"
-                fill="currentColor"
-                opacity="0.5"
-            />
-            {/* Body */}
-            <ellipse cx="16" cy="16" rx="1" ry="4" fill="currentColor" opacity="0.9" />
-            {/* Antennae */}
-            <line x1="15" y1="12" x2="12" y2="8" stroke="currentColor" strokeWidth="0.5" opacity="0.6" />
-            <line x1="17" y1="12" x2="20" y2="8" stroke="currentColor" strokeWidth="0.5" opacity="0.6" />
-        </svg>
-    );
+/* ─── Pixel Art Frames (16×16 grid, each unit = 2px) ─── */
+/* Coordinates are [col, row] from top-left. Color: currentColor */
+
+const FRAME_A: [number, number][] = [
+    // Left antenna
+    [5, 2], [4, 1],
+    // Right antenna
+    [10, 2], [11, 1],
+    // Head
+    [7, 3], [8, 3],
+    // Body (vertical center line)
+    [7, 4], [8, 4],
+    [7, 5], [8, 5],
+    [7, 6], [8, 6],
+    [7, 7], [8, 7],
+    [7, 8], [8, 8],
+    [7, 9], [8, 9],
+    // Left upper wing (spread)
+    [6, 4], [5, 3], [4, 3], [3, 3],
+    [6, 5], [5, 4], [4, 4], [3, 4], [2, 4],
+    [6, 6], [5, 5], [4, 5], [3, 5], [2, 5],
+    [5, 6], [4, 6], [3, 6],
+    // Left lower wing
+    [6, 7], [5, 7], [4, 7],
+    [6, 8], [5, 8], [4, 8], [3, 8],
+    [5, 9], [4, 9],
+    // Right upper wing (spread)
+    [9, 4], [10, 3], [11, 3], [12, 3],
+    [9, 5], [10, 4], [11, 4], [12, 4], [13, 4],
+    [9, 6], [10, 5], [11, 5], [12, 5], [13, 5],
+    [10, 6], [11, 6], [12, 6],
+    // Right lower wing
+    [9, 7], [10, 7], [11, 7],
+    [9, 8], [10, 8], [11, 8], [12, 8],
+    [10, 9], [11, 9],
+];
+
+const FRAME_B: [number, number][] = [
+    // Antennae (same)
+    [5, 2], [4, 1],
+    [10, 2], [11, 1],
+    // Head
+    [7, 3], [8, 3],
+    // Body
+    [7, 4], [8, 4],
+    [7, 5], [8, 5],
+    [7, 6], [8, 6],
+    [7, 7], [8, 7],
+    [7, 8], [8, 8],
+    [7, 9], [8, 9],
+    // Left upper wing (folded — narrower)
+    [6, 4], [5, 4], [4, 4],
+    [6, 5], [5, 5], [4, 5],
+    [6, 6], [5, 6],
+    // Left lower wing (folded)
+    [6, 7], [5, 7],
+    [6, 8], [5, 8],
+    // Right upper wing (folded)
+    [9, 4], [10, 4], [11, 4],
+    [9, 5], [10, 5], [11, 5],
+    [9, 6], [10, 6],
+    // Right lower wing (folded)
+    [9, 7], [10, 7],
+    [9, 8], [10, 8],
+];
+
+function pixelsToBoxShadow(pixels: [number, number][], pixelSize: number, color: string): string {
+    return pixels
+        .map(([col, row]) => `${col * pixelSize}px ${row * pixelSize}px 0 0 ${color}`)
+        .join(", ");
 }
 
 export default function CursorDot() {
@@ -65,12 +90,21 @@ export default function CursorDot() {
     const cursorY = useMotionValue(-100);
     const [isHovering, setIsHovering] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const [frame, setFrame] = useState(0);
     const [rotation, setRotation] = useState(0);
     const prevPos = useRef({ x: 0, y: 0 });
 
-    const springConfig = { damping: 20, stiffness: 200, mass: 0.8 };
+    const springConfig = { damping: 22, stiffness: 180, mass: 0.6 };
     const x = useSpring(cursorX, springConfig);
     const y = useSpring(cursorY, springConfig);
+
+    // Wing flap animation — toggle between frames
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFrame((f) => (f === 0 ? 1 : 0));
+        }, 400);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -82,14 +116,13 @@ export default function CursorDot() {
             cursorX.set(e.clientX);
             cursorY.set(e.clientY);
 
-            // Calculate movement direction for butterfly rotation
             const dx = e.clientX - prevPos.current.x;
             const dy = e.clientY - prevPos.current.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist > 3) {
+            if (dist > 4) {
                 const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-                setRotation(angle + 90); // +90 because butterfly faces "up" by default
+                setRotation(angle + 90);
             }
 
             prevPos.current = { x: e.clientX, y: e.clientY };
@@ -114,32 +147,31 @@ export default function CursorDot() {
 
     if (!isVisible) return null;
 
+    const PIXEL_SIZE = isHovering ? 3 : 2;
+    const pixels = frame === 0 ? FRAME_A : FRAME_B;
+    const shadow = pixelsToBoxShadow(pixels, PIXEL_SIZE, "currentColor");
+
     return (
         <>
-            {/* Butterfly follower */}
+            {/* Pixel butterfly */}
             <motion.div
-                className="fixed top-0 left-0 pointer-events-none z-[9999] text-ink/40"
+                className="fixed top-0 left-0 pointer-events-none z-[9999] text-ink/50"
                 style={{
                     x,
                     y,
-                    translateX: "-50%",
-                    translateY: "-50%",
+                    translateX: `${-8 * PIXEL_SIZE}px`,
+                    translateY: `${-5 * PIXEL_SIZE}px`,
                     rotate: rotation,
                 }}
             >
-                <motion.div
-                    animate={{
-                        scale: isHovering ? 1.6 : 1,
-                        opacity: isHovering ? 0.8 : 0.5,
+                <div
+                    style={{
+                        width: `${PIXEL_SIZE}px`,
+                        height: `${PIXEL_SIZE}px`,
+                        boxShadow: shadow,
+                        imageRendering: "pixelated",
                     }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 25,
-                    }}
-                >
-                    <ButterflyIcon size={isHovering ? 32 : 22} />
-                </motion.div>
+                />
             </motion.div>
 
             {/* Small dot at exact cursor position */}
@@ -153,36 +185,19 @@ export default function CursorDot() {
                 }}
             >
                 <motion.div
-                    className="rounded-full bg-ink/30"
+                    className="rounded-none bg-ink/40"
                     animate={{
-                        width: isHovering ? 0 : 3,
-                        height: isHovering ? 0 : 3,
+                        width: isHovering ? 0 : 2,
+                        height: isHovering ? 0 : 2,
                     }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
                 />
             </motion.div>
 
-            {/* Butterfly flapping + global cursor hide */}
+            {/* Global cursor hide */}
             <style jsx global>{`
                 * {
                     cursor: none !important;
-                }
-                @keyframes flapLeft {
-                    0%, 100% { transform: scaleX(1); }
-                    50% { transform: scaleX(0.6); }
-                }
-                @keyframes flapRight {
-                    0%, 100% { transform: scaleX(1); }
-                    50% { transform: scaleX(0.6); }
-                }
-                .butterfly-wing-left {
-                    transform-origin: 16px 16px;
-                    animation: flapLeft 0.8s ease-in-out infinite;
-                }
-                .butterfly-wing-right {
-                    transform-origin: 16px 16px;
-                    animation: flapRight 0.8s ease-in-out infinite;
-                    animation-delay: 0.05s;
                 }
             `}</style>
         </>

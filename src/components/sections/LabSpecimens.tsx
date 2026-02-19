@@ -19,6 +19,9 @@ export default function LabSpecimens() {
 
     return (
         <section className="px-6 sm:px-12 lg:px-20 py-32 sm:py-48">
+            {/* ─── Korean Cultural Label ─── */}
+            <div className="font-dot text-[10px] text-accent/60 mb-4">﹁작품﹂</div>
+
             {/* ─── Section Header ─── */}
             <motion.div
                 ref={headerRef}
@@ -27,10 +30,10 @@ export default function LabSpecimens() {
                 animate={headerInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
-                <h2 className="font-mono text-[11px] tracking-[0.3em] uppercase text-ink-muted">
+                <h2 className="font-pixel text-[11px] tracking-[0.2em] uppercase text-ink-muted">
                     Selected Specimens
                 </h2>
-                <span className="font-mono text-[10px] text-ink-faint tabular-nums">
+                <span className="font-pixel text-[10px] text-ink-faint tabular-nums">
                     {String(PROJECTS.length).padStart(2, "0")} entries
                 </span>
             </motion.div>

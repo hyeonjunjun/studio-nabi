@@ -18,6 +18,7 @@ const PHRASES = [
     "Seoul · Worldwide",
     "Est. 2024",
     "나비 = Butterfly",
+    "Nothing is Unnecessary",
 ];
 
 function MarqueeContent() {
@@ -25,7 +26,7 @@ function MarqueeContent() {
         <>
             {PHRASES.map((phrase, i) => (
                 <span key={i} className="flex items-center gap-8 shrink-0">
-                    <span className="font-display italic text-[clamp(1.2rem,2.5vw,2rem)] text-ink-muted whitespace-nowrap">
+                    <span className="font-pixel text-[clamp(1rem,2vw,1.4rem)] text-ink-muted whitespace-nowrap">
                         {phrase}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-ink-faint/30 shrink-0" />

@@ -78,10 +78,10 @@ export default function SpecimenCard({ project, index }: SpecimenCardProps) {
                     <div className="relative overflow-hidden">
                         {/* ─── Top Row: Index + Sector ─── */}
                         <div className="flex items-center justify-between mb-4">
-                            <motion.span layoutId={`project-index-${project.id}`} className="font-mono text-[10px] tracking-[0.2em] text-ink-faint">
+                            <motion.span layoutId={`project-index-${project.id}`} className="font-pixel text-[10px] tracking-[0.15em] text-ink-faint">
                                 Nᵒ {project.id}
                             </motion.span>
-                            <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-ink-faint border border-ink/[0.08] rounded-full px-3 py-1">
+                            <span className="font-pixel text-[9px] tracking-[0.15em] uppercase text-ink-faint border border-ink/[0.08] rounded-none px-3 py-1">
                                 {project.sector}
                             </span>
                         </div>
@@ -97,10 +97,10 @@ export default function SpecimenCard({ project, index }: SpecimenCardProps) {
 
                         {/* ─── Meta Row ─── */}
                         <div className="flex items-baseline justify-between mt-4">
-                            <span className="font-mono text-[11px] text-ink-muted">
+                            <span className="font-pixel text-[10px] text-ink-muted">
                                 {project.client}
                             </span>
-                            <span className="font-mono text-[11px] text-ink-faint tabular-nums">
+                            <span className="font-pixel text-[10px] text-ink-faint tabular-nums">
                                 {project.year}
                             </span>
                         </div>
@@ -143,7 +143,7 @@ export default function SpecimenCard({ project, index }: SpecimenCardProps) {
                                 }}
                             />
                             <div className="absolute bottom-2 left-3 z-20">
-                                <span className="font-mono text-[8px] tracking-[0.3em] uppercase text-white/70">
+                                <span className="font-pixel text-[8px] tracking-[0.2em] uppercase text-white/70">
                                     Specimen {project.id}
                                 </span>
                             </div>

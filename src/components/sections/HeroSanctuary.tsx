@@ -3,7 +3,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import HeroMeshGradient from "@/components/HeroMeshGradient";
 
 /**
  * HeroSanctuary
@@ -37,7 +36,7 @@ function DropdownMenu() {
             onMouseLeave={() => setIsOpen(false)}
         >
             <motion.button
-                className="font-mono text-[10px] tracking-[0.3em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 flex items-center gap-2"
+                className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 flex items-center gap-2"
                 whileHover={{ x: -2 }}
             >
                 <span>Menu</span>
@@ -193,8 +192,7 @@ export default function HeroSanctuary() {
             ref={ref}
             className="relative h-screen overflow-hidden"
         >
-            {/* ─── Background ─── */}
-            <HeroMeshGradient />
+            {/* Background is now global via NaturalGradient in layout */}
 
             {/* ─── Content Layer ─── */}
             <motion.div
@@ -208,7 +206,7 @@ export default function HeroSanctuary() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
-                    <Link href="/" className="font-mono text-[10px] tracking-[0.35em] uppercase text-ink-muted hover:text-ink transition-colors duration-300">
+                    <Link href="/" className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-colors duration-300">
                         Studio Nabi
                     </Link>
                 </motion.div>
@@ -246,7 +244,7 @@ export default function HeroSanctuary() {
 
                         {/* "Nᵒ01" — monospace, smaller, tracking wide */}
                         <motion.p
-                            className="font-mono text-[clamp(0.7rem,1.5vw,1.1rem)] tracking-[0.5em] uppercase text-ink-muted mt-2"
+                            className="font-pixel text-[clamp(0.7rem,1.5vw,1.1rem)] tracking-[0.3em] uppercase text-ink-muted mt-2"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
@@ -263,7 +261,7 @@ export default function HeroSanctuary() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.6, duration: 0.8 }}
                 >
-                    <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-ink-muted">
+                    <span className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted">
                         20
                     </span>
                 </motion.div>
@@ -275,7 +273,7 @@ export default function HeroSanctuary() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.6, duration: 0.8 }}
                 >
-                    <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-ink-muted">
+                    <span className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted">
                         26
                     </span>
                 </motion.div>
@@ -299,7 +297,7 @@ export default function HeroSanctuary() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 2.0, duration: 0.6 }}
                 >
-                    <span className="font-mono text-[9px] tracking-[0.2em] text-ink-faint tabular-nums">
+                    <span className="font-pixel text-[9px] tracking-[0.15em] text-ink-faint tabular-nums">
                         37.5°N, 127.0°E
                     </span>
                 </motion.div>

@@ -9,16 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#F0F0F0",
-        ink: "#1A1A1A",
+        canvas: "#fafafa",
+        ink: "#1a1a1a",
         "ink-muted": "#6B6B6B",
         "ink-faint": "#9A9A9A",
         border: "#D8D8D8",
+        accent: "#8B9E6B",
+        "accent-muted": "#A3B585",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        pixel: ["var(--font-pixel)", "monospace"],
+        dot: ["var(--font-dot)", "sans-serif"],
       },
       /* ─── 12-Column Grid System ─── */
       gridTemplateColumns: {

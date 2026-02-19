@@ -25,12 +25,16 @@
   --font-display: var(--font-display);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pixel: var(--font-pixel);
+  --font-dot: var(--font-dot);
 
-  --color-canvas: #F0F0F0;
-  --color-ink: #1A1A1A;
+  --color-canvas: #fafafa;
+  --color-ink: #1a1a1a;
   --color-ink-muted: #6B6B6B;
   --color-ink-faint: #9A9A9A;
   --color-border: #D8D8D8;
+  --color-accent: #8B9E6B;
+  --color-accent-muted: #A3B585;
 }
 
 /* ─── Base ─── */
@@ -59,6 +63,17 @@ body {
 
   .font-display {
     font-family: var(--font-display), Georgia, serif;
+  }
+
+  .font-pixel {
+    font-family: var(--font-pixel), monospace;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: auto;
+  }
+
+  .font-dot {
+    font-family: var(--font-dot), sans-serif;
   }
 
   /* ─── 12-Column Grid ─── */

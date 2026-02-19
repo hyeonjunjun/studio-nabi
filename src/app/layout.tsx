@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Serif, Geist, Geist_Mono, Silkscreen, DotGothic16 } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import AtmosphericGrain from "@/components/AtmosphericGrain";
 import CurtainPreloader from "@/components/CurtainPreloader";
 import DynamicIsland from "@/components/DynamicIsland";
-import IridescentBackground from "@/components/IridescentBackground";
+import NaturalGradient from "@/components/NaturalGradient";
 import CursorDot from "@/components/CursorDot";
 
 /* ─── Typography ─── */
@@ -29,6 +29,20 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const silkscreen = Silkscreen({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-pixel",
+});
+
+const dotGothic = DotGothic16({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-dot",
+});
+
 /* ─── Metadata ─── */
 
 export const metadata: Metadata = {
@@ -47,10 +61,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${instrumentSerif.variable} ${geistSans.variable} ${geistMono.variable} antialiased bg-canvas text-ink`}
+        className={`${instrumentSerif.variable} ${geistSans.variable} ${geistMono.variable} ${silkscreen.variable} ${dotGothic.variable} antialiased bg-canvas text-ink`}
       >
         <CurtainPreloader />
-        <IridescentBackground />
+        <NaturalGradient />
         <AtmosphericGrain />
         <DynamicIsland />
         <CursorDot />

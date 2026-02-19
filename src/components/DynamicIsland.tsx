@@ -68,7 +68,7 @@ export default function DynamicIsland() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="text-sm font-mono tracking-wider uppercase text-canvas/80 hover:text-canvas transition-colors duration-200"
+                                    className="text-sm font-pixel tracking-wider uppercase text-canvas/80 hover:text-canvas transition-colors duration-200"
                                 >
                                     {link.label}
                                 </Link>
