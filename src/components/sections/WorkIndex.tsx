@@ -54,7 +54,7 @@ function WorkRow({ project, index, onHover, onLeave }: {
 
                         {/* Title + Pitch */}
                         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-6 min-w-0">
-                            <h3 className="font-display italic text-[clamp(1.2rem,5vw,2.5rem)] tracking-[-0.02em] text-ink group-hover:text-accent transition-colors duration-500 truncate">
+                            <h3 className="font-display italic text-[clamp(1.2rem,5vw,2.5rem)] tracking-[-0.02em] text-ink group-hover:text-accent transition-colors duration-500 truncate pr-4 py-1 leading-normal">
                                 {project.title}
                             </h3>
                             <span className="font-sans text-sm text-ink-muted opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-w-md hidden sm:inline truncate">
@@ -130,7 +130,7 @@ export default function WorkIndex() {
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 >
                     <div className="flex items-baseline justify-between border-b border-ink/[0.08] pb-4">
-                        <h2 className="font-display italic text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.02em] text-ink">
+                        <h2 className="font-display italic text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.02em] text-ink pr-2 py-1">
                             Selected Work
                         </h2>
                         <span className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-faint">

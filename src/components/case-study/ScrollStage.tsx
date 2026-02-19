@@ -88,7 +88,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
     // Combine all images
     const allImages = [
         project.image,
-        ...project.editorial.images.filter((img) => img !== project.image),
+        ...project.editorial.images,
     ];
 
     return (

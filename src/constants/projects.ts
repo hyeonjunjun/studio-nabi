@@ -36,7 +36,7 @@ export const PROJECTS: Project[] = [
             headline: "Save Anything, Understand Everything",
             subhead: "Content Intelligence",
             copy: "Sift transforms how you save content from the internet. Paste any URL — TikTok, Instagram, YouTube, or the open web — and Sift instantly scrapes, summarizes, and organizes it into a beautiful feed. Built with an optimistic-insert architecture that makes saving feel instant, even while the backend orchestrates scrapers and AI in the background.",
-            images: ["/images/sift-v2.jpg"],
+            images: ["/images/sift-v2.jpg", "/images/sift-v2.jpg", "/images/sift-v2.jpg"],
         },
         schematic: {
             stack: ["React Native", "Supabase", "Vercel", "OpenAI GPT-4o", "Apify"],
@@ -61,6 +61,8 @@ export const PROJECTS: Project[] = [
             images: [
                 "/images/verbaitim-hero.png",
                 "/images/verbaitim-interface.png",
+                "/images/verbaitim-hero.png",
+                "/images/verbaitim-interface.png",
             ],
         },
         schematic: {
@@ -83,7 +85,7 @@ export const PROJECTS: Project[] = [
             headline: "Precision measurement for thought.",
             subhead: "Automotive-Grade Input",
             copy: "Caliper lives inside existing text fields, providing real-time visual guidance. Designed with the rigor of high-end automotive displays, it enforces structured thinking through live color coding and floating dial controls. A rejection of playfulness in favor of pure instrument precision.",
-            images: ["/images/caliper-main.png"],
+            images: ["/images/caliper-main.png", "/images/caliper-main.png", "/images/caliper-main.png"],
         },
         schematic: {
             stack: ["React", "Canvas API", "Local-First"],
