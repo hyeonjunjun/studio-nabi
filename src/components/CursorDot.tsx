@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 
 /**
  * CursorDot — Pixel Butterfly Edition
@@ -79,10 +79,19 @@ const FRAME_B: [number, number][] = [
     [9, 8], [10, 8],
 ];
 
+const PIXELS_A = FRAME_A;
+const PIXELS_B = FRAME_B;
+
 function pixelsToBoxShadow(pixels: [number, number][], pixelSize: number, color: string): string {
     return pixels
         .map(([col, row]) => `${col * pixelSize}px ${row * pixelSize}px 0 0 ${color}`)
         .join(", ");
+}
+
+interface Particle {
+    id: number;
+    x: number;
+    y: number;
 }
 
 export default function CursorDot() {
@@ -92,17 +101,34 @@ export default function CursorDot() {
     const [isVisible, setIsVisible] = useState(false);
     const [frame, setFrame] = useState(0);
     const [rotation, setRotation] = useState(0);
+    const [particles, setParticles] = useState<Particle[]>([]);
+    const particleIdCounter = useRef(0);
+    const lastParticlePos = useRef({ x: 0, y: 0 });
     const prevPos = useRef({ x: 0, y: 0 });
+    const velocity = useRef(0);
 
     const springConfig = { damping: 22, stiffness: 180, mass: 0.6 };
     const x = useSpring(cursorX, springConfig);
     const y = useSpring(cursorY, springConfig);
 
-    // Wing flap animation — toggle between frames
+    // Wing flap animation — modified by velocity
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+        const flap = () => {
+            setFrame((f) => (f === 0 ? 1 : 0));
+            // Base speed 400ms, decreases to 150ms based on velocity
+            const delay = Math.max(150, 400 - velocity.current * 10);
+            timeoutId = setTimeout(flap, isHovering ? 2000 : delay); // "Land" when hovering (slow flap)
+        };
+        flap();
+        return () => clearTimeout(timeoutId);
+    }, [isHovering]);
+
+    // Particle Cleanup
     useEffect(() => {
         const interval = setInterval(() => {
-            setFrame((f) => (f === 0 ? 1 : 0));
-        }, 400);
+            setParticles((prev) => prev.slice(-20)); // Keep last 20
+        }, 100);
         return () => clearInterval(interval);
     }, []);
 
@@ -119,10 +145,27 @@ export default function CursorDot() {
             const dx = e.clientX - prevPos.current.x;
             const dy = e.clientY - prevPos.current.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
+            velocity.current = dist;
 
             if (dist > 4) {
                 const angle = Math.atan2(dy, dx) * (180 / Math.PI);
                 setRotation(angle + 90);
+
+                // Spawn particle/trail if moved enough
+                const distSinceLastParticle = Math.sqrt(
+                    Math.pow(e.clientX - lastParticlePos.current.x, 2) +
+                    Math.pow(e.clientY - lastParticlePos.current.y, 2)
+                );
+
+                if (distSinceLastParticle > 15 && !isHovering) {
+                    const newParticle = {
+                        id: particleIdCounter.current++,
+                        x: e.clientX,
+                        y: e.clientY
+                    };
+                    setParticles(prev => [...prev.slice(-15), newParticle]);
+                    lastParticlePos.current = { x: e.clientX, y: e.clientY };
+                }
             }
 
             prevPos.current = { x: e.clientX, y: e.clientY };
@@ -143,16 +186,38 @@ export default function CursorDot() {
             window.removeEventListener("mousemove", moveCursor);
             document.removeEventListener("mouseover", handleMouseOver);
         };
-    }, [cursorX, cursorY]);
+    }, [cursorX, cursorY, isHovering]);
 
     if (!isVisible) return null;
 
     const PIXEL_SIZE = isHovering ? 3 : 2;
-    const pixels = frame === 0 ? FRAME_A : FRAME_B;
+    const pixels = frame === 0 ? PIXELS_A : PIXELS_B;
     const shadow = pixelsToBoxShadow(pixels, PIXEL_SIZE, "currentColor");
 
     return (
         <>
+            {/* Particles (Pollination) */}
+            <AnimatePresence>
+                {particles.map((p) => (
+                    <motion.div
+                        key={p.id}
+                        initial={{ opacity: 0.6, scale: 1 }}
+                        animate={{ opacity: 0, scale: 0.5, y: p.y + 10 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="fixed top-0 left-0 pointer-events-none z-[9998] bg-accent"
+                        style={{
+                            x: p.x,
+                            y: p.y,
+                            width: 2,
+                            height: 2,
+                            translateX: "-50%",
+                            translateY: "-50%",
+                        }}
+                    />
+                ))}
+            </AnimatePresence>
+
             {/* Pixel butterfly */}
             <motion.div
                 className="fixed top-0 left-0 pointer-events-none z-[9999] text-ink/50"
@@ -170,6 +235,7 @@ export default function CursorDot() {
                         height: `${PIXEL_SIZE}px`,
                         boxShadow: shadow,
                         imageRendering: "pixelated",
+                        transition: "box-shadow 0.1s ease-out",
                     }}
                 />
             </motion.div>

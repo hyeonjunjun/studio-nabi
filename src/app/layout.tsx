@@ -5,7 +5,6 @@ import SmoothScroll from "@/components/SmoothScroll";
 import AtmosphericGrain from "@/components/AtmosphericGrain";
 import CurtainPreloader from "@/components/CurtainPreloader";
 import DynamicIsland from "@/components/DynamicIsland";
-import NaturalGradient from "@/components/NaturalGradient";
 import CursorDot from "@/components/CursorDot";
 
 /* ─── Typography ─── */
@@ -64,7 +63,6 @@ export default function RootLayout({
         className={`${instrumentSerif.variable} ${geistSans.variable} ${geistMono.variable} ${silkscreen.variable} ${dotGothic.variable} antialiased bg-canvas text-ink`}
       >
         <CurtainPreloader />
-        <NaturalGradient />
         <AtmosphericGrain />
         <DynamicIsland />
         <CursorDot />

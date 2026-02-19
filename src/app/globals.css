@@ -45,6 +45,10 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ─── Printed Aesthetic ─── */
+  filter: contrast(105%) brightness(98%);
+  transition: filter 0.8s ease;
 }
 
 /* ─── Selection ─── */

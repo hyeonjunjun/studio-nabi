@@ -1,119 +1,118 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useEffect, useRef, useMemo } from "react";
+import { useSpring, useMotionValue } from "framer-motion";
+import { useDesignStore } from "@/store/useDesignStore";
 
 /**
- * NaturalGradient
- * ───────────────
- * Abstracted natural landscape as soft horizontal bands.
- * Layered: sky (pale blue) → horizon (warm amber haze) → ground (sage).
- * Each band drifts at a slightly different rate for depth parallax.
- * Mouse influence adds gentle position offset.
+ * NaturalGradient — Adaptive Biomes Edition
+ * ───────────────────────────────────────
+ * Abstracted natural landscape as soft radial gradients.
+ * Layered biomes that react to the active project's "mood" color.
+ * Uses canvas for performance with smooth spring-based mouse drift.
  */
 
 interface Band {
-    y: number;       // position as fraction of viewport (0 = top)
-    height: number;  // height as fraction
-    color: string;   // CSS color
-    speed: number;   // parallax speed multiplier (lower = slower)
-    opacity: number;
+    y: number;       // Base vertical position (0 to 1)
+    color: string;   // RGB string "r, g, b"
+    size: number;    // Size multiplier
+    drift: number;   // Parallax speed
+    opacity: number; // Base opacity
 }
 
 const BANDS: Band[] = [
-    // Sky — pale, high
-    { y: 0, height: 0.35, color: "200, 215, 230", speed: 0.15, opacity: 0.12 },
-    // Mid-sky — warmer
-    { y: 0.25, height: 0.25, color: "215, 205, 185", speed: 0.25, opacity: 0.10 },
-    // Horizon — warm amber haze
-    { y: 0.40, height: 0.20, color: "195, 175, 145", speed: 0.35, opacity: 0.14 },
-    // Near ground — sage
-    { y: 0.55, height: 0.25, color: "155, 175, 145", speed: 0.45, opacity: 0.08 },
-    // Ground — deep warm
-    { y: 0.75, height: 0.30, color: "180, 165, 140", speed: 0.20, opacity: 0.06 },
+    { y: 0.1, color: "226, 232, 240", size: 0.6, drift: 0.02, opacity: 0.4 }, // Sky
+    { y: 0.4, color: "203, 213, 225", size: 0.5, drift: 0.015, opacity: 0.3 }, // Horizon
+    { y: 0.65, color: "139, 158, 107", size: 0.45, drift: 0.01, opacity: 0.35 }, // Ground (Sage)
+    { y: 0.85, color: "148, 163, 184", size: 0.4, drift: 0.012, opacity: 0.25 }, // Shadow
+    { y: 0.5, color: "255, 255, 255", size: 0.7, drift: 0.005, opacity: 0.5 }, // Mist
 ];
 
 export default function NaturalGradient() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const mouseRef = useRef({ x: 0.5, y: 0.5 });
-    const animRef = useRef(0);
+    const mouseX = useMotionValue(0.5);
+    const mouseY = useMotionValue(0.5);
+    const activeMood = useDesignStore((state) => state.activeMood);
+    const isFocussed = useDesignStore((state) => state.isFocussed);
     const timeRef = useRef(0);
 
-    const draw = useCallback(() => {
+    const smoothX = useSpring(mouseX, { damping: 40, stiffness: 80 });
+    const smoothY = useSpring(mouseY, { damping: 40, stiffness: 80 });
+    const blur = useSpring(isFocussed ? 1 : 0, { damping: 40, stiffness: 100 });
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            mouseX.set(e.clientX / window.innerWidth);
+            mouseY.set(e.clientY / window.innerHeight);
+        };
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, [mouseX, mouseY]);
+
+    useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const w = canvas.width;
-        const h = canvas.height;
-
-        ctx.clearRect(0, 0, w, h);
-
-        const t = timeRef.current;
-        const mx = mouseRef.current.x;
-        const my = mouseRef.current.y;
-
-        for (const band of BANDS) {
-            // Organic drift
-            const driftX = Math.sin(t * band.speed * 0.5) * w * 0.02;
-            const driftY = Math.cos(t * band.speed * 0.3) * h * 0.01;
-
-            // Mouse influence (very subtle)
-            const mouseOffsetX = (mx - 0.5) * w * 0.03 * band.speed;
-            const mouseOffsetY = (my - 0.5) * h * 0.02 * band.speed;
-
-            const bx = driftX + mouseOffsetX;
-            const by = band.y * h + driftY + mouseOffsetY;
-            const bh = band.height * h * 1.5;
-
-            // Breathing opacity
-            const breathe = 1 + Math.sin(t * 0.15 + band.y * 3) * 0.15;
-            const alpha = band.opacity * breathe;
-
-            // Radial gradient for soft edges
-            const gradient = ctx.createRadialGradient(
-                w * 0.5 + bx, by + bh * 0.5, 0,
-                w * 0.5 + bx, by + bh * 0.5, Math.max(w, h) * 0.7
-            );
-            gradient.addColorStop(0, `rgba(${band.color}, ${alpha})`);
-            gradient.addColorStop(0.5, `rgba(${band.color}, ${alpha * 0.5})`);
-            gradient.addColorStop(1, `rgba(${band.color}, 0)`);
-
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, w, h);
-        }
-
-        timeRef.current += 0.016;
-        animRef.current = requestAnimationFrame(draw);
-    }, []);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+        let w = (canvas.width = window.innerWidth);
+        let h = (canvas.height = window.innerHeight);
 
         const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
         };
-        resize();
         window.addEventListener("resize", resize);
 
-        const handleMouse = (e: MouseEvent) => {
-            mouseRef.current = {
-                x: e.clientX / window.innerWidth,
-                y: e.clientY / window.innerHeight,
-            };
+        const render = () => {
+            ctx.clearRect(0, 0, w, h);
+
+            // Focal Blur Effect
+            ctx.filter = `blur(${blur.get() * 8}px)`;
+
+            const time = timeRef.current;
+
+            BANDS.forEach((band) => {
+                const drawY = h * band.y + Math.sin(time * band.drift) * 30 + (smoothY.get() - 0.5) * 50;
+                const radius = h * band.size;
+
+                const grad = ctx.createRadialGradient(
+                    w * 0.5 + (smoothX.get() - 0.5) * 100,
+                    drawY,
+                    0,
+                    w * 0.5,
+                    drawY,
+                    radius
+                );
+
+                let color = `rgb(${band.color})`;
+                ctx.globalAlpha = band.opacity;
+
+                grad.addColorStop(0, color);
+                grad.addColorStop(1, "transparent");
+
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+            });
+
+            // Noise Integration (Baked into Canvas)
+            if (Math.random() > 0.5) {
+                ctx.fillStyle = "rgba(0,0,0,0.02)";
+                for (let i = 0; i < 1000; i++) {
+                    ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
+                }
+            }
+
+            timeRef.current += 0.01;
+            requestAnimationFrame(render);
         };
-        window.addEventListener("mousemove", handleMouse, { passive: true });
 
-        animRef.current = requestAnimationFrame(draw);
-
+        const animId = requestAnimationFrame(render);
         return () => {
             window.removeEventListener("resize", resize);
-            window.removeEventListener("mousemove", handleMouse);
-            cancelAnimationFrame(animRef.current);
+            cancelAnimationFrame(animId);
         };
-    }, [draw]);
+    }, [activeMood, isFocussed, smoothX, smoothY, blur]);
 
     return (
         <canvas

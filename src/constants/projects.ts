@@ -7,9 +7,9 @@ export interface Project {
     image: string;
     mood: string;
     /** Specimen metadata */
-    classification?: string;
-    habitat?: string;
-    status?: "Active" | "Archived";
+    classification: string;
+    habitat: string;
+    status: "Active" | "Archived";
     editorial: {
         headline: string;
         subhead: string;
@@ -31,8 +31,11 @@ export const PROJECTS: Project[] = [
         client: "Condé Nast",
         sector: "Fashion",
         year: "2026",
-        image: "/images/vogue.jpg",
+        image: "/images/vogue_preview.png",
         mood: "#7f1d1d",
+        classification: "Digital Maximalism",
+        habitat: "Global Editorial",
+        status: "Active",
         editorial: {
             headline: "The Rebirth of Red",
             subhead: "Digital Maximalism",
@@ -52,8 +55,11 @@ export const PROJECTS: Project[] = [
         client: "Tesla",
         sector: "Automotive",
         year: "2025",
-        image: "/images/tesla.jpg",
+        image: "/images/tesla_preview.png",
         mood: "#172554",
+        classification: "HMI Design System",
+        habitat: "Automotive Cockpit",
+        status: "Active",
         editorial: {
             headline: "Autonomy in Motion",
             subhead: "HMI Design System",
@@ -73,8 +79,11 @@ export const PROJECTS: Project[] = [
         client: "Stripe",
         sector: "SaaS",
         year: "2025",
-        image: "/images/stripe.jpg",
+        image: "/images/stripe_preview.png",
         mood: "#6366f1",
+        classification: "Infrastructure",
+        habitat: "Global Commerce",
+        status: "Active",
         editorial: {
             headline: "The Invisible Ledger",
             subhead: "Financial Infrastructure",
@@ -94,8 +103,11 @@ export const PROJECTS: Project[] = [
         client: "Vitra",
         sector: "Industrial",
         year: "2024",
-        image: "/images/vitra.jpg",
+        image: "/images/vitra_preview.png",
         mood: "#404040",
+        classification: "Object Research",
+        habitat: "Physical Space",
+        status: "Archived",
         editorial: {
             headline: "Specific Objects",
             subhead: "Material Research",
@@ -115,8 +127,11 @@ export const PROJECTS: Project[] = [
         client: "Internal",
         sector: "Makers",
         year: "2024",
-        image: "/images/system.jpg",
+        image: "/images/system_preview.png",
         mood: "#166534",
+        classification: "Internal Tooling",
+        habitat: "Design Ops",
+        status: "Active",
         editorial: {
             headline: "Order from Chaos",
             subhead: "Design Ops",

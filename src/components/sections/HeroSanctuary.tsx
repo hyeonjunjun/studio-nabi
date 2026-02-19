@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
+import HeroSurface from "@/components/HeroSurface";
 
 /**
  * HeroSanctuary
@@ -96,7 +97,7 @@ interface LetterState {
     velocityR: number;
 }
 
-function usePhysicsLetters(text: string) {
+function usePhysicsLetters(text: string, springX: any, springY: any) {
     const lettersRef = useRef<LetterState[]>(
         text.split("").map((char) => ({
             char,
@@ -110,23 +111,17 @@ function usePhysicsLetters(text: string) {
     );
 
     const spanRefs = useRef<(HTMLSpanElement | null)[]>([]);
-    const mouseRef = useRef({ x: 0, y: 0 });
     const animRef = useRef<number>(0);
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
-        mouseRef.current = { x: e.clientX, y: e.clientY };
-    }, []);
-
     useEffect(() => {
-        window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
         const SPRING = 0.06;
         const DAMPING = 0.82;
         const INFLUENCE_RADIUS = 180;
 
         const tick = () => {
             const letters = lettersRef.current;
-            const { x: mx, y: my } = mouseRef.current;
+            const mx = springX.get() * window.innerWidth;
+            const my = springY.get() * window.innerHeight;
 
             for (let i = 0; i < letters.length; i++) {
                 const span = spanRefs.current[i];
@@ -167,9 +162,8 @@ function usePhysicsLetters(text: string) {
 
         return () => {
             cancelAnimationFrame(animRef.current);
-            window.removeEventListener("mousemove", handleMouseMove);
         };
-    }, [handleMouseMove]);
+    }, [springX, springY]);
 
     return { letters: lettersRef.current, spanRefs };
 }
@@ -182,17 +176,49 @@ export default function HeroSanctuary() {
         offset: ["start start", "end start"],
     });
 
+    const mouseX = useMotionValue(0.5);
+    const mouseY = useMotionValue(0.5);
+    const springX = useSpring(mouseX, { damping: 40, stiffness: 80 });
+    const springY = useSpring(mouseY, { damping: 40, stiffness: 80 });
+
     const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
     const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
-    const { letters: folioLetters, spanRefs: folioRefs } = usePhysicsLetters("Folio");
+    useEffect(() => {
+        const handleGlobalMouse = (e: MouseEvent) => {
+            mouseX.set(e.clientX / window.innerWidth);
+            mouseY.set(e.clientY / window.innerHeight);
+        };
+        window.addEventListener("mousemove", handleGlobalMouse, { passive: true });
+        return () => window.removeEventListener("mousemove", handleGlobalMouse);
+    }, [mouseX, mouseY]);
+
+    const { letters: folioLetters, spanRefs: folioRefs } = usePhysicsLetters("Folio", springX, springY);
 
     return (
         <section
             ref={ref}
             className="relative h-screen overflow-hidden"
+            onMouseMove={(e) => {
+                // Keep local mouse set just in case, though global is handled by useEffect
+                mouseX.set(e.clientX / window.innerWidth);
+                mouseY.set(e.clientY / window.innerHeight);
+            }}
         >
-            {/* Background is now global via NaturalGradient in layout */}
+            {/* ─── GPU-Accelerated Atmospheric Surface ─── */}
+            <HeroSurface />
+
+            {/* ─── Subtle Structure Layer ─── */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+                {/* Bento Grid Substrate - Deeply reduced opacity for elegance */}
+                <div
+                    className="absolute inset-0 opacity-[0.02]"
+                    style={{
+                        backgroundImage: `linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)`,
+                        backgroundSize: '80px 80px'
+                    }}
+                />
+            </div>
 
             {/* ─── Content Layer ─── */}
             <motion.div
@@ -280,24 +306,25 @@ export default function HeroSanctuary() {
 
                 {/* ══ BOTTOM-LEFT: Thesis "designing to change" ══ */}
                 <motion.div
-                    className="absolute bottom-8 sm:bottom-12 left-8 sm:left-12 lg:left-20"
+                    className="absolute bottom-12 sm:bottom-16 left-8 sm:left-12 lg:left-20"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 >
-                    <p className="font-display italic text-[clamp(1.4rem,3vw,2.4rem)] leading-[1.2] text-ink/70">
+                    <p className="font-display italic text-[clamp(2rem,4vw,3.5rem)] leading-[0.9] tracking-[-0.03em] text-ink/80">
                         designing to change
                     </p>
                 </motion.div>
 
                 {/* ══ BOTTOM-RIGHT: Coordinates ══ */}
                 <motion.div
-                    className="absolute bottom-8 sm:bottom-12 right-8 sm:right-12 lg:right-20"
+                    className="absolute bottom-12 sm:bottom-16 right-8 sm:right-12 lg:right-20 text-right"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 2.0, duration: 0.6 }}
                 >
-                    <span className="font-pixel text-[9px] tracking-[0.15em] text-ink-faint tabular-nums">
+                    <p className="font-pixel text-[8px] tracking-[0.3em] uppercase text-ink-faint mb-1">Station</p>
+                    <span className="font-pixel text-[9px] tracking-[0.15em] text-ink/60 tabular-nums">
                         37.5°N, 127.0°E
                     </span>
                 </motion.div>
