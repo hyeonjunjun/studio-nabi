@@ -2,21 +2,13 @@
 
 /* ─── Studio Nabi · Spatial Interface ─── */
 
-/* @theme {
+:root {
   --font-display: var(--font-display);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-pixel: var(--font-pixel);
   --font-dot: var(--font-dot);
 
-  --color-canvas: #faf9f7;
-  --color-ink: #0a0a0a;
-  --color-ink-muted: #555555;
-  --color-ink-faint: #999999;
-  --color-border: #e0e0e0;
-  --color-accent: #8b9e6b;
-  --color-accent-muted: #a3b585;
-:root {
   --color-canvas: #faf9f7;
   --color-ink: #0a0a0a;
   --color-ink-muted: #555555;
