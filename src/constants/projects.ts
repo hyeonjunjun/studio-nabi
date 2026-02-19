@@ -2,14 +2,12 @@ export interface Project {
     id: string;
     title: string;
     client: string;
-    sector: "Fashion" | "Automotive" | "SaaS" | "Industrial" | "Makers";
+    sector: string;
     year: string;
     image: string;
     mood: string;
-    /** Specimen metadata */
-    classification: string;
-    habitat: string;
-    status: "Active" | "Archived";
+    /** One-line pitch */
+    pitch: string;
     editorial: {
         headline: string;
         subhead: string;
@@ -26,123 +24,72 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
     {
-        id: "01",
-        title: "VOGUE REDESIGN",
-        client: "Condé Nast",
-        sector: "Fashion",
-        year: "2026",
-        image: "/assets/environment/sky.png",
-        mood: "#7f1d1d",
-        classification: "Digital Maximalism",
-        habitat: "Global Editorial",
-        status: "Active",
+        id: "sift",
+        title: "SIFT",
+        client: "Personal",
+        sector: "Mobile · AI",
+        year: "2025",
+        image: "/images/sift-v2.jpg",
+        mood: "#8b9e6b",
+        pitch: "AI-powered content curation — paste any URL, get an instant summary.",
         editorial: {
-            headline: "The Rebirth of Red",
-            subhead: "Digital Maximalism",
-            copy: "Reimagining the digital presence of the world's most influential fashion authority. A system built on tension, white space, and typographic authority.",
-            images: ["/images/vogue-1.jpg", "/images/vogue-2.jpg"],
+            headline: "Save Anything, Understand Everything",
+            subhead: "Content Intelligence",
+            copy: "Sift transforms how you save content from the internet. Paste any URL — TikTok, Instagram, YouTube, or the open web — and Sift instantly scrapes, summarizes, and organizes it into a beautiful feed. Built with an optimistic-insert architecture that makes saving feel instant, even while the backend orchestrates scrapers and AI in the background.",
+            images: ["/images/sift-v2.jpg"],
         },
         schematic: {
-            stack: ["Next.js 14", "WebGL", "Sanity CMS"],
-            grid: "12-Col Liquid",
-            typography: "Bodoni Moda / Inter",
-            colors: ["#7f1d1d", "#000000", "#ffffff"],
+            stack: ["React Native", "Supabase", "Vercel", "OpenAI GPT-4o", "Apify"],
+            grid: "iOS HIG · 8px Baseline",
+            typography: "SF Pro / SF Mono",
+            colors: ["#8b9e6b", "#0a0a0a", "#faf9f7"],
         },
     },
     {
         id: "02",
-        title: "MODEL 3 INTERFACE",
-        client: "Tesla",
-        sector: "Automotive",
-        year: "2025",
-        image: "/assets/environment/mountains.png",
-        mood: "#172554",
-        classification: "HMI Design System",
-        habitat: "Automotive Cockpit",
-        status: "Active",
+        title: "VerbAItim",
+        client: "Linguistic Preservation Initiative",
+        sector: "AI / SaaS",
+        year: "2026",
+        image: "/images/verbaitim-hero.png",
+        mood: "#4169E1",
+        pitch: "High-precision linguistic SaaS bridging field documentation with pedagogical output.",
         editorial: {
-            headline: "Autonomy in Motion",
-            subhead: "HMI Design System",
-            copy: "Defining the interaction language for Level 5 autonomy. Trust through transparency.",
-            images: ["/images/tesla-1.jpg"],
+            headline: "The future of language is verifiable data.",
+            subhead: "Scientific Naturalism meets Awwwards-level Motion.",
+            copy: "VerbAItim bridges the gap between field linguistics and diverse pedagogical output. By leveraging Allosaurus for universal phonetic capture and ByT5 for byte-level preservation, we create a 'Pipeline of Preservation' that ensures indigenous data sovereignty through rigorous Chain of Custody verification. The interface balances archival warmth with industrial precision, creating a digital workbench that feels both organic and surgical.",
+            images: [
+                "/images/verbaitim-hero.png",
+                "/images/verbaitim-interface.png",
+            ],
         },
         schematic: {
-            stack: ["C++ / Qt", "React Native", "OpenGL"],
-            grid: "Fluid 8px",
-            typography: "Gotham Pro / Mono",
-            colors: ["#172554", "#e2e8f0"],
+            stack: ["Next.js", "Framer Motion", "Lovable", "Allosaurus", "ByT5"],
+            grid: "4px Industrial Precision",
+            typography: "Instrument Serif / Inter",
+            colors: ["#FAFAFA", "#0A0A0A", "#4169E1"],
         },
     },
     {
         id: "03",
-        title: "CHECKOUT V3",
-        client: "Stripe",
-        sector: "SaaS",
-        year: "2025",
-        image: "/assets/environment/clouds.png",
-        mood: "#6366f1",
-        classification: "Infrastructure",
-        habitat: "Global Commerce",
-        status: "Active",
+        title: "Subject 003",
+        client: "In Development",
+        sector: "System Arc",
+        year: "2026",
+        image: "/images/sift-mobile.png", // Placeholder
+        mood: "#000000",
+        pitch: "Classified system architecture.",
         editorial: {
-            headline: "The Invisible Ledger",
-            subhead: "Financial Infrastructure",
-            copy: "Reducing friction in global commerce to zero. A study in microscopic interaction design.",
+            headline: "System Status: Building",
+            subhead: "Initializing...",
+            copy: "Project currently in stealth development mode. Data redaction active.",
             images: [],
         },
         schematic: {
-            stack: ["React", "Ruby", "Sorbet"],
-            grid: "4px Baseline",
-            typography: "Sohne / Bandit",
-            colors: ["#6366f1", "#0a0a0a"],
+            stack: ["React", "WebGL", "Node.js"],
+            grid: "Unknown",
+            typography: "Unknown",
+            colors: ["#000000", "#FFFFFF"],
         },
-    },
-    {
-        id: "04",
-        title: "CHAIR STUDY 04",
-        client: "Vitra",
-        sector: "Industrial",
-        year: "2024",
-        image: "/assets/environment/pampas.png",
-        mood: "#404040",
-        classification: "Object Research",
-        habitat: "Physical Space",
-        status: "Archived",
-        editorial: {
-            headline: "Specific Objects",
-            subhead: "Material Research",
-            copy: "An exploration of molded plywood and sustainable polymers.",
-            images: []
-        },
-        schematic: {
-            stack: ["Rhino 3D", "Keyshot", "CNC"],
-            grid: "Golden Ratio",
-            typography: "Helvetica Now",
-            colors: ["#404040", "#d4d4d4"]
-        }
-    },
-    {
-        id: "05",
-        title: "SYSTEM ARC",
-        client: "Internal",
-        sector: "Makers",
-        year: "2024",
-        image: "/assets/environment/dandelion_seed.png",
-        mood: "#166534",
-        classification: "Internal Tooling",
-        habitat: "Design Ops",
-        status: "Active",
-        editorial: {
-            headline: "Order from Chaos",
-            subhead: "Design Ops",
-            copy: "Internal tooling to accelerate the design-to-code pipeline.",
-            images: []
-        },
-        schematic: {
-            stack: ["Rust", "Tauri", "Svelte"],
-            grid: "Modular",
-            typography: "JetBrains Mono",
-            colors: ["#166534", "#f0fdf4"]
-        }
     },
 ];

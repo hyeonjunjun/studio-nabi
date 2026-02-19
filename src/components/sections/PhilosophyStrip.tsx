@@ -15,7 +15,7 @@ const PHRASES = [
     "Digital Naturalism",
     "Design Engineering",
     "Interfaces as Habitats",
-    "Seoul · Worldwide",
+    "NYC · Worldwide",
     "Est. 2024",
     "나비 = Butterfly",
     "Nothing is Unnecessary",

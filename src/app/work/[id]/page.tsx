@@ -9,15 +9,18 @@ import PageTransition from "@/components/PageTransition";
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const [project, setProject] = useState<Project | null>(null);
+    const [checked, setChecked] = useState(false);
 
     useEffect(() => {
         const found = PROJECTS.find((p) => p.id === resolvedParams.id);
         if (found) {
             setProject(found);
         }
+        setChecked(true);
     }, [resolvedParams.id]);
 
-    if (!project) return null;
+    if (!checked) return null;
+    if (!project) return notFound();
 
     return (
         <PageTransition>

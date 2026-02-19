@@ -1,234 +1,281 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import type { Project } from "@/constants/projects";
-import Link from "next/link";
 import { PROJECTS } from "@/constants/projects";
+import Link from "next/link";
+import Image from "next/image";
 
 /**
- * ScrollStage
- * ───────────
- * A continuous scroll-locked case study experience.
- * Uses CSS sticky positioning + Framer Motion scroll transforms
- * to reveal 6 stages as the user scrolls through 600vh of content.
- *
- * Inspired by AVATR Vision + Lightweight.
+ * ScrollStage — Image-First Case Study
+ * ─────────────────────────────────────
+ * Clean scrollable layout inspired by baothiento.com / hugoferradas.com:
+ *   1. Back link + project number
+ *   2. Hero: large title + one-line pitch
+ *   3. Metadata strip: Client / Year / Sector / Stack
+ *   4. Image stream (full-width, scroll-reveal)
+ *   5. Technical details section
+ *   6. Next project link
  */
 
 interface ScrollStageProps {
     project: Project;
 }
 
+/* ─── Animation Variants ─── */
+const reveal = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (delay: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] as const },
+    }),
+};
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex flex-col gap-2">
+            <span className="font-pixel text-[9px] tracking-[0.25em] uppercase text-accent">
+                {label}
+            </span>
+            <span className="font-sans text-sm text-ink">
+                {value}
+            </span>
+        </div>
+    );
+}
+
+function ImageBlock({ src, index }: { src: string; index: number }) {
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.15 });
+
+    return (
+        <motion.div
+            ref={ref}
+            className="relative w-full aspect-[16/10] overflow-hidden rounded-sm"
+            initial={{ opacity: 0, y: 40 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{
+                duration: 0.8,
+                delay: index * 0.08,
+                ease: [0.16, 1, 0.3, 1],
+            }}
+        >
+            <Image
+                src={src}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 85vw"
+                priority={index === 0}
+            />
+        </motion.div>
+    );
+}
+
 export default function ScrollStage({ project }: ScrollStageProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"],
-    });
-
-    // Stage progress transforms (each stage is ~16.7% of total)
-    const heroOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-    const heroScale = useTransform(scrollYProgress, [0, 0.15], [2, 1]);
-
-    const briefOpacity = useTransform(scrollYProgress, [0.12, 0.18, 0.28, 0.32], [0, 1, 1, 0]);
-    const briefY = useTransform(scrollYProgress, [0.12, 0.20], [60, 0]);
-
-    const processOpacity = useTransform(scrollYProgress, [0.28, 0.35, 0.48, 0.52], [0, 1, 1, 0]);
-    const processY = useTransform(scrollYProgress, [0.28, 0.38], [40, 0]);
-
-    const systemOpacity = useTransform(scrollYProgress, [0.48, 0.55, 0.68, 0.72], [0, 1, 1, 0]);
-    const systemY = useTransform(scrollYProgress, [0.48, 0.58], [40, 0]);
-
-    const paletteOpacity = useTransform(scrollYProgress, [0.68, 0.75, 0.83, 0.87], [0, 1, 1, 0]);
-
-    const closeOpacity = useTransform(scrollYProgress, [0.85, 0.92], [0, 1]);
-    const closeY = useTransform(scrollYProgress, [0.85, 0.95], [40, 0]);
-
-    // Background color morph for process stage
-    const bgOpacity = useTransform(scrollYProgress, [0.30, 0.45, 0.50], [0, 0.06, 0]);
+    const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+    const [metaRef, metaInView] = useInView({ triggerOnce: true, threshold: 0.3 });
+    const [techRef, techInView] = useInView({ triggerOnce: true, threshold: 0.3 });
 
     // Find next project
     const currentIndex = PROJECTS.findIndex((p) => p.id === project.id);
     const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
 
+    // Combine all images
+    const allImages = [
+        project.image,
+        ...project.editorial.images.filter((img) => img !== project.image),
+    ];
+
     return (
-        <div ref={containerRef} className="relative" style={{ height: "600vh" }}>
-            {/* Sticky viewport */}
-            <div className="sticky top-0 h-screen overflow-hidden">
-                {/* Background mood color */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        backgroundColor: project.mood,
-                        opacity: bgOpacity,
-                    }}
-                />
-
-                {/* ─── Stage 1: Hero ─── */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ opacity: heroOpacity }}
+        <div className="min-h-screen bg-canvas">
+            {/* ─── Top Bar ─── */}
+            <motion.div
+                className="flex items-center justify-between px-6 sm:px-12 lg:px-20 pt-8 pb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+            >
+                <Link
+                    href="/"
+                    className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-faint hover:text-ink transition-colors duration-300 py-3 -my-2 pr-4"
                 >
-                    <motion.div
-                        className="text-center"
-                        style={{ scale: heroScale }}
+                    ← Index
+                </Link>
+                <span className="font-pixel text-[10px] tracking-[0.3em] uppercase text-ink-faint">
+                    Nᵒ {project.id}
+                </span>
+            </motion.div>
+
+            {/* ─── Hero: Title + Pitch ─── */}
+            <div
+                ref={heroRef}
+                className="px-6 sm:px-12 lg:px-20 pt-16 sm:pt-24 pb-16 sm:pb-20"
+            >
+                <div className="max-w-4xl">
+                    <motion.p
+                        className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-4"
+                        custom={0}
+                        initial="hidden"
+                        animate={heroInView ? "visible" : "hidden"}
+                        variants={reveal}
                     >
-                        <motion.p
-                            layoutId={`project-index-${project.id}`}
-                            className="font-pixel text-[10px] tracking-[0.3em] uppercase text-ink-faint mb-4"
-                        >
-                            Nᵒ {project.id}
-                        </motion.p>
+                        ({project.client})
+                    </motion.p>
+
+                    <div className="overflow-hidden">
                         <motion.h1
-                            layoutId={`project-title-${project.id}`}
-                            className="font-display text-[clamp(2rem,6vw,5rem)] leading-[0.95] tracking-[-0.02em] text-ink"
+                            className="font-display italic text-[clamp(2.5rem,6vw,5rem)] leading-[1.05] tracking-[-0.02em] text-ink"
+                            custom={0.1}
+                            initial="hidden"
+                            animate={heroInView ? "visible" : "hidden"}
+                            variants={reveal}
                         >
-                            {project.title}
+                            {project.editorial.headline}
                         </motion.h1>
-                        <div className="flex items-center justify-center gap-8 mt-6">
-                            <span className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted">
-                                {project.client}
-                            </span>
-                            <span className="w-1 h-1 rounded-full bg-ink-faint" />
-                            <span className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted tabular-nums">
-                                {project.year}
-                            </span>
-                        </div>
-                    </motion.div>
-                </motion.div>
-
-                {/* ─── Stage 2: Brief ─── */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center px-8"
-                    style={{ opacity: briefOpacity, y: briefY }}
-                >
-                    <div className="max-w-2xl text-center">
-                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
-                            {project.editorial.subhead}
-                        </p>
-                        <h2 className="font-display italic text-[clamp(1.8rem,4vw,3.5rem)] leading-[1.1] text-ink mb-8">
-                            &ldquo;{project.editorial.headline}&rdquo;
-                        </h2>
-                        <p className="font-sans text-[15px] leading-[1.8] text-ink-muted max-w-lg mx-auto">
-                            {project.editorial.copy}
-                        </p>
                     </div>
-                </motion.div>
 
-                {/* ─── Stage 3: Process ─── */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center px-8"
-                    style={{ opacity: processOpacity, y: processY }}
-                >
-                    <div className="max-w-xl text-center">
-                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8">
-                            Design Decisions
-                        </p>
-                        <div className="flex flex-col gap-6">
-                            <div className="border border-ink/[0.06] rounded-lg p-6">
-                                <span className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint">Grid System</span>
-                                <p className="font-sans text-lg text-ink mt-2">{project.schematic.grid}</p>
-                            </div>
-                            <div className="border border-ink/[0.06] rounded-lg p-6">
-                                <span className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint">Typography</span>
-                                <p className="font-sans text-lg text-ink mt-2">{project.schematic.typography}</p>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
+                    <motion.p
+                        className="font-display italic text-[clamp(1.2rem,2.5vw,2rem)] text-ink-muted mt-2 leading-[1.3]"
+                        custom={0.2}
+                        initial="hidden"
+                        animate={heroInView ? "visible" : "hidden"}
+                        variants={reveal}
+                    >
+                        {project.pitch}
+                    </motion.p>
+                </div>
+            </div>
 
-                {/* ─── Stage 4: System / Tech Stack ─── */}
+            {/* ─── Metadata Strip ─── */}
+            <motion.div
+                ref={metaRef}
+                className="px-6 sm:px-12 lg:px-20 py-8 border-y border-ink/[0.06]"
+                initial={{ opacity: 0, y: 16 }}
+                animate={metaInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            >
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+                    <MetaItem label="Client" value={project.client} />
+                    <MetaItem label="Year" value={project.year} />
+                    <MetaItem label="Type" value={project.sector} />
+                    <MetaItem
+                        label="Stack"
+                        value={project.schematic.stack.slice(0, 3).join(", ")}
+                    />
+                </div>
+            </motion.div>
+
+            {/* ─── Description ─── */}
+            <div className="px-6 sm:px-12 lg:px-20 py-16 sm:py-20">
                 <motion.div
-                    className="absolute inset-0 flex items-center justify-center px-8"
-                    style={{ opacity: systemOpacity, y: systemY }}
+                    className="max-w-2xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 >
-                    <div className="max-w-md">
-                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-8 text-center">
-                            Technical Specification
-                        </p>
-                        <div className="grid grid-cols-1 gap-3">
-                            {project.schematic.stack.map((tech, i) => (
-                                <motion.div
-                                    key={tech}
-                                    className="flex items-center justify-between border-b border-ink/[0.06] pb-3"
-                                    initial={{ opacity: 0, x: -10 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                >
-                                    <span className="font-pixel text-[10px] tracking-[0.15em] text-ink-faint">
-                                        {String(i + 1).padStart(2, "0")}
-                                    </span>
-                                    <span className="font-sans text-[15px] text-ink">
-                                        {tech}
-                                    </span>
-                                </motion.div>
+                    <p className="font-pixel text-[9px] tracking-[0.25em] uppercase text-ink-faint mb-6">
+                        Overview
+                    </p>
+                    <p className="font-sans text-[15px] leading-[1.8] text-ink-muted">
+                        {project.editorial.copy}
+                    </p>
+                </motion.div>
+            </div>
+
+            {/* ─── Image Stream ─── */}
+            <div className="px-6 sm:px-12 lg:px-20 space-y-4 sm:space-y-6">
+                {allImages.map((src, i) => (
+                    <ImageBlock key={`${src}-${i}`} src={src} index={i} />
+                ))}
+            </div>
+
+            {/* ─── Technical Details ─── */}
+            <motion.div
+                ref={techRef}
+                className="px-6 sm:px-12 lg:px-20 py-20 sm:py-28"
+                initial={{ opacity: 0 }}
+                animate={techInView ? { opacity: 1 } : {}}
+                transition={{ duration: 0.6 }}
+            >
+                <p className="font-pixel text-[9px] tracking-[0.25em] uppercase text-ink-faint mb-10">
+                    Details
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8 border-t border-ink/[0.06] pt-10">
+                    {/* Stack */}
+                    <div>
+                        <span className="font-pixel text-[9px] tracking-[0.25em] uppercase text-accent mb-4 block">
+                            Stack
+                        </span>
+                        <div className="flex flex-col gap-2">
+                            {project.schematic.stack.map((tech) => (
+                                <span key={tech} className="font-sans text-sm text-ink">
+                                    {tech}
+                                </span>
                             ))}
                         </div>
                     </div>
-                </motion.div>
 
-                {/* ─── Stage 5: Palette ─── */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center px-8"
-                    style={{ opacity: paletteOpacity }}
-                >
-                    <div className="text-center">
-                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-10">
-                            Color System
-                        </p>
-                        <div className="flex items-center gap-4 justify-center">
-                            {project.schematic.colors.map((color, i) => (
-                                <motion.div
-                                    key={color}
-                                    className="flex flex-col items-center gap-3"
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: i * 0.12, type: "spring", stiffness: 300, damping: 20 }}
-                                >
+                    {/* System */}
+                    <div>
+                        <span className="font-pixel text-[9px] tracking-[0.25em] uppercase text-accent mb-4 block">
+                            System
+                        </span>
+                        <div className="flex flex-col gap-2">
+                            <span className="font-sans text-sm text-ink">{project.schematic.grid}</span>
+                            <span className="font-sans text-sm text-ink">{project.schematic.typography}</span>
+                        </div>
+                    </div>
+
+                    {/* Colors */}
+                    <div>
+                        <span className="font-pixel text-[9px] tracking-[0.25em] uppercase text-accent mb-4 block">
+                            Palette
+                        </span>
+                        <div className="flex items-center gap-3">
+                            {project.schematic.colors.map((color) => (
+                                <div key={color} className="flex items-center gap-2">
                                     <div
-                                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-ink/[0.06] shadow-sm"
+                                        className="w-5 h-5 rounded-full border border-ink/[0.08]"
                                         style={{ backgroundColor: color }}
                                     />
-                                    <span className="font-pixel text-[8px] tracking-[0.2em] text-ink-faint uppercase">
+                                    <span className="font-pixel text-[8px] tracking-[0.15em] text-ink-faint uppercase">
                                         {color}
                                     </span>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
-                </motion.div>
+                </div>
+            </motion.div>
 
-                {/* ─── Stage 6: Close / Next Specimen ─── */}
-                <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ opacity: closeOpacity, y: closeY }}
+            {/* ─── Next Project ─── */}
+            <div className="border-t border-ink/[0.06]">
+                <Link
+                    href={`/work/${nextProject.id}`}
+                    className="group block px-6 sm:px-12 lg:px-20 py-16 sm:py-24"
                 >
-                    <div className="text-center">
-                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6">
-                            Next Specimen
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-4">
+                            Next Project
                         </p>
-                        <Link
-                            href={`/work/${nextProject.id}`}
-                            className="group inline-block"
-                        >
-                            <h3 className="font-display text-[clamp(1.5rem,4vw,3rem)] leading-[1.05] text-ink group-hover:text-ink-muted transition-colors duration-500">
-                                {nextProject.title}
-                            </h3>
-                            <p className="font-pixel text-[10px] tracking-[0.2em] text-ink-muted mt-3">
-                                {nextProject.client} · {nextProject.year}
-                            </p>
-                        </Link>
-                        <div className="mt-10">
-                            <Link
-                                href="/"
-                                className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint hover:text-ink transition-colors duration-300"
-                            >
-                                ← Return to Index
-                            </Link>
-                        </div>
-                    </div>
-                </motion.div>
+                        <h3 className="font-display italic text-[clamp(2rem,5vw,4rem)] leading-[1.05] text-ink group-hover:text-accent transition-colors duration-500">
+                            {nextProject.title}
+                        </h3>
+                        <p className="font-sans text-sm text-ink-muted mt-2 group-hover:text-ink transition-colors duration-500">
+                            {nextProject.pitch}
+                        </p>
+                    </motion.div>
+                </Link>
             </div>
         </div>
     );

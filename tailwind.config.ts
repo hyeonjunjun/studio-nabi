@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#fafafa",
-        ink: "#1a1a1a",
-        "ink-muted": "#6B6B6B",
-        "ink-faint": "#9A9A9A",
-        border: "#D8D8D8",
+        canvas: "#ffffff",
+        ink: "#0a0a0a",
+        "ink-muted": "#555555",
+        "ink-faint": "#999999",
+        border: "#e0e0e0",
         accent: "#8B9E6B",
         "accent-muted": "#A3B585",
       },

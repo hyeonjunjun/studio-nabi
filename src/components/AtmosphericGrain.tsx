@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
  */
 export default function AtmosphericGrain() {
     return (
-        <div className="pointer-events-none fixed inset-0 z-[100] h-full w-full overflow-hidden opacity-[0.035]">
+        <div className="pointer-events-none fixed inset-0 z-[100] h-full w-full overflow-hidden opacity-[0.05]">
             <div className="absolute inset-[-100%] h-[300%] w-[300%] bg-noise-pattern animate-grain" />
 
             <style jsx>{`

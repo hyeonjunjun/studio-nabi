@@ -1,173 +1,49 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
 
 /**
  * HeroSanctuary
  * ─────────────
- * Full-viewport editorial hero with specific layout:
+ * Fullscreen spatial hero with two tactile layers:
+ *   1. Cursor-reactive radial gradient "light spot"
+ *   2. Parallax depth on the stacked headline
  *
  *   [top-left]      studio nabi
- *   [top-right]     animated dropdown menu / contact
- *   [bottom-left]   designing to change
- *   [center]        Folio Nᵒ01
- *   [right-center]  20 / 26  (split year)
- *   [bottom-right]  37.5°N, 127.0°E
- *
- * Cinematic mesh gradient background.
+ *   [top-right]     01 Works / 02 About / 03 Contact
+ *   [center]        Ryan Jun / Design / Engineer —
+ *   [bottom-left]   Brief descriptor
+ *   [bottom-right]  NYC, NY  2026
  */
 
-/* ─── Animated Dropdown Menu ─── */
-function DropdownMenu() {
-    const [isOpen, setIsOpen] = useState(false);
+const NAV_ITEMS = [
+    { num: "01", label: "Works", href: "#work" },
+    { num: "02", label: "About", href: "#about" },
+    { num: "03", label: "Contact", href: "mailto:stuuudionabi@gmail.com" },
+];
 
-    const menuItems = [
-        { label: "Work", href: "/work" },
-        { label: "About", href: "/about" },
-        { label: "Contact", href: "mailto:hello@studionabi.com" },
-    ];
+/* ─── Stagger animation variants ─── */
+const containerVariants = {
+    hidden: {},
+    visible: {
+        transition: { staggerChildren: 0.12, delayChildren: 0.6 },
+    },
+};
 
-    return (
-        <div
-            className="relative"
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)}
-        >
-            <motion.button
-                className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 flex items-center gap-2"
-                whileHover={{ x: -2 }}
-            >
-                <span>Menu</span>
-                <motion.span
-                    animate={{ rotate: isOpen ? 45 : 0 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-[8px]"
-                >
-                    +
-                </motion.span>
-            </motion.button>
+const lineReveal = {
+    hidden: { y: "110%", opacity: 0 },
+    visible: {
+        y: "0%",
+        opacity: 1,
+        transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as const },
+    },
+};
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        className="absolute top-full right-0 mt-4 flex flex-col items-end gap-3"
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        {menuItems.map((item, i) => (
-                            <motion.div
-                                key={item.label}
-                                initial={{ opacity: 0, x: 10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 10 }}
-                                transition={{
-                                    duration: 0.3,
-                                    delay: i * 0.06,
-                                    ease: [0.22, 1, 0.36, 1],
-                                }}
-                            >
-                                <Link
-                                    href={item.href}
-                                    className="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-colors duration-300"
-                                >
-                                    {item.label}
-                                </Link>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-}
+/* ─── Parallax multipliers per headline line (deeper = more movement) ─── */
+const PARALLAX = [0.015, 0.025, 0.035];
 
-/* ─── Physics Letters ─── */
-interface LetterState {
-    char: string;
-    offsetY: number;
-    rotation: number;
-    targetY: number;
-    targetR: number;
-    velocityY: number;
-    velocityR: number;
-}
-
-function usePhysicsLetters(text: string, springX: any, springY: any) {
-    const lettersRef = useRef<LetterState[]>(
-        text.split("").map((char) => ({
-            char,
-            offsetY: 0,
-            rotation: 0,
-            targetY: 0,
-            targetR: 0,
-            velocityY: 0,
-            velocityR: 0,
-        }))
-    );
-
-    const spanRefs = useRef<(HTMLSpanElement | null)[]>([]);
-    const animRef = useRef<number>(0);
-
-    useEffect(() => {
-        const SPRING = 0.06;
-        const DAMPING = 0.82;
-        const INFLUENCE_RADIUS = 180;
-
-        const tick = () => {
-            const letters = lettersRef.current;
-            const mx = springX.get() * window.innerWidth;
-            const my = springY.get() * window.innerHeight;
-
-            for (let i = 0; i < letters.length; i++) {
-                const span = spanRefs.current[i];
-                if (!span) continue;
-
-                const rect = span.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
-
-                const dx = mx - cx;
-                const dy = my - cy;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                if (dist < INFLUENCE_RADIUS) {
-                    const strength = (1 - dist / INFLUENCE_RADIUS) * 18;
-                    letters[i].targetY = -strength * (dy < 0 ? 1 : -0.5);
-                    letters[i].targetR = (dx / INFLUENCE_RADIUS) * 4;
-                } else {
-                    letters[i].targetY = 0;
-                    letters[i].targetR = 0;
-                }
-
-                letters[i].velocityY += (letters[i].targetY - letters[i].offsetY) * SPRING;
-                letters[i].velocityY *= DAMPING;
-                letters[i].offsetY += letters[i].velocityY;
-
-                letters[i].velocityR += (letters[i].targetR - letters[i].rotation) * SPRING;
-                letters[i].velocityR *= DAMPING;
-                letters[i].rotation += letters[i].velocityR;
-
-                span.style.transform = `translateY(${letters[i].offsetY}px) rotate(${letters[i].rotation}deg)`;
-            }
-
-            animRef.current = requestAnimationFrame(tick);
-        };
-
-        tick();
-
-        return () => {
-            cancelAnimationFrame(animRef.current);
-        };
-    }, [springX, springY]);
-
-    return { letters: lettersRef.current, spanRefs };
-}
-
-/* ─── Hero Section ─── */
 export default function HeroSanctuary() {
     const ref = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({
@@ -175,151 +51,243 @@ export default function HeroSanctuary() {
         offset: ["start start", "end start"],
     });
 
-    const mouseX = useMotionValue(0.5);
-    const mouseY = useMotionValue(0.5);
-    const springX = useSpring(mouseX, { damping: 40, stiffness: 80 });
-    const springY = useSpring(mouseY, { damping: 40, stiffness: 80 });
+    const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+    const contentY = useTransform(scrollYProgress, [0, 0.6], [0, -100]);
 
-    const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-    const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+    /* ─── Cursor tracking for light spot ─── */
+    const rawX = useMotionValue(0.5);
+    const rawY = useMotionValue(0.5);
+    const spotX = useSpring(rawX, { damping: 40, stiffness: 120, mass: 0.8 });
+    const spotY = useSpring(rawY, { damping: 40, stiffness: 120, mass: 0.8 });
+
+    /* ─── Parallax offset per line ─── */
+    const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
-        const handleGlobalMouse = (e: MouseEvent) => {
-            mouseX.set(e.clientX / window.innerWidth);
-            mouseY.set(e.clientY / window.innerHeight);
-        };
-        window.addEventListener("mousemove", handleGlobalMouse, { passive: true });
-        return () => window.removeEventListener("mousemove", handleGlobalMouse);
-    }, [mouseX, mouseY]);
+        const section = ref.current;
+        if (!section) return;
 
-    const { letters: folioLetters, spanRefs: folioRefs } = usePhysicsLetters("Folio", springX, springY);
+        const handleMove = (e: MouseEvent) => {
+            const rect = section.getBoundingClientRect();
+            const nx = (e.clientX - rect.left) / rect.width;
+            const ny = (e.clientY - rect.top) / rect.height;
+            rawX.set(nx);
+            rawY.set(ny);
+            // Center-relative offset (-0.5 to 0.5)
+            setMouseOffset({ x: nx - 0.5, y: ny - 0.5 });
+        };
+
+        section.addEventListener("mousemove", handleMove, { passive: true });
+        return () => section.removeEventListener("mousemove", handleMove);
+    }, [rawX, rawY]);
 
     return (
         <section
             ref={ref}
             className="relative h-screen overflow-hidden bg-canvas"
-            onMouseMove={(e) => {
-                mouseX.set(e.clientX / window.innerWidth);
-                mouseY.set(e.clientY / window.innerHeight);
-            }}
         >
-            {/* ─── Subtle Structure Layer ─── */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
-                {/* Bento Grid Substrate - Minimalist line work */}
-                <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: `linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)`,
-                        backgroundSize: '100px 100px'
+            {/* ─── Cinematic Atmosphere (Video) ─── */}
+            <motion.div
+                className="absolute inset-0 z-0 select-none pointer-events-none"
+                style={{
+                    scale: 1.05, // Prevent edge bleeding
+                    x: useTransform(spotX, [0, 1], [-20, 20]),
+                    y: useTransform(spotY, [0, 1], [-20, 20]),
+                }}
+            >
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover opacity-50 mix-blend-multiply contrast-110"
+                    style={{ filter: "grayscale(40%) contrast(1.1)" }}
+                    ref={(el) => {
+                        if (el) el.playbackRate = 0.75;
                     }}
-                />
-            </div>
+                >
+                    <source src="/assets/Add_soft_gentle_1080p_202602191457.mp4" type="video/mp4" />
+                </video>
+                {/* Vignette mask to soften edges */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--color-canvas)_120%)]" />
+            </motion.div>
+
+            {/* ─── Subtle Grid Substrate ─── */}
+            <div
+                className="absolute inset-0 pointer-events-none opacity-[0.025] z-0"
+                style={{
+                    backgroundImage: `linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)`,
+                    backgroundSize: '120px 120px'
+                }}
+            />
+
+            {/* ─── Cursor Light Spot ─── */}
+            <motion.div
+                className="absolute inset-0 pointer-events-none z-[1]"
+                style={{
+                    background: useTransform(
+                        [spotX, spotY],
+                        ([x, y]: number[]) =>
+                            `radial-gradient(600px circle at ${(x as number) * 100}% ${(y as number) * 100}%, rgba(139,158,107,0.07) 0%, rgba(139,158,107,0.02) 40%, transparent 70%)`
+                    ),
+                }}
+            />
 
             {/* ─── Content Layer ─── */}
             <motion.div
-                className="absolute inset-0 z-10 flex flex-col justify-between p-8 sm:p-12 lg:p-20"
+                className="absolute inset-0 z-10 flex flex-col justify-between p-6 sm:p-10 lg:p-16"
                 style={{ opacity: contentOpacity, y: contentY }}
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             >
-                {/* ══ TOP: Station Branding & Menu ══ */}
-                <div className="flex justify-between items-start pointer-events-auto">
+                {/* ══ TOP BAR ══ */}
+                <div className="flex justify-between items-start">
+                    {/* Logo */}
                     <motion.div
-                        initial={{ opacity: 0, x: -12 }}
+                        initial={{ opacity: 0, x: -16 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <Link href="/" className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted/80 hover:text-ink transition-colors duration-300">
+                        <Link
+                            href="/"
+                            className="font-pixel text-[10px] tracking-[0.25em] uppercase text-ink-muted hover:text-ink transition-colors duration-300"
+                        >
                             Studio Nabi
                         </Link>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, x: 12 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    {/* Numbered Navigation */}
+                    <motion.nav
+                        className="flex flex-col items-end gap-3"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            hidden: {},
+                            visible: { transition: { staggerChildren: 0.08, delayChildren: 0.5 } },
+                        }}
                     >
-                        <DropdownMenu />
-                    </motion.div>
+                        {NAV_ITEMS.map((item) => (
+                            <motion.div
+                                key={item.num}
+                                variants={{
+                                    hidden: { opacity: 0, x: 20 },
+                                    visible: {
+                                        opacity: 1,
+                                        x: 0,
+                                        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                                    },
+                                }}
+                            >
+                                <Link
+                                    href={item.href}
+                                    className="group flex items-center gap-3 font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 py-2 -my-1"
+                                >
+                                    <span className="text-ink-faint group-hover:text-accent transition-colors duration-300">
+                                        {item.num}
+                                    </span>
+                                    <span className="relative">
+                                        {item.label}
+                                        <span className="absolute bottom-[-2px] left-0 w-0 h-[1px] bg-ink group-hover:w-full transition-all duration-500 ease-out" />
+                                    </span>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </motion.nav>
                 </div>
 
-                {/* ══ CENTER: Folio Nᵒ01 ══ */}
-                <div className="flex-1 flex items-center justify-center select-none pointer-events-none">
-                    <motion.div
-                        className="text-center"
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        {/* "Folio" in display italic — physics-enabled */}
-                        <div className="font-display italic text-[clamp(6rem,20vw,16rem)] leading-[0.75] tracking-[-0.04em] text-ink">
-                            {folioLetters.map((letter, i) => (
-                                <span
-                                    key={`f-${i}`}
-                                    ref={(el) => { folioRefs.current[i] = el; }}
-                                    className="inline-block will-change-transform cursor-default"
-                                >
-                                    {letter.char}
-                                </span>
-                            ))}
+                {/* ══ CENTER: Massive Stacked Headline with Parallax ══ */}
+                <motion.div
+                    className="flex-1 flex items-center"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    <h1 className="w-full max-w-[90vw] lg:max-w-[80vw]">
+                        {/* Line 1: Ryan Jun — shallowest parallax */}
+                        <div className="overflow-hidden">
+                            <motion.span
+                                className="block font-display italic text-[clamp(3rem,11vw,10rem)] leading-[0.88] tracking-[-0.04em] text-ink will-change-transform"
+                                variants={lineReveal}
+                                style={{
+                                    transform: `translate(${mouseOffset.x * PARALLAX[0] * 100}px, ${mouseOffset.y * PARALLAX[0] * 100}px)`,
+                                    transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                                }}
+                            >
+                                Ryan Jun
+                            </motion.span>
                         </div>
 
-                        {/* "Nᵒ01" — monospace, smaller, tracking wide */}
-                        <motion.p
-                            className="font-pixel text-[clamp(0.8rem,2vw,1.4rem)] tracking-[0.5em] uppercase text-ink-muted/40 mt-6"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 1.2, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            Nᵒ01
-                        </motion.p>
-                    </motion.div>
-                </div>
+                        {/* Line 2: Design — medium parallax */}
+                        <div className="overflow-hidden mt-1">
+                            <motion.span
+                                className="block font-display italic text-[clamp(3rem,11vw,10rem)] leading-[0.88] tracking-[-0.04em] text-ink will-change-transform"
+                                variants={lineReveal}
+                                style={{
+                                    transform: `translate(${mouseOffset.x * PARALLAX[1] * 100}px, ${mouseOffset.y * PARALLAX[1] * 100}px)`,
+                                    transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                                }}
+                            >
+                                Design
+                            </motion.span>
+                        </div>
 
-                {/* ══ BOTTOM: Thesis & Coordinates ══ */}
+                        {/* Line 3: Engineer — deepest parallax */}
+                        <div className="overflow-hidden mt-1 flex items-baseline gap-4">
+                            <motion.span
+                                className="block font-display italic text-[clamp(3rem,11vw,10rem)] leading-[0.88] tracking-[-0.04em] text-ink will-change-transform"
+                                variants={lineReveal}
+                                style={{
+                                    transform: `translate(${mouseOffset.x * PARALLAX[2] * 100}px, ${mouseOffset.y * PARALLAX[2] * 100}px)`,
+                                    transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                                }}
+                            >
+                                Engineer
+                            </motion.span>
+                            <motion.span
+                                className="font-display italic text-[clamp(2rem,5vw,5rem)] text-ink-faint will-change-transform"
+                                variants={lineReveal}
+                                style={{
+                                    transform: `translate(${mouseOffset.x * PARALLAX[2] * 100}px, ${mouseOffset.y * PARALLAX[2] * 100}px)`,
+                                    transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                                }}
+                            >
+                                —
+                            </motion.span>
+                        </div>
+                    </h1>
+                </motion.div>
+
+                {/* ══ BOTTOM BAR ══ */}
                 <div className="flex justify-between items-end">
+                    {/* Descriptor */}
                     <motion.div
-                        className="max-w-[40vw]"
-                        initial={{ opacity: 0, y: 12 }}
+                        className="max-w-[50vw] lg:max-w-xs"
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ delay: 1.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <p className="font-display italic text-[clamp(2.5rem,5vw,4.5rem)] leading-[0.9] tracking-[-0.04em] text-ink">
-                            designing to change
-                        </p>
-                        <p className="font-pixel text-[8px] tracking-[0.2em] uppercase text-ink-muted/50 mt-4 leading-relaxed max-w-xs">
-                            Research into the kinetic behavior of digital matter. Based in Seoul.
+                        <p className="font-pixel text-[9px] sm:text-[10px] tracking-[0.15em] uppercase text-ink-muted leading-relaxed">
+                            Building digital experiences at the
+                            <br />
+                            intersection of craft and code.
                         </p>
                     </motion.div>
 
-                    <div className="flex gap-20 items-end">
-                        <motion.div
-                            className="hidden lg:block text-right"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1.6, duration: 0.8 }}
-                        >
-                            <p className="font-pixel text-[8px] tracking-[0.3em] uppercase text-ink-faint mb-1">Index</p>
-                            <span className="font-pixel text-[10px] tracking-[0.2em] uppercase text-ink-muted">
-                                20 / 26
-                            </span>
-                        </motion.div>
-
-                        <motion.div
-                            className="text-right"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 2.0, duration: 0.6 }}
-                        >
-                            <p className="font-pixel text-[8px] tracking-[0.3em] uppercase text-ink-faint mb-1">Station</p>
-                            <span className="font-pixel text-[9px] tracking-[0.15em] text-ink/60 tabular-nums inline-block min-w-[120px]">
-                                37.5°N, 127.0°E
-                            </span>
-                        </motion.div>
-                    </div>
+                    {/* Location + Year */}
+                    <motion.div
+                        className="text-right"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 2.0, duration: 0.8 }}
+                    >
+                        <p className="font-pixel text-[8px] tracking-[0.3em] uppercase text-ink-faint mb-1">
+                            Station
+                        </p>
+                        <span className="font-mono text-[10px] tracking-[0.1em] text-ink-muted tabular-nums">
+                            NYC, NY · 2024
+                        </span>
+                    </motion.div>
                 </div>
 
-                {/* ─── Scroll Indicator — Bottom Center ─── */}
+                {/* ─── Scroll Indicator ─── */}
                 <motion.div
                     className="absolute bottom-6 left-1/2 -translate-x-1/2"
                     initial={{ opacity: 0 }}
@@ -327,7 +295,7 @@ export default function HeroSanctuary() {
                     transition={{ delay: 2.4, duration: 0.6 }}
                 >
                     <motion.div
-                        className="w-[1px] h-10 bg-ink-faint/30 origin-top"
+                        className="w-[1px] h-8 bg-ink-faint/40 origin-top"
                         animate={{ scaleY: [0, 1, 0] }}
                         transition={{
                             duration: 2.4,

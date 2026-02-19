@@ -1,14 +1,14 @@
 import HeroSanctuary from "@/components/sections/HeroSanctuary";
-import PhilosophyStrip from "@/components/sections/PhilosophyStrip";
-import LabSpecimens from "@/components/sections/LabSpecimens";
+import IntroStatement from "@/components/sections/IntroStatement";
+import WorkIndex from "@/components/sections/WorkIndex";
 import Colophon from "@/components/sections/Colophon";
 
 export default function Home() {
   return (
     <main>
       <HeroSanctuary />
-      <PhilosophyStrip />
-      <LabSpecimens />
+      <IntroStatement />
+      <WorkIndex />
       <Colophon />
     </main>
   );

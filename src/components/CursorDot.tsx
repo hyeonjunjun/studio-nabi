@@ -251,21 +251,16 @@ export default function CursorDot() {
                 }}
             >
                 <motion.div
-                    className="rounded-none bg-ink/40"
+                    className="rounded-full bg-ink/60"
                     animate={{
-                        width: isHovering ? 0 : 2,
-                        height: isHovering ? 0 : 2,
+                        width: isHovering ? 6 : 4,
+                        height: isHovering ? 6 : 4,
                     }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
                 />
             </motion.div>
 
-            {/* Global cursor hide */}
-            <style jsx global>{`
-                * {
-                    cursor: none !important;
-                }
-            `}</style>
+
         </>
     );
 }

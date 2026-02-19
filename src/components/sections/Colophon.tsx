@@ -7,8 +7,8 @@ import { useInView } from "react-intersection-observer";
 /**
  * Colophon
  * ────────
- * Three-column footer with live local time clock,
- * breathing availability indicator, and technical colophon.
+ * Clean minimal footer. Two-column layout with contact + availability.
+ * Live clock, breathing availability indicator, easter egg preserved.
  */
 export default function Colophon() {
     const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -18,56 +18,65 @@ export default function Colophon() {
     return (
         <footer
             ref={ref}
-            className="px-6 sm:px-12 lg:px-20 py-32 sm:py-40 border-t border-ink/[0.06]"
+            className="px-6 sm:px-12 lg:px-20 py-24 sm:py-32 border-t border-ink/[0.06]"
         >
             <motion.div
-                className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-16 sm:gap-8"
                 initial={{ opacity: 0, y: 16 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-                {/* Contact */}
+                {/* Left: Contact + Links */}
                 <div>
-                    <h4 className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint mb-4">
+                    <h4 className="font-pixel text-[9px] tracking-[0.25em] uppercase text-ink-faint mb-6">
                         Contact
                     </h4>
                     <a
-                        href="mailto:hello@studionabi.com"
-                        className="font-pixel text-sm text-ink-muted hover:text-ink transition-colors duration-300"
+                        href="mailto:stuuudionabi@gmail.com"
+                        className="font-display italic text-[clamp(1.2rem,2.5vw,1.8rem)] text-ink hover:text-accent transition-colors duration-300 block mb-4"
                     >
-                        hello@studionabi.com
+                        stuuudionabi@gmail.com
                     </a>
+                    <div className="flex gap-6 mt-6">
+                        {[
+                            { label: "LinkedIn", href: "https://www.linkedin.com/in/ryan-jun-" },
+                            { label: "GitHub", href: "https://github.com/studionabi" },
+                            { label: "Twitter", href: "https://twitter.com/studionabi" },
+                        ].map(({ label, href }) => (
+                            <a
+                                key={label}
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint hover:text-ink transition-colors duration-300 p-2 -m-2"
+                            >
+                                {label}
+                            </a>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Availability + Live Clock */}
-                <div>
-                    <h4 className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint mb-4">
+                {/* Right: Availability + Clock + Colophon */}
+                <div className="sm:text-right">
+                    <h4 className="font-pixel text-[9px] tracking-[0.25em] uppercase text-ink-faint mb-6">
                         Availability
                     </h4>
-                    <div className="flex items-center gap-2 mb-3">
-                        {/* Breathing pulse */}
+                    <div className="flex items-center gap-2 sm:justify-end mb-4">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                         </span>
-                        <span className="font-pixel text-sm text-ink-muted">
+                        <span className="font-pixel text-[11px] text-ink-muted">
                             Open to projects
                         </span>
                     </div>
 
-                    {/* Live Local Time */}
                     <LiveClock />
-                </div>
 
-                {/* Colophon */}
-                <div>
-                    <h4 className="font-pixel text-[9px] tracking-[0.2em] uppercase text-ink-faint mb-4">
-                        Colophon
-                    </h4>
-                    <p className="font-pixel text-[11px] text-ink-faint leading-relaxed">
+                    <p className="font-pixel text-[10px] text-ink-faint leading-relaxed mt-8">
                         Built with Next.js, Three.js &amp; Framer Motion.
                         <br />
-                        Set in Silkscreen &amp; Geist.
+                        Set in Instrument Serif, Silkscreen &amp; Geist.
                     </p>
                 </div>
             </motion.div>
@@ -87,7 +96,7 @@ export default function Colophon() {
                             나비가 날아갑니다 🦋
                         </motion.span>
                     ) : (
-                        <>© 2024—{new Date().getFullYear()} Studio Nabi. All rights reserved.</>
+                        <>© 2026—{new Date().getFullYear()} Studio Nabi. All rights reserved.</>
                     )}
                 </p>
             </div>
@@ -96,7 +105,7 @@ export default function Colophon() {
 }
 
 /**
- * LiveClock — Ticks every second. Makes the studio feel alive.
+ * LiveClock — Ticks every second. NYC local time.
  */
 function LiveClock() {
     const [time, setTime] = useState<string>("");
@@ -110,7 +119,7 @@ function LiveClock() {
                     minute: "2-digit",
                     second: "2-digit",
                     hour12: false,
-                    timeZone: "Asia/Seoul",
+                    timeZone: "America/New_York",
                 })
             );
         };
@@ -121,7 +130,7 @@ function LiveClock() {
 
     return (
         <div className="font-pixel text-[10px] tracking-[0.15em] text-ink-faint tabular-nums">
-            Seoul Local — {time || "--:--:--"}
+            NYC Local — {time || "--:--:--"}
         </div>
     );
 }

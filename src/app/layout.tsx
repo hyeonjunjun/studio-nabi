@@ -4,7 +4,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import AtmosphericGrain from "@/components/AtmosphericGrain";
 import CurtainPreloader from "@/components/CurtainPreloader";
-import DynamicIsland from "@/components/DynamicIsland";
+
 import CursorDot from "@/components/CursorDot";
 
 /* ─── Typography ─── */
@@ -64,7 +64,7 @@ export default function RootLayout({
       >
         <CurtainPreloader />
         <AtmosphericGrain />
-        <DynamicIsland />
+
         <CursorDot />
         <SmoothScroll>{children}</SmoothScroll>
       </body>

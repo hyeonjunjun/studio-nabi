@@ -1,25 +1,6 @@
 @import "tailwindcss";
 
-/* ─── Marquee Ticker ─── */
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 40s linear infinite;
-}
-
-.animate-marquee-paused {
-  animation-play-state: paused;
-}
-
-/* ─── Studio Nabi · Digital Naturalism ─── */
+/* ─── Studio Nabi · Spatial Interface ─── */
 
 @theme {
   --font-display: var(--font-display);
@@ -28,11 +9,11 @@
   --font-pixel: var(--font-pixel);
   --font-dot: var(--font-dot);
 
-  --color-canvas: #ffffff;
-  --color-ink: #000000;
-  --color-ink-muted: #4a4a4a;
-  --color-ink-faint: #b4b4b4;
-  --color-border: #eeeeee;
+  --color-canvas: #faf9f7;
+  --color-ink: #0a0a0a;
+  --color-ink-muted: #555555;
+  --color-ink-faint: #999999;
+  --color-border: #e0e0e0;
   --color-accent: #8b9e6b;
   --color-accent-muted: #a3b585;
 }
@@ -45,13 +26,14 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* ─── Printed Aesthetic ─── */
-  filter: contrast(105%) brightness(98%);
-  transition: filter 0.8s ease;
 }
 
-/* ─── Selection ─── */
+/* Hide cursor on non-touch devices (pixel butterfly replaces it) */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
 
 ::selection {
   background-color: var(--color-ink);
@@ -79,50 +61,83 @@ body {
   .font-dot {
     font-family: var(--font-dot), sans-serif;
   }
+}
 
-  /* ─── 12-Column Grid ─── */
+/* ─── Cinematic Entrances ─── */
 
-  .grid-layout {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1rem;
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
   }
 
-  @media (min-width: 640px) {
-    .grid-layout {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-clip {
+  from {
+    clip-path: inset(100% 0 0 0);
   }
 
-  @media (min-width: 1024px) {
-    .grid-layout {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
 
-  /* Edge-to-edge grid (no side padding) */
-  .grid-bleed {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1rem;
+  to {
+    opacity: 1;
   }
+}
 
-  /* Inset grid (tighter max-width for body copy) */
-  .grid-inset {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1rem;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+.animate-reveal-up {
+  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-reveal-clip {
+  animation: reveal-clip 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease both;
+}
+
+/* Stagger delay utilities */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-600 {
+  animation-delay: 600ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+.delay-800 {
+  animation-delay: 800ms;
 }

@@ -12,7 +12,7 @@ import { useStudioStore } from "@/lib/store";
  * Sequence (~2.8s):
  *   0.3s  — "STUDIO" slides in from left, letter-by-letter
  *   0.6s  — "NABI" drops from above, letter-by-letter (spring)
- *   1.4s  — "Seoul · Est. 2024" fades in
+ *   1.4s  — "NYC, NY · Est. 2024" fades in
  *   2.0s  — Everything scales down + fades
  *   2.4s  — Curtain slides up
  */
@@ -125,7 +125,7 @@ export default function CurtainPreloader() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1.4, duration: 0.6 }}
                         >
-                            Seoul · Est. 2024
+                            NYC, NY · Est. 2024
                         </motion.p>
                     </motion.div>
                 </motion.div>
