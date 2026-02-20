@@ -27,7 +27,7 @@ export default function StickyNav() {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
             <RollingLink
-                href="/"
+                href="#hero"
                 label="Studio Nabi"
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             />
@@ -36,7 +36,7 @@ export default function StickyNav() {
                 {[
                     { label: "Work", href: "#work" },
                     { label: "About", href: "#about" },
-                    { label: "Contact", href: "mailto:stuuudionabi@gmail.com" },
+                    { label: "Contact", href: "#contact" },
                 ].map(({ label, href }) => (
                     <RollingLink
                         key={label}

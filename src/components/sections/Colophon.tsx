@@ -17,6 +17,7 @@ export default function Colophon() {
 
     return (
         <footer
+            id="contact"
             ref={ref}
             className="px-6 sm:px-12 lg:px-20 py-24 sm:py-32 border-t border-ink/[0.06]"
         >

@@ -15,10 +15,10 @@ import Image from "next/image";
 const LINES = [
     { text: "Hi — I'm Ryan,", highlight: false },
     { text: "Design Engineer.", highlight: true },
-    { text: "NYC-based, crafting digital", highlight: false },
-    { text: "experiences that live at the", highlight: false },
-    { text: "intersection of design systems,", highlight: false },
-    { text: "interaction, and engineering.", highlight: true },
+    { text: "NYC-based, crafting", highlight: false },
+    { text: "products that live at the", highlight: false },
+    { text: "intersection of taste,", highlight: false },
+    { text: "stories, and engineering.", highlight: true },
     // { text: "— Studio Nabi", highlight: true }, // Removed signature
 ];
 

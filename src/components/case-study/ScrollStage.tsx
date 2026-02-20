@@ -189,17 +189,18 @@ export default function ScrollStage({ project }: ScrollStageProps) {
             </div>
 
             {/* ─── Image Stream (Strict 2-Column Grid) ─── */}
-            <div className="px-6 sm:px-12 lg:px-20 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {allImages.map((src, i) => (
-                    <div
-                        key={`${src}-${i}`}
-                        className="md:col-span-1"
-                    >
+            {allImages.map((src, i) => (
+                <div
+                    key={`${src}-${i}`}
+                    className={i === 0 || (i === allImages.length - 1 && i % 2 !== 0) ? "md:col-span-2" : "md:col-span-1"}
+                >
+                    {i === 0 ? (
                         <ImageBlock src={src} index={i} />
-                    </div>
-                ))}
-            </div>
-
+                    ) : (
+                        <PlaceholderBlock index={i} />
+                    )}
+                </div>
+            ))}
             {/* ─── Technical Details ─── */}
             <motion.div
                 ref={techRef}
@@ -287,7 +288,41 @@ export default function ScrollStage({ project }: ScrollStageProps) {
             </div>
 
             {/* ─── Scroll To Top ─── */}
+            {/* ─── Scroll To Top ─── */}
             <ScrollToTop />
         </div>
+    );
+}
+
+function PlaceholderBlock({ index }: { index: number }) {
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.15 });
+
+    return (
+        <motion.div
+            ref={ref}
+            className="relative w-full aspect-[16/10] overflow-hidden rounded-sm border border-ink/[0.08] bg-ink/[0.02] flex items-center justify-center group"
+            initial={{ opacity: 0, y: 40 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{
+                duration: 0.8,
+                delay: index * 0.08,
+                ease: [0.16, 1, 0.3, 1],
+            }}
+        >
+            <div className="flex flex-col items-center gap-2 opacity-50 group-hover:opacity-100 transition-opacity duration-500">
+                <span className="font-pixel text-[10px] tracking-[0.2em] text-ink-faint uppercase">
+                    Fig. {index.toString().padStart(2, "0")}
+                </span>
+                <span className="font-mono text-[9px] tracking-[0.1em] text-ink-muted uppercase">
+                    Asset Pending
+                </span>
+            </div>
+
+            {/* Crosshairs */}
+            <div className="absolute top-4 left-4 w-2 h-2 border-l border-t border-ink/20" />
+            <div className="absolute top-4 right-4 w-2 h-2 border-r border-t border-ink/20" />
+            <div className="absolute bottom-4 left-4 w-2 h-2 border-l border-b border-ink/20" />
+            <div className="absolute bottom-4 right-4 w-2 h-2 border-r border-b border-ink/20" />
+        </motion.div>
     );
 }

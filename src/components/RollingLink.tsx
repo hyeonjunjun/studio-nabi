@@ -13,7 +13,7 @@ interface RollingLinkProps {
 export default function RollingLink({ href, label, onClick }: RollingLinkProps) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const isExternal = href.startsWith("http") || href.startsWith("mailto");
+    const isExternal = href.startsWith("http") || href.startsWith("mailto") || href.startsWith("#");
     const Component = isExternal ? "a" : Link;
     const props = isExternal ? { href, onClick, target: href.startsWith("http") ? "_blank" : undefined, rel: href.startsWith("http") ? "noopener noreferrer" : undefined } : { href, onClick };
 

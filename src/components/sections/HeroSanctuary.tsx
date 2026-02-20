@@ -24,7 +24,7 @@ import RollingLink from "@/components/RollingLink";
 const NAV_ITEMS = [
     { num: "01", label: "Works", href: "#work" },
     { num: "02", label: "About", href: "#about" },
-    { num: "03", label: "Contact", href: "mailto:stuuudionabi@gmail.com" },
+    { num: "03", label: "Contact", href: "#contact" },
 ];
 
 /* ─── Stagger animation variants ─── */
@@ -86,6 +86,7 @@ export default function HeroSanctuary() {
 
     return (
         <section
+            id="hero"
             ref={ref}
             className="relative h-screen overflow-hidden bg-canvas"
         >
@@ -103,8 +104,8 @@ export default function HeroSanctuary() {
                     loop
                     muted
                     playsInline
-                    className="w-full h-full object-cover opacity-40 mix-blend-multiply contrast-110"
-                    style={{ filter: "grayscale(40%) contrast(1.1)" }}
+                    className="w-full h-full object-cover opacity-50 mix-blend-multiply contrast-110"
+                    style={{ filter: "grayscale(10%) contrast(1.1)" }}
                     ref={(el) => {
                         if (el) el.playbackRate = 0.75;
                     }}
@@ -150,7 +151,7 @@ export default function HeroSanctuary() {
                         transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <RollingLink
-                            href="/"
+                            href="#hero"
                             label="Studio Nabi"
                         />
                     </motion.div>
