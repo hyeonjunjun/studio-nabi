@@ -45,7 +45,7 @@ export default function IntroStatement() {
         <motion.section
             id="about"
             ref={containerRef}
-            className="relative py-32 sm:py-48 lg:py-64 px-6 sm:px-12 lg:px-20 overflow-hidden bg-canvas border-t border-ink/[0.03]"
+            className="relative py-32 sm:py-48 lg:py-64 px-6 sm:px-12 lg:px-20 overflow-hidden bg-canvas"
             style={{ clipPath }}
         >
             {/* ─── Background Layer: Continuity Line ─── */}

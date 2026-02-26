@@ -305,6 +305,13 @@ export default function HeroSanctuary() {
                     />
                 </motion.div>
             </motion.div>
+
+            {/* ─── Bottom Gradient Dissolve (below content, above background) ─── */}
+            <div className="absolute bottom-0 left-0 right-0 h-48 z-[2] pointer-events-none"
+                style={{
+                    background: 'linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--color-canvas) 40%, transparent) 40%, color-mix(in srgb, var(--color-canvas) 75%, transparent) 70%, var(--color-canvas) 100%)',
+                }}
+            />
         </section>
     );
 }

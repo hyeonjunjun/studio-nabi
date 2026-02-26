@@ -93,7 +93,7 @@ function ProcessSection({ project }: { project: Project }) {
 
     return (
         <section id="the-rough" className="py-24 sm:py-32 border-t border-ink/[0.06]">
-            <div className="max-w-4xl px-6 sm:px-12 lg:px-0 mx-auto mb-16">
+            <div className="px-6 sm:px-12 lg:px-0 mb-16">
                 <motion.div
                     ref={ref}
                     initial="hidden"
@@ -128,7 +128,7 @@ function EngineeringSection({ project }: { project: Project }) {
 
     return (
         <section id="engineering" className="py-24 sm:py-32 bg-ink/[0.02] border-y border-ink/[0.06]">
-            <div className="max-w-4xl px-6 sm:px-12 lg:px-0 mx-auto">
+            <div className="px-6 sm:px-12 lg:px-0">
                 <motion.div
                     ref={ref}
                     initial="hidden"
@@ -173,7 +173,7 @@ function SystemSection({ project }: { project: Project }) {
 
     return (
         <section id="the-system" className="py-24 sm:py-32 border-t border-ink/[0.06]">
-            <div className="max-w-4xl px-6 sm:px-12 lg:px-0 mx-auto mb-20">
+            <div className="px-6 sm:px-12 lg:px-0 mb-20">
                 <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-accent mb-4">
                     (04) The System
                 </p>
@@ -236,8 +236,8 @@ function HighlightSection({ highlight, index, id }: { highlight: ProjectHighligh
     if (!highlight) return null;
 
     return (
-        <div id={id} className="py-24 sm:py-32">
-            <div className="max-w-4xl px-6 sm:px-12 lg:px-0 mx-auto mb-16">
+        <div id={id} className="py-12 sm:py-16">
+            <div className="px-6 sm:px-12 lg:px-0 mb-12">
                 <motion.div
                     ref={ref}
                     initial="hidden"
@@ -246,7 +246,7 @@ function HighlightSection({ highlight, index, id }: { highlight: ProjectHighligh
                     custom={0}
                 >
                     <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-4">
-                        Highlight {index + 1}
+                        02.{index + 1} // HIGHLIGHT
                     </p>
                     <h2 className="font-display italic text-[clamp(2rem,5vw,4rem)] leading-[1.1] text-ink mb-10">
                         {highlight.title}
@@ -343,7 +343,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                 </aside>
 
                 {/* ─── Main Content ─── */}
-                <main className="lg:col-span-9 flex flex-col min-w-0">
+                <main className="lg:col-span-9 flex flex-col min-w-0 overflow-hidden">
                     {/* ─── Header ─── */}
                     <motion.div
                         className="flex items-center justify-between px-6 sm:px-12 lg:px-0 pt-12 pb-4 border-b border-ink/[0.03]"
@@ -452,7 +452,7 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                         <ProcessSection project={project} />
 
                         <div className="space-y-12">
-                            <div className="px-6 sm:px-12 lg:px-0 mb-20">
+                            <div className="px-6 sm:px-12 lg:px-0 pt-24 pb-12">
                                 <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-accent mb-4">
                                     (02) Highlights
                                 </p>
@@ -514,26 +514,26 @@ export default function ScrollStage({ project }: ScrollStageProps) {
                         )}
                     </div>
 
-                    <div className="border-t border-ink/[0.06] mt-auto">
+                    <div className="border-t border-ink/[0.06] mt-auto overflow-hidden">
                         <Link
                             href={`/work/${nextProject.id}`}
-                            className="group relative z-20 block px-6 sm:px-12 lg:px-0 py-40 sm:py-56 transition-all duration-500 hover:bg-black"
+                            className="group relative z-20 block px-6 sm:px-12 py-32 sm:py-44 transition-all duration-500 hover:bg-black overflow-hidden"
                         >
-                            <div className="relative z-10 lg:pr-12">
+                            <div className="relative z-10 max-w-4xl">
                                 <p className="font-pixel text-[9px] tracking-[0.3em] uppercase text-ink-faint mb-6 group-hover:text-white/40 transition-colors">
                                     Next Sequence
                                 </p>
-                                <h3 className="font-display italic text-[clamp(2.5rem,8vw,7.5rem)] leading-[1.2] text-ink group-hover:text-accent transition-all duration-500 group-hover:translate-x-4">
+                                <h3 className="font-display italic text-[clamp(2.5rem,6vw,5.5rem)] leading-[1.15] text-ink group-hover:text-accent transition-all duration-500 group-hover:translate-x-4 break-words">
                                     {nextProject.title}
                                 </h3>
-                                <p className="font-sans text-sm text-ink-muted mt-10 max-w-xl group-hover:text-white/60 transition-colors leading-relaxed">
+                                <p className="font-sans text-sm text-ink-muted mt-8 max-w-xl group-hover:text-white/60 transition-colors leading-relaxed">
                                     {nextProject.pitch}
                                 </p>
                             </div>
 
                             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                <div className="absolute top-1/2 right-0 sm:right-6 lg:right-12 -translate-y-1/2 opacity-0 group-hover:opacity-10 transition-all duration-700">
-                                    <span className="font-display italic text-[24rem] leading-none text-white select-none">
+                                <div className="absolute top-1/2 right-8 sm:right-12 lg:right-16 -translate-y-1/2 opacity-0 group-hover:opacity-[0.06] transition-all duration-700">
+                                    <span className="font-display italic text-[min(20rem,40vw)] leading-none text-white select-none">
                                         {nextProject.id.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
