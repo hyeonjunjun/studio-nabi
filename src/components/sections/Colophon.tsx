@@ -70,7 +70,9 @@ export default function Colophon() {
                     <LiveClock />
 
                     <p className="font-pixel text-[10px] text-ink-faint leading-relaxed mt-8">
-                        Built with Next.js, Three.js &amp; Framer Motion.
+                        Built with late-night coffee in NYC.
+                        <br />
+                        Powered by Next.js, Three.js &amp; Framer Motion.
                         <br />
                         Set in Instrument Serif, Silkscreen &amp; Geist.
                     </p>

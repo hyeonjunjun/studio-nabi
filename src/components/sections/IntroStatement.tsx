@@ -13,11 +13,11 @@ import Image from "next/image";
  */
 
 const LINES = [
-    { text: "Studio Nabi — Ryan Jun.", highlight: true },
+    { text: "Studio Nabi — Ryan Jun.", highlight: true, scribble: "underline" },
     { text: "Crafting digital nature", highlight: false },
     { text: "at the intersection of", highlight: false },
     { text: "taste, technical stories,", highlight: false },
-    { text: "and precise craftsmanship.", highlight: true },
+    { text: "and precise craftsmanship.", highlight: true, scribble: "circle" },
 ];
 
 export default function IntroStatement() {
@@ -109,6 +109,7 @@ export default function IntroStatement() {
                                 key={i}
                                 text={line.text}
                                 highlight={line.highlight}
+                                scribble={line.scribble as any}
                                 index={i}
                                 scroll={scrollYProgress}
                             />
@@ -143,46 +144,70 @@ export default function IntroStatement() {
  * ParagraphReveal — Character-level staggered opacity reveal.
  * Eliminates all blur and jitter by avoiding motion in the primary reveal path.
  */
-function ParagraphReveal({ text, highlight, index, scroll }: {
+function ParagraphReveal({ text, highlight, scribble, index, scroll }: {
     text: string;
     highlight: boolean;
+    scribble?: "underline" | "circle";
     index: number;
     scroll: MotionValue<number>;
 }) {
     // Each line has a specific scroll range where it "activates"
     const start = 0.2 + (index * 0.08);
     const end = start + 0.2;
+    const svgReveal = useTransform(scroll, [start + 0.1, end + 0.15], [0, 1]);
 
     // Split text into words and then characters to maintain layout stability
     const words = text.split(" ");
 
     return (
-        <p className={`font-display italic text-[clamp(1.6rem,3.5vw,3rem)] leading-[1.1] tracking-[-0.02em] ${highlight ? "text-ink" : "text-ink-muted"
-            }`}>
-            {words.map((word, wordIndex) => (
-                <span key={wordIndex} className="inline-block mr-[0.25em] last:mr-0">
-                    {word.split("").map((char, charIndex) => {
-                        // Total index for the stagger (across the whole line)
-                        const charPos = text.indexOf(word) + charIndex;
-                        const charRevealStart = start + (charPos * 0.002);
+        <div className="relative w-fit">
+            {/* Handwritten Annotations */}
+            {scribble === "underline" && (
+                <motion.svg
+                    className="absolute -bottom-2 -left-2 w-[calc(100%+1rem)] h-4 text-accent/80 overflow-visible pointer-events-none z-0"
+                    viewBox="0 0 100 10" preserveAspectRatio="none"
+                    style={{ pathLength: svgReveal, opacity: svgReveal }}
+                >
+                    <path d="M0,5 Q30,8 60,3 T100,5" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                </motion.svg>
+            )}
+            {scribble === "circle" && (
+                <motion.svg
+                    className="absolute -inset-y-4 -inset-x-6 w-[calc(100%+3rem)] h-[calc(100%+2rem)] text-accent/50 overflow-visible pointer-events-none z-0"
+                    viewBox="0 0 100 100" preserveAspectRatio="none"
+                    style={{ pathLength: svgReveal, opacity: svgReveal }}
+                >
+                    <path d="M50,5 C85,0 100,30 95,70 C85,100 15,100 5,70 C-5,30 15,10 50,5 Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </motion.svg>
+            )}
 
-                        return (
-                            <motion.span
-                                key={charIndex}
-                                style={{
-                                    opacity: useTransform(
-                                        scroll,
-                                        [charRevealStart, charRevealStart + 0.05, end, end + 0.05],
-                                        [0, 1, 1, 0.6]
-                                    ),
-                                }}
-                            >
-                                {char}
-                            </motion.span>
-                        );
-                    })}
-                </span>
-            ))}
-        </p>
+            <p className={`relative z-10 font-display italic text-[clamp(1.6rem,3.5vw,3rem)] leading-[1.1] tracking-[-0.02em] ${highlight ? "text-ink" : "text-ink-muted"
+                }`}>
+                {words.map((word, wordIndex) => (
+                    <span key={wordIndex} className="inline-block mr-[0.25em] last:mr-0">
+                        {word.split("").map((char, charIndex) => {
+                            // Total index for the stagger (across the whole line)
+                            const charPos = text.indexOf(word) + charIndex;
+                            const charRevealStart = start + (charPos * 0.002);
+
+                            return (
+                                <motion.span
+                                    key={charIndex}
+                                    style={{
+                                        opacity: useTransform(
+                                            scroll,
+                                            [charRevealStart, charRevealStart + 0.05, end, end + 0.05],
+                                            [0, 1, 1, 0.6]
+                                        ),
+                                    }}
+                                >
+                                    {char}
+                                </motion.span>
+                            );
+                        })}
+                    </span>
+                ))}
+            </p>
+        </div>
     );
 }
