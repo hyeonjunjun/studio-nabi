@@ -10,6 +10,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
     if (!project) return null;
 
     const imageUrl = project.image || '/placeholder.jpg';
+    const displayId = (index + 1).toString().padStart(2, '0');
 
     return (
         <motion.div
@@ -21,10 +22,17 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
         >
             <Link
                 href={`/work/${project.id}`}
-                className="block bg-ink/[0.03] hover:bg-ink/[0.05] transition-colors duration-500 rounded-sm p-2"
+                className="block bg-ink/[0.02] hover:bg-ink/[0.04] transition-all duration-500 rounded-sm p-2 group"
             >
                 {/* Image Container */}
                 <div className="relative w-full aspect-[4/3] rounded-sm overflow-hidden bg-ink/[0.05]">
+                    {/* ID Badge - Nothing OS Style */}
+                    <div className="absolute top-3 left-3 z-10 px-2 py-1 glass rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <span className="font-pixel text-[8px] text-ink/60 tracking-widest uppercase">
+                            INDEX.S / {displayId}
+                        </span>
+                    </div>
+
                     <Image
                         src={imageUrl}
                         alt={project.title}
@@ -33,10 +41,13 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
                         quality={90}
                     />
+
+                    {/* Dot Matrix Overlay on Hover */}
+                    <div className="absolute inset-0 dot-matrix opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none" />
                 </div>
 
                 {/* Content Container */}
-                <div className="px-4 py-5 flex items-start justify-between">
+                <div className="px-3 py-5 flex items-start justify-between">
                     <div className="flex flex-col gap-1 pr-6">
                         <h3 className="font-display italic text-2xl text-ink">
                             {project.title}
@@ -46,15 +57,20 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
                         </p>
                     </div>
 
-                    <div className="flex gap-2 shrink-0">
-                        {project.tags?.slice(0, 2).map((tag: string, i: number) => (
-                            <span
-                                key={i}
-                                className="px-2 py-1 rounded border border-ink/[0.08] font-pixel text-[8px] uppercase tracking-wider text-ink-muted"
-                            >
-                                {tag}
-                            </span>
-                        ))}
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className="font-dot text-[10px] text-ink/20 transform rotate-90 origin-right translate-x-1 -translate-y-2 uppercase tracking-tighter">
+                            Metadata.sys
+                        </span>
+                        <div className="flex gap-2">
+                            {project.tags?.slice(0, 1).map((tag: string, i: number) => (
+                                <span
+                                    key={i}
+                                    className="px-2 py-0.5 rounded-full border border-ink/[0.08] font-pixel text-[8px] uppercase tracking-[0.2em] text-ink/40 bg-canvas"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </Link>
@@ -84,6 +100,23 @@ export default function WorkOverview() {
                 >
                     <div className="sticky top-32 lg:top-48 flex flex-col gap-12 lg:pr-8">
 
+                        {/* Status Bar - Nothing OS Style */}
+                        <div className="flex items-center gap-4">
+                            <div className="px-2.5 py-1 glass rounded-full flex items-center gap-2">
+                                <motion.div
+                                    animate={{ opacity: [1, 0.4, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_rgba(139,158,107,0.5)]"
+                                />
+                                <span className="font-pixel text-[8px] uppercase tracking-[0.2em] text-ink/60">
+                                    Status: Active
+                                </span>
+                            </div>
+                            <span className="font-pixel text-[8px] text-ink/20 tracking-tighter">
+                                [ NYC // 40.71° N ]
+                            </span>
+                        </div>
+
                         {/* Title & Identity */}
                         <div>
                             <h2 className="font-sans text-xl sm:text-2xl font-medium tracking-tight text-ink mb-1 flex items-center gap-2">
@@ -99,13 +132,31 @@ export default function WorkOverview() {
                             </p>
 
                             <div className="space-y-4">
-                                <p className="font-sans text-sm text-ink font-medium">Recently, I've been:</p>
-                                <ul className="space-y-3 font-sans text-sm text-ink-muted list-disc list-inside marker:text-ink/20">
-                                    <li>Solving multimedia workflows and <span className="border-b border-ink/20 border-dotted pb-[1px]">digital sketchbooking</span>.</li>
-                                    <li>Learning content processing w/ <span className="border-b border-ink/20 border-dotted pb-[1px]">ffmpeg</span> & <span className="border-b border-ink/20 border-dotted pb-[1px]">diffing algos</span>.</li>
-                                    <li>Designing from first-principles.</li>
-                                    <li>Crafting high-precision spatial tools.</li>
-                                    <li>Making digital gardens in NYC.</li>
+                                <div className="flex items-center gap-2 text-ink/40">
+                                    <div className="w-1 h-1 bg-ink/20" />
+                                    <p className="font-pixel text-[9px] uppercase tracking-[0.15em]">Activity.log</p>
+                                </div>
+                                <ul className="space-y-3 font-sans text-sm text-ink-muted">
+                                    <li className="flex items-start gap-4">
+                                        <span className="font-dot text-[10px] text-ink/20 py-1">01</span>
+                                        <span>Solving multimedia workflows and <span className="border-b border-ink/20 border-dotted pb-[1px]">digital sketchbooking</span>.</span>
+                                    </li>
+                                    <li className="flex items-start gap-4">
+                                        <span className="font-dot text-[10px] text-ink/20 py-1">02</span>
+                                        <span>Learning content processing w/ <span className="border-b border-ink/20 border-dotted pb-[1px]">ffmpeg</span> & <span className="border-b border-ink/20 border-dotted pb-[1px]">diffing algos</span>.</span>
+                                    </li>
+                                    <li className="flex items-start gap-4">
+                                        <span className="font-dot text-[10px] text-ink/20 py-1">03</span>
+                                        <span>Designing from first-principles.</span>
+                                    </li>
+                                    <li className="flex items-start gap-4">
+                                        <span className="font-dot text-[10px] text-ink/20 py-1">04</span>
+                                        <span>Crafting high-precision spatial tools.</span>
+                                    </li>
+                                    <li className="flex items-start gap-4">
+                                        <span className="font-dot text-[10px] text-ink/20 py-1">05</span>
+                                        <span>Making digital gardens in NYC.</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

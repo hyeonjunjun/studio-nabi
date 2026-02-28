@@ -12,7 +12,7 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motio
  *
  * States:
  *   - "default"  → Standard flower + butterfly
- *   - "link"     → Flower scales up with accent ring
+ *   - "link"     → Flower scales up (No ring)
  *   - "view"     → Flower morphs into a "View" text pill
  */
 
@@ -111,7 +111,7 @@ export default function CursorDot() {
     }, []);
 
     useEffect(() => {
-        // Robust check for mouse/trackpad (fixes issues on hybrid devices like Surface/gaming laptops)
+        // Robust check for mouse/trackpad
         const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
         if (!hasFinePointer) return;
 
@@ -263,53 +263,16 @@ export default function CursorDot() {
                         exit={{ opacity: 0, scale: 0.5 }}
                         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     >
-                        <div className="bg-ink text-canvas px-4 py-1.5 rounded-full">
+                        <div className="bg-ink text-canvas px-4 py-1.5 rounded-full shadow-lg">
                             <span className="font-pixel text-[9px] tracking-[0.2em] uppercase">
                                 View
                             </span>
                         </div>
                     </motion.div>
-                ) : cursorState === "link" ? (
-                    /* Accent Ring — enlarged flower with glow ring on interactive elements */
-                    <motion.div
-                        key="link-ring"
-                        className="fixed top-0 left-0 pointer-events-none z-[9999] text-ink"
-                        style={{
-                            x: cursorX,
-                            y: cursorY,
-                            translateX: `${-4.5 * PIXEL_SIZE}px`,
-                            translateY: `${-4.5 * PIXEL_SIZE}px`,
-                        }}
-                        initial={{ scale: 1 }}
-                        animate={{ scale: 1.4 }}
-                        exit={{ scale: 1 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        <div
-                            style={{
-                                width: `${PIXEL_SIZE}px`,
-                                height: `${PIXEL_SIZE}px`,
-                                boxShadow: flowerShadow,
-                                imageRendering: "pixelated",
-                                transition: "color 0.2s",
-                            }}
-                        />
-                        {/* Accent ring */}
-                        <div
-                            className="absolute rounded-full border border-accent/40"
-                            style={{
-                                width: "32px",
-                                height: "32px",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                            }}
-                        />
-                    </motion.div>
                 ) : (
-                    /* Default Flower */
+                    /* Default Flower / Link Flower (No Ring) */
                     <motion.div
-                        key="flower-default"
+                        key="flower-state"
                         className="fixed top-0 left-0 pointer-events-none z-[9999] text-ink"
                         style={{
                             x: cursorX,
@@ -317,10 +280,12 @@ export default function CursorDot() {
                             translateX: `${-4.5 * PIXEL_SIZE}px`,
                             translateY: `${-4.5 * PIXEL_SIZE}px`,
                         }}
-                        initial={{ scale: 1, opacity: 1 }}
-                        animate={{ scale: 1, opacity: 1 }}
+                        animate={{
+                            scale: cursorState === "link" ? 1.4 : 1,
+                            opacity: 1,
+                        }}
                         exit={{ scale: 0.5, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     >
                         <div
                             style={{
