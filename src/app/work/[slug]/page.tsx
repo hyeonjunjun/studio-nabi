@@ -9,8 +9,6 @@ import { useRef } from "react";
 import ChapterSidebar from "@/components/case-study/ChapterSidebar";
 import HighlightAccordion from "@/components/case-study/HighlightAccordion";
 import StatGrid from "@/components/case-study/StatGrid";
-import NothingEqLoader from "@/components/ui/NothingEqLoader";
-import WaveformLine from "@/components/ui/WaveformLine";
 
 /* ─── Constants ─── */
 
@@ -76,7 +74,6 @@ function ImageBlock({ src, placeholder }: { src: string; placeholder?: string })
         alt=""
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-        style={{ filter: "grayscale(1) brightness(0.6)" }}
         sizes="(max-width: 768px) 100vw, 60vw"
         quality={90}
       />
@@ -84,8 +81,23 @@ function ImageBlock({ src, placeholder }: { src: string; placeholder?: string })
   );
 }
 
+/** Strata band separator — a horizontal surface-colored band */
+function StrataBand() {
+  return (
+    <div
+      className="w-full"
+      style={{
+        height: 48,
+        backgroundColor: "var(--color-surface)",
+        borderTop: "1px solid var(--color-border)",
+        borderBottom: "1px solid var(--color-border)",
+      }}
+    />
+  );
+}
+
 /* ═══════════════════════════════════════════
-   ProjectDetail — Album Liner Notes Layout
+   ProjectDetail — Editorial Serif + Strata Bands
    7-chapter structure with pinned sidebar
    ═══════════════════════════════════════════ */
 
@@ -125,7 +137,7 @@ export default function ProjectDetail() {
       {/* ── Scroll Progress Bar ── */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[1px] z-[100] origin-left"
-        style={{ scaleX, backgroundColor: "var(--color-accent)" }}
+        style={{ scaleX, backgroundColor: "var(--color-text)" }}
       />
 
       {/* ── Chapter Sidebar ── */}
@@ -134,7 +146,7 @@ export default function ProjectDetail() {
       {/* ── Back Button ── */}
       <motion.button
         onClick={() => router.back()}
-        className="fixed top-6 right-6 z-50 flex items-center gap-2 group mix-blend-difference"
+        className="fixed top-6 right-6 z-50 flex items-center gap-2 group"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -152,10 +164,10 @@ export default function ProjectDetail() {
       </motion.button>
 
       {/* ════════════════════════════════════════
-         CH.01 COVER — Full-bleed hero
+         CH.01 COVER — Hero block with TL;DR
          ════════════════════════════════════════ */}
-      <section id="ch-cover" className="relative w-full h-screen overflow-hidden">
-        {/* Hero image — grayscale */}
+      <section id="ch-cover" className="relative w-full min-h-screen flex flex-col justify-end" style={{ padding: "var(--page-px)" }}>
+        {/* Hero image — full color */}
         <motion.div
           layoutId={`project-image-${project.id}`}
           className="absolute inset-0"
@@ -167,65 +179,77 @@ export default function ProjectDetail() {
             priority
             sizes="100vw"
             className="object-cover"
-            style={{ filter: "grayscale(1) brightness(0.4)" }}
+            style={{ filter: "brightness(0.85)" }}
+          />
+          {/* Bone gradient overlay at bottom for text legibility */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(to top, var(--color-bg) 0%, transparent 60%)",
+            }}
           />
         </motion.div>
 
-        {/* Title overlay — bottom left */}
-        <div className="absolute inset-0 flex flex-col justify-end" style={{ padding: "var(--page-px)" }}>
+        {/* Title + TL;DR panel */}
+        <div className="relative z-10 pb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8, ease }}
           >
-            <span className="micro block mb-3" style={{ color: "var(--color-accent-dim)" }}>
+            <span
+              className="font-mono uppercase block mb-4"
+              style={{
+                fontSize: "var(--text-micro)",
+                letterSpacing: "0.2em",
+                color: "var(--color-text-dim)",
+              }}
+            >
               [{project.sector}] // {project.year}
             </span>
             <h1
-              className="font-mono uppercase leading-[0.95] tracking-tight"
+              className="font-display leading-[0.95] tracking-[-0.02em]"
               style={{
                 fontSize: "var(--text-display)",
-                color: "var(--color-accent)",
+                color: "var(--color-text)",
               }}
             >
               {project.title}
             </h1>
-            <p
-              className="font-mono uppercase mt-3"
-              style={{
-                fontSize: "var(--text-xs)",
-                letterSpacing: "0.15em",
-                color: "var(--color-text-dim)",
-              }}
-            >
-              Client: {project.client}
-            </p>
           </motion.div>
-        </div>
 
-        {/* Bottom edge — tags */}
-        <div
-          className="absolute bottom-0 left-0 right-0 flex items-center gap-3 overflow-x-auto"
-          style={{
-            padding: "0.5rem var(--page-px)",
-            borderTop: "1px solid rgba(255,255,255,0.1)",
-          }}
-        >
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="font-mono uppercase whitespace-nowrap"
-              style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "0.15em",
-                color: "var(--color-text-ghost)",
-                padding: "2px 8px",
-                border: "1px solid var(--color-border)",
-              }}
-            >
-              {tag}
-            </span>
-          ))}
+          {/* TL;DR panel */}
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-12 p-6"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border-strong)",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.6, ease }}
+          >
+            {[
+              { label: "Problem", value: project.pitch },
+              { label: "Role", value: project.role },
+              { label: "Tools", value: project.schematic.stack.slice(0, 3).join(", ") },
+              { label: "Outcome", value: project.editorial.subhead },
+            ].map((item) => (
+              <div key={item.label} className="flex flex-col gap-2">
+                <span className="micro">{item.label}</span>
+                <span
+                  className="font-sans"
+                  style={{
+                    fontSize: "var(--text-sm)",
+                    color: "var(--color-text)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -245,7 +269,7 @@ export default function ProjectDetail() {
             transition={{ duration: 0.8, ease }}
           >
             <h2
-              className="font-sans leading-[1.1] mb-6"
+              className="font-display leading-[1.1] mb-6"
               style={{
                 fontSize: "var(--text-2xl)",
                 color: "var(--color-text)",
@@ -259,7 +283,7 @@ export default function ProjectDetail() {
               style={{
                 fontSize: "var(--text-xs)",
                 letterSpacing: "0.15em",
-                color: "var(--color-accent-dim)",
+                color: "var(--color-text-dim)",
               }}
             >
               {project.editorial.subhead}
@@ -310,9 +334,11 @@ export default function ProjectDetail() {
             </div>
           )}
         </section>
+      </div>
 
-        <WaveformLine />
+      <StrataBand />
 
+      <div className="max-w-[900px] mx-auto" style={{ padding: "0 var(--page-px)" }}>
         {/* ════════════════════════════════════════
            CH.03 THE PROCESS — Rough sketches
            ════════════════════════════════════════ */}
@@ -326,7 +352,7 @@ export default function ProjectDetail() {
             transition={{ duration: 0.8, ease }}
           >
             <h3
-              className="font-sans leading-[1.15] mb-6"
+              className="font-display leading-[1.15] mb-6"
               style={{ fontSize: "var(--text-xl)", color: "var(--color-text)" }}
             >
               {project.process.title}
@@ -366,9 +392,11 @@ export default function ProjectDetail() {
             <p className="micro">No highlights documented yet.</p>
           )}
         </section>
+      </div>
 
-        <div className="hairline" />
+      <StrataBand />
 
+      <div className="max-w-[900px] mx-auto" style={{ padding: "0 var(--page-px)" }}>
         {/* ════════════════════════════════════════
            CH.05 THE ENGINE — Engineering + Signals
            ════════════════════════════════════════ */}
@@ -401,7 +429,7 @@ export default function ProjectDetail() {
                       letterSpacing: "0.15em",
                       color: "var(--color-text-dim)",
                       padding: "4px 10px",
-                      border: "1px solid var(--color-border)",
+                      border: "1px solid var(--color-border-strong)",
                     }}
                   >
                     {signal}
@@ -427,9 +455,11 @@ export default function ProjectDetail() {
           <ChapterLabel num="06" title="The Numbers" />
           <StatGrid stats={project.statistics} />
         </section>
+      </div>
 
-        <WaveformLine />
+      <StrataBand />
 
+      <div className="max-w-[900px] mx-auto" style={{ padding: "0 var(--page-px)" }}>
         {/* ════════════════════════════════════════
            CH.07 CREDITS — Contributors + Next
            ════════════════════════════════════════ */}
@@ -445,8 +475,8 @@ export default function ProjectDetail() {
                 style={{ borderBottom: "1px solid var(--color-border)" }}
               >
                 <span
-                  className="font-mono"
-                  style={{ fontSize: "var(--text-sm)", color: "var(--color-text)", letterSpacing: "0.05em" }}
+                  className="font-sans"
+                  style={{ fontSize: "var(--text-sm)", color: "var(--color-text)" }}
                 >
                   {c.name}
                 </span>
@@ -504,7 +534,7 @@ export default function ProjectDetail() {
       {/* ── Prev / Next Navigation ── */}
       <div
         className="grid grid-cols-2"
-        style={{ borderTop: "1px solid var(--color-border)" }}
+        style={{ borderTop: "1px solid var(--color-border-strong)" }}
       >
         <Link
           href={`/work/${prevProject.id}`}
@@ -513,11 +543,10 @@ export default function ProjectDetail() {
         >
           <span className="label block mb-3">← Previous</span>
           <h3
-            className="font-mono uppercase leading-[1.15]"
+            className="font-display leading-[1.15]"
             style={{
               fontSize: "var(--text-lg)",
               color: "var(--color-text)",
-              letterSpacing: "0.05em",
             }}
           >
             {prevProject.title}
@@ -530,11 +559,10 @@ export default function ProjectDetail() {
         >
           <span className="label block mb-3">Next →</span>
           <h3
-            className="font-mono uppercase leading-[1.15]"
+            className="font-display leading-[1.15]"
             style={{
               fontSize: "var(--text-lg)",
               color: "var(--color-text)",
-              letterSpacing: "0.05em",
             }}
           >
             {nextProject.title}
@@ -550,23 +578,20 @@ export default function ProjectDetail() {
         <span className="micro" style={{ opacity: 0.4 }}>
           HKJ Studio © {new Date().getFullYear()}
         </span>
-        <div className="flex items-center gap-4">
-          <NothingEqLoader bars={3} segmentsPerBar={3} size={3} gap={1} />
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="font-mono uppercase transition-colors duration-300"
-            style={{
-              fontSize: "var(--text-xs)",
-              letterSpacing: "0.15em",
-              color: "var(--color-text-dim)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            ↑ Top
-          </button>
-        </div>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="font-mono uppercase transition-colors duration-300"
+          style={{
+            fontSize: "var(--text-xs)",
+            letterSpacing: "0.15em",
+            color: "var(--color-text-dim)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ↑ Top
+        </button>
       </footer>
     </div>
   );

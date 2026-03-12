@@ -118,7 +118,7 @@ export default function Cursor() {
               y: cursorY,
               translateX: "-50%",
               translateY: "-50%",
-              border: "1px solid rgba(255, 255, 255, 0.3)",
+              border: "1px solid rgba(38, 38, 38, 0.2)",
             }}
           />
         )}
@@ -146,8 +146,8 @@ export default function Cursor() {
         <div
           className="absolute inset-0 rounded-full transition-all duration-200"
           style={{
-            background: isRing ? "transparent" : "rgba(255, 255, 255, 0.9)",
-            border: isRing ? "1px solid rgba(255, 255, 255, 0.6)" : "none",
+            background: isRing ? "transparent" : "rgba(38, 38, 38, 0.9)",
+            border: isRing ? "1px solid rgba(38, 38, 38, 0.5)" : "none",
             opacity: cursorState === "link" ? 0.8 : 1,
           }}
         />
@@ -155,7 +155,7 @@ export default function Cursor() {
         {cursorState === "image" && (
           <motion.span
             className="absolute inset-0 flex items-center justify-center font-mono uppercase tracking-[0.2em]"
-            style={{ fontSize: "8px", color: "var(--color-accent-dim)" }}
+            style={{ fontSize: "8px", color: "var(--color-text-dim)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.2 }}
@@ -167,7 +167,7 @@ export default function Cursor() {
         {cursorState === "explore" && (
           <motion.span
             className="absolute inset-0 flex items-center justify-center font-mono uppercase tracking-[0.15em]"
-            style={{ fontSize: "8px", color: "var(--color-accent-dim)" }}
+            style={{ fontSize: "8px", color: "var(--color-text-dim)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.2 }}
@@ -184,7 +184,7 @@ export default function Cursor() {
             transition={{ delay: 0.1, duration: 0.2 }}
           >
             <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
-              <path d="M1 1L9 6L1 11V1Z" fill="rgba(255,255,255,0.7)" />
+              <path d="M1 1L9 6L1 11V1Z" fill="rgba(38,38,38,0.7)" />
             </svg>
           </motion.span>
         )}

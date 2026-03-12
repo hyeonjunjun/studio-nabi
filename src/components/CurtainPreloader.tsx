@@ -1,76 +1,124 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
 import { useStudioStore } from "@/lib/store";
-import NothingEqLoader from "@/components/ui/NothingEqLoader";
 
 /**
- * Preloader — High-Fidelity & Brutal
- * A mechanical dot-matrix style equalizer loader setting the tone.
+ * CurtainPreloader — Bone & Charcoal Instrument
+ *
+ * Full bone background.
+ * Corner mono label: HKJ STUDIO — LOADING 37%
+ * Thin charcoal line draws across screen to 100%.
+ * Line "snaps" — fast, feels like a breath.
  */
 
 export default function CurtainPreloader() {
   const [visible, setVisible] = useState(true);
+  const [progress, setProgress] = useState(0);
   const setLoaded = useStudioStore((s) => s.setLoaded);
   const isLoaded = useStudioStore((s) => s.isLoaded);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    // Check sessionStorage — only show on first visit
-    if (sessionStorage.getItem("hkj-loaded-v2")) {
+    // Skip on revisit
+    if (sessionStorage.getItem("hkj-loaded-v3")) {
       setLoaded(true);
       setVisible(false);
       return;
     }
 
-    const timer = setTimeout(() => {
-      sessionStorage.setItem("hkj-loaded-v2", "1");
-      setLoaded(true);
-    }, 2800); // Give enough time for the mechanical feel to register
-    return () => clearTimeout(timer);
+    const start = performance.now();
+    const duration = 1800; // 1.8s — a breath, not a gate
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+      // Ease-out curve for natural deceleration
+      const eased = 1 - Math.pow(1 - t, 3);
+      setProgress(Math.round(eased * 100));
+
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        sessionStorage.setItem("hkj-loaded-v3", "1");
+        setLoaded(true);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, [setLoaded]);
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black"
-          initial={{ clipPath: "inset(0 0 0 0)" }}
-          animate={
-            isLoaded
-              ? { clipPath: "inset(0 0 100% 0)" }
-              : { clipPath: "inset(0 0 0 0)" }
-          }
-          transition={{
-            duration: 0.8,
-            ease: [0.83, 0, 0.17, 1], // Sharp, mechanical ease
-            delay: isLoaded ? 0.2 : 0,
-          }}
+          className="fixed inset-0 z-[60] flex flex-col justify-between"
+          style={{ backgroundColor: "var(--color-bg)" }}
+          initial={{ opacity: 1 }}
+          animate={isLoaded ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: isLoaded ? 0.15 : 0 }}
           onAnimationComplete={() => {
             if (isLoaded) setVisible(false);
           }}
         >
-          <motion.div
-            className="flex flex-col items-center justify-center gap-6"
-            animate={isLoaded ? { scale: 0.98, opacity: 0 } : {}}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+          {/* Corner label */}
+          <div
+            className="flex items-center justify-between w-full"
+            style={{ padding: "var(--page-px)" }}
           >
-            <NothingEqLoader bars={5} segmentsPerBar={4} intervalMs={100} />
-
-            {/* Brutalist loading text */}
-            <motion.div
-              className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#888] flex items-center gap-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+            <span
+              className="font-mono uppercase"
+              style={{
+                fontSize: "var(--text-xs)",
+                letterSpacing: "0.15em",
+                color: "var(--color-text-ghost)",
+              }}
             >
-              <span>Initializing State</span>
-              <span className="w-1 h-1 bg-white inline-block animate-pulse" />
-            </motion.div>
-          </motion.div>
+              HKJ Studio
+            </span>
+            <span
+              className="font-mono uppercase tabular-nums"
+              style={{
+                fontSize: "var(--text-xs)",
+                letterSpacing: "0.15em",
+                color: "var(--color-text-ghost)",
+              }}
+            >
+              Loading {progress}%
+            </span>
+          </div>
+
+          {/* Center — thin charcoal line */}
+          <div className="flex-1 flex items-center" style={{ padding: "0 var(--page-px)" }}>
+            <div className="w-full h-px" style={{ backgroundColor: "var(--color-border)" }}>
+              <motion.div
+                className="h-full origin-left"
+                style={{
+                  backgroundColor: "var(--color-text)",
+                  width: `${progress}%`,
+                  transition: "width 60ms linear",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Bottom spacer for symmetry */}
+          <div style={{ padding: "var(--page-px)" }}>
+            <span
+              className="font-mono uppercase"
+              style={{
+                fontSize: "var(--text-micro)",
+                letterSpacing: "0.2em",
+                color: "var(--color-text-ghost)",
+              }}
+            >
+              Design Engineering
+            </span>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
-

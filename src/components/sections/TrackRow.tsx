@@ -4,26 +4,26 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { gsap } from "@/lib/gsap";
-import NothingEqLoader from "@/components/ui/NothingEqLoader";
 import type { Project } from "@/constants/projects";
+
+/** Hero rows get the massive preview panel on hover */
+const HERO_IDS = new Set(["sift", "gyeol"]);
 
 interface TrackRowProps {
   project: Project;
   index: number;
 }
 
-import { useAudioStore } from "@/lib/audioStore";
-
 export default function TrackRow({ project, index }: TrackRowProps) {
   const router = useRouter();
-  const { isPlaying } = useAudioStore();
   const expandRef = useRef<HTMLDivElement>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const num = String(index + 1).padStart(2, "0");
+  const isHero = HERO_IDS.has(project.id);
 
   const handleEnter = () => {
-    setIsExpanded(true);
-    if (expandRef.current) {
+    setHovered(true);
+    if (isHero && expandRef.current) {
       gsap.to(expandRef.current, {
         height: "auto",
         opacity: 1,
@@ -34,8 +34,8 @@ export default function TrackRow({ project, index }: TrackRowProps) {
   };
 
   const handleLeave = () => {
-    setIsExpanded(false);
-    if (expandRef.current) {
+    setHovered(false);
+    if (isHero && expandRef.current) {
       gsap.to(expandRef.current, {
         height: 0,
         opacity: 0,
@@ -51,7 +51,7 @@ export default function TrackRow({ project, index }: TrackRowProps) {
 
   return (
     <div
-      className="track-row cursor-pointer"
+      className="cursor-pointer group"
       data-cursor="explore"
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
@@ -62,142 +62,137 @@ export default function TrackRow({ project, index }: TrackRowProps) {
       role="link"
       tabIndex={0}
     >
-      {/* Index */}
-      <span
-        className="font-mono"
-        style={{
-          fontSize: "var(--text-micro)",
-          color: "var(--color-text-ghost)",
-          letterSpacing: "0.05em",
-        }}
-      >
-        [{num}]
-      </span>
-
-      {/* Title */}
-      <span
-        className="font-mono uppercase tracking-[0.08em] truncate"
-        style={{
-          fontSize: "var(--text-sm)",
-          color: "var(--color-text)",
-        }}
-      >
-        {project.title}
-      </span>
-
-      {/* Client */}
-      <span
-        className="font-mono truncate hidden md:block"
-        style={{
-          fontSize: "var(--text-xs)",
-          color: "var(--color-text-dim)",
-        }}
-      >
-        {project.client}
-      </span>
-
-      {/* Sector */}
-      <span
-        className="micro truncate hidden lg:block"
-      >
-        {project.sector}
-      </span>
-
-      {/* Year */}
-      <span
-        className="micro hidden lg:block"
-      >
-        {project.year}
-      </span>
-
-      {/* EQ indicator — only shows if audio is actually playing and row is expanded */}
+      {/* Main row */}
       <div
-        className="flex justify-end"
+        className="grid items-center transition-colors duration-200"
         style={{
-          opacity: isExpanded && isPlaying ? 1 : 0,
-          transition: "opacity 0.2s ease",
+          gridTemplateColumns: "48px 1fr 200px 80px",
+          borderBottom: "1px solid var(--color-border)",
+          borderLeft: hovered ? "2px solid var(--color-text)" : "1px solid transparent",
+          padding: "0.875rem 0.5rem",
+          backgroundColor: hovered ? "var(--color-surface-raised)" : "transparent",
         }}
       >
-        <NothingEqLoader
-          bars={3}
-          segmentsPerBar={3}
-          size={3}
-          gap={2}
-          intervalMs={150}
-        />
-      </div>
-
-      {/* Expanded content */}
-      <div
-        ref={expandRef}
-        className="col-span-full overflow-hidden"
-        style={{ height: 0, opacity: 0 }}
-      >
-        <div
-          className="grid gap-6 pt-4 pb-2"
+        {/* # */}
+        <span
+          className="font-mono"
           style={{
-            gridTemplateColumns: "1fr 1fr",
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-ghost)",
+            letterSpacing: "0.05em",
           }}
         >
-          {/* Grayscale image */}
+          {num}
+        </span>
+
+        {/* Title — serif */}
+        <span
+          className="font-display truncate"
+          style={{
+            fontSize: "var(--text-lg)",
+            color: "var(--color-text)",
+          }}
+        >
+          {project.title}
+        </span>
+
+        {/* Role */}
+        <span
+          className="font-mono uppercase truncate hidden md:block"
+          style={{
+            fontSize: "var(--text-xs)",
+            color: "var(--color-text-dim)",
+            letterSpacing: "0.08em",
+          }}
+        >
+          {project.role}
+        </span>
+
+        {/* Year */}
+        <span
+          className="font-mono hidden sm:block"
+          style={{
+            fontSize: "var(--text-xs)",
+            color: "var(--color-text-ghost)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          {project.year}
+        </span>
+      </div>
+
+      {/* Hero row: expanded preview panel */}
+      {isHero && (
+        <div
+          ref={expandRef}
+          className="overflow-hidden"
+          style={{ height: 0, opacity: 0 }}
+        >
           <div
-            className="relative overflow-hidden"
+            className="grid gap-6 py-6 px-2"
             style={{
-              aspectRatio: "16 / 10",
-              border: "1px solid var(--color-border)",
+              gridTemplateColumns: "1fr 1fr",
+              borderBottom: "1px solid var(--color-border)",
             }}
           >
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
+            {/* Full-color image */}
+            <div
+              className="relative overflow-hidden"
               style={{
-                filter: "grayscale(1) brightness(0.6)",
-              }}
-            />
-          </div>
-
-          {/* Pitch + CTA */}
-          <div className="flex flex-col justify-between py-1">
-            <p
-              className="font-sans leading-relaxed"
-              style={{
-                fontSize: "var(--text-sm)",
-                color: "var(--color-text-dim)",
+                aspectRatio: "16 / 10",
+                border: "1px solid var(--color-border)",
               }}
             >
-              {project.pitch}
-            </p>
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
 
-            <div className="flex items-center gap-2 mt-4">
-              <span
-                className="font-mono uppercase tracking-[0.15em]"
+            {/* Pitch + CTA */}
+            <div className="flex flex-col justify-between py-1">
+              <p
+                className="font-sans leading-relaxed"
                 style={{
-                  fontSize: "var(--text-xs)",
-                  color: "var(--color-text)",
+                  fontSize: "var(--text-base)",
+                  color: "var(--color-text-dim)",
                 }}
               >
-                Explore
-              </span>
-              <svg
-                width="16"
-                height="8"
-                viewBox="0 0 16 8"
-                fill="none"
-                style={{ color: "var(--color-text-dim)" }}
-              >
-                <path
-                  d="M0 4H14M14 4L10 0.5M14 4L10 7.5"
-                  stroke="currentColor"
-                  strokeWidth="0.75"
-                />
-              </svg>
+                {project.pitch}
+              </p>
+
+              <div className="flex items-center gap-2 mt-4">
+                <span
+                  className="font-mono uppercase tracking-[0.12em] px-3 py-1.5 transition-colors duration-200"
+                  style={{
+                    fontSize: "var(--text-xs)",
+                    color: "var(--color-text)",
+                    border: "1px solid var(--color-border-strong)",
+                  }}
+                >
+                  View Case Study
+                </span>
+                <svg
+                  width="16"
+                  height="8"
+                  viewBox="0 0 16 8"
+                  fill="none"
+                  style={{ color: "var(--color-text-dim)" }}
+                >
+                  <path
+                    d="M0 4H14M14 4L10 0.5M14 4L10 7.5"
+                    stroke="currentColor"
+                    strokeWidth="0.75"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

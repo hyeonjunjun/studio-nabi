@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import NothingEqLoader from "@/components/ui/NothingEqLoader";
 import LiveClock from "@/components/ui/LiveClock";
-import { useAudioStore } from "@/lib/audioStore";
+import InfiniteMarquee from "@/components/ui/InfiniteMarquee";
+import SplitText from "@/components/ui/SplitText";
+
+const PORTS = [
+  { label: "Client", description: "Product & brand work" },
+  { label: "Collab", description: "Joint ventures & open source" },
+  { label: "Speaking", description: "Talks, panels, mentorship" },
+];
 
 const SOCIALS = [
   { label: "GitHub", href: "#" },
@@ -12,8 +17,16 @@ const SOCIALS = [
   { label: "Twitter", href: "#" },
 ];
 
+const MARQUEE_ITEMS = [
+  "Craft",
+  "Systems",
+  "AI",
+  "Design",
+  "Engineering",
+  "Restraint",
+];
+
 export default function ContactSection() {
-  const { isPlaying } = useAudioStore();
   const [copied, setCopied] = useState(false);
   const email = "hello@hkjstudio.com";
 
@@ -33,122 +46,145 @@ export default function ContactSection() {
   }, [email]);
 
   return (
-    <section
-      data-section="contact"
-      className="relative"
-      style={{
-        padding: "6rem var(--page-px) 0",
-        borderTop: "1px solid var(--color-border)",
-      }}
-    >
-      {/* Section header */}
-      <div
-        className="flex items-center justify-between mb-16"
+    <>
+      {/* ═══ Marquee divider ═══ */}
+      <InfiniteMarquee
+        items={MARQUEE_ITEMS}
+        separator="—"
+        speed={40}
+      />
+
+      <section
+        data-section="contact"
+        className="relative"
         style={{
-          borderBottom: "1px solid var(--color-border)",
-          paddingBottom: "0.75rem",
+          padding: "8rem var(--page-px) 0",
+          backgroundColor: "var(--color-bg)",
         }}
       >
-        <span className="label">Contact</span>
-        {/* Removed 'Transmission' decor */}
-      </div>
-
-      {/* CTA area */}
-      <div className="max-w-5xl mx-auto mb-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <p
-            className="font-sans mb-10"
+        {/* ═══ Full-width CTA — no card wrapper ═══ */}
+        <div className="max-w-4xl mx-auto text-center mb-20 md:mb-28">
+          <SplitText
+            text="Let's build something extraordinary."
+            tag="h2"
+            type="words"
+            animation="slide-up"
+            stagger={0.05}
+            delay={0.1}
+            duration={0.7}
+            className="font-display italic"
             style={{
-              fontSize: "var(--text-lg)",
+              fontSize: "clamp(2rem, 6vw, 5rem)",
+              lineHeight: 1.1,
               color: "var(--color-text)",
             }}
-          >
-            Let&apos;s make something together.
-          </p>
+          />
 
-          {/* Email CTA — dominant */}
+          {/* Email CTA */}
           <button
             onClick={copyEmail}
-            className="group font-mono uppercase tracking-[0.05em] transition-colors duration-300 block"
+            className="font-mono tracking-[0.02em] transition-colors duration-300 mt-10 md:mt-14 block mx-auto"
             style={{
-              fontSize: "var(--text-3xl)",
-              color: copied ? "var(--color-accent)" : "var(--color-text)",
-              letterSpacing: "0.02em",
+              fontSize: "clamp(1rem, 2vw, 1.25rem)",
+              color: copied
+                ? "var(--color-accent-warm)"
+                : "var(--color-text)",
               lineHeight: 1.1,
             }}
           >
-            {copied ? "Copied" : email}
+            {copied ? "Copied to clipboard" : email}
           </button>
 
           <p
-            className="mt-3 transition-opacity duration-300 micro"
-            style={{
-              opacity: copied ? 0 : 1,
-            }}
+            className="mt-2 transition-opacity duration-300 micro"
+            style={{ opacity: copied ? 0 : 1 }}
           >
             Click to copy
           </p>
-        </motion.div>
-      </div>
+        </div>
 
-      {/* Footer bar */}
-      <div
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-        style={{
-          borderTop: "1px solid var(--color-border)",
-          padding: "1rem 0",
-        }}
-      >
-        {/* Social links */}
-        <div className="flex gap-6">
-          {SOCIALS.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              className="font-mono uppercase tracking-[0.1em] transition-colors duration-300"
-              style={{
-                fontSize: "var(--text-xs)",
-                color: "var(--color-text-dim)",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "var(--color-text)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "var(--color-text-dim)")
-              }
+        {/* ═══ Port diagram — simplified horizontal ═══ */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto mb-20"
+          style={{
+            borderTop: "1px solid var(--color-border)",
+            paddingTop: "2rem",
+          }}
+        >
+          {PORTS.map((port) => (
+            <div
+              key={port.label}
+              className="flex flex-col items-center sm:items-center gap-1"
             >
-              {s.label}
-            </a>
+              <span
+                className="font-mono uppercase"
+                style={{
+                  fontSize: "var(--text-xs)",
+                  letterSpacing: "0.12em",
+                  color: "var(--color-text)",
+                }}
+              >
+                {port.label}
+              </span>
+              <span
+                className="font-sans"
+                style={{
+                  fontSize: "var(--text-sm)",
+                  color: "var(--color-text-dim)",
+                }}
+              >
+                {port.description}
+              </span>
+            </div>
           ))}
         </div>
 
-        {/* Clock + Copyright + EQ */}
-        <div className="flex items-center gap-6">
-          <LiveClock
-            showTimezone
-            className="font-mono"
-          />
-          <span
-            className="font-mono"
-            style={{
-              color: "var(--color-text-ghost)",
-              fontSize: "var(--text-xs)",
-            }}
-          >
-            &copy; {new Date().getFullYear()} HKJ Studio
-          </span>
-          <div style={{ opacity: isPlaying ? 1 : 0, transition: "opacity 0.2s" }}>
-            <NothingEqLoader bars={3} segmentsPerBar={3} size={3} gap={2} intervalMs={200} />
+        {/* ═══ Footer bar ═══ */}
+        <div
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+          style={{
+            borderTop: "1px solid var(--color-border)",
+            padding: "1rem 0 2rem",
+          }}
+        >
+          {/* Social links */}
+          <div className="flex gap-6">
+            {SOCIALS.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                className="font-mono uppercase tracking-[0.1em] transition-colors duration-300"
+                style={{
+                  fontSize: "var(--text-xs)",
+                  color: "var(--color-text-dim)",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = "var(--color-text)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "var(--color-text-dim)")
+                }
+              >
+                {s.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Clock + Copyright */}
+          <div className="flex items-center gap-6">
+            <LiveClock showTimezone className="font-mono" />
+            <span
+              className="font-mono"
+              style={{
+                color: "var(--color-text-ghost)",
+                fontSize: "var(--text-xs)",
+              }}
+            >
+              &copy; {new Date().getFullYear()} HKJ Studio
+            </span>
           </div>
         </div>
-      </div>
-      {/* Extra padding buffer for the fixed AudioTransport bar */}
-      <div className="h-[40px]" />
-    </section>
+      </section>
+    </>
   );
 }

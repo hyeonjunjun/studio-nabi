@@ -151,7 +151,7 @@ export default function HighlightAccordion({
                             style={{
                               fontSize: "var(--text-xs)",
                               letterSpacing: "0.1em",
-                              color: "var(--color-accent-dim)",
+                              color: "var(--color-accent-warm)",
                             }}
                           >
                             {h.recipe}

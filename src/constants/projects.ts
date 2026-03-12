@@ -24,6 +24,7 @@ export interface Project {
     id: string;
     title: string;
     client: string;
+    role: string;
     sector: string;
     year: string;
     tags: string[];
@@ -64,6 +65,7 @@ export const PROJECTS: Project[] = [
         id: "sift",
         title: "Sift: Digital Sanctuary",
         client: "HKJ Studio",
+        role: "Design & Engineering",
         sector: "Mobile · AI",
         year: "2025",
         tags: ["Digital Sanctuary", "UX of AI", "React Native"],
@@ -123,6 +125,7 @@ export const PROJECTS: Project[] = [
         id: "verbaitim",
         title: "VerbAItim",
         client: "Linguistic Preservation Initiative",
+        role: "Design Lead",
         sector: "AI / SaaS",
         year: "2026",
         tags: ["Design System", "Full Stack", "Linguistics"],
@@ -178,6 +181,7 @@ export const PROJECTS: Project[] = [
         id: "conductor",
         title: "CONDUCTOR",
         client: "Internal Tooling",
+        role: "Developer",
         sector: "Design Systems",
         year: "2026",
         tags: ["Tooling", "Canvas API", "Low-Latency"],
@@ -228,6 +232,7 @@ export const PROJECTS: Project[] = [
         id: "gyeol",
         title: "GYEOL",
         client: "HKJ Studio",
+        role: "Design & Engineering",
         sector: "Material Science",
         year: "2026",
         tags: ["Coming Soon", "Material", "Texture"],

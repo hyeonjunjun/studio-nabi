@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Space_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Space_Mono, Inter, Newsreader } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import CurtainPreloader from "@/components/CurtainPreloader";
 import Cursor from "@/components/Cursor";
 import GlobalNav from "@/components/GlobalNav";
-import AudioTransport from "@/components/audio/AudioTransport";
 
 /* ── Typography ── */
 
@@ -16,11 +15,17 @@ const spaceMono = Space_Mono({
   variable: "--font-space-mono",
 });
 
-const ibmPlex = IBM_Plex_Sans({
-  weight: ["300", "400", "500", "600"],
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-ibm-plex",
+  variable: "--font-satoshi", // CSS var name kept generic for easy swap to Satoshi later
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-editorial-new", // CSS var name kept generic for easy swap to Editorial New later
+  style: ["normal", "italic"],
 });
 
 /* ── Metadata ── */
@@ -44,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceMono.variable} ${ibmPlex.variable} antialiased`}
+        className={`${spaceMono.variable} ${inter.variable} ${newsreader.variable} antialiased`}
         style={{
           backgroundColor: "var(--color-bg)",
           color: "var(--color-text)",
@@ -53,16 +58,9 @@ export default function RootLayout({
         <CurtainPreloader />
         <Cursor />
         <GlobalNav />
-        <AudioTransport />
 
-        {/* Tape Noise Overlay */}
-        <div
-          className="fixed inset-0 pointer-events-none z-10 opacity-[0.02] mix-blend-overlay film-grain"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-          }}
-        />
+        {/* Paper Noise Texture */}
+        <div className="paper-noise" />
 
         <SmoothScroll>{children}</SmoothScroll>
       </body>

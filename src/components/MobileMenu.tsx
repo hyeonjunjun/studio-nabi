@@ -23,8 +23,8 @@ interface MenuLink {
 }
 
 const MENU_LINKS: MenuLink[] = [
-  { label: "Projects", target: "[data-section='work']" },
-  { label: "Exploration", target: "[data-section='exploration']" },
+  { label: "Work", target: "[data-section='work']" },
+  { label: "About", target: "[data-section='about']" },
   { label: "Contact", target: "[data-section='contact']" },
 ];
 

@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   HKJ Studio · Console
-   teenage engineering · monochrome · utility
+   HKJ Studio · Bone & Charcoal Instrument
+   light-mode · editorial · typographic
    ═══════════════════════════════════════════ */
 
 :root {
   /* ── Typography ── */
+  --font-display: var(--font-editorial-new), "Georgia", serif;
   --font-mono: var(--font-space-mono), "Courier New", monospace;
-  --font-sans: var(--font-ibm-plex), system-ui, sans-serif;
+  --font-sans: var(--font-satoshi), system-ui, sans-serif;
 
-  /* ── Monochrome Palette ── */
-  --color-bg: #000000;
-  --color-surface: #060606;
-  --color-surface-raised: #0d0d0d;
-  --color-border: #1a1a1a;
-  --color-border-strong: #2a2a2a;
-  --color-border-active: #444444;
-  --color-text: #d4d4d4;
-  --color-text-dim: #666666;
-  --color-text-ghost: #333333;
-  --color-accent: #ffffff;
-  --color-accent-dim: #999999;
+  /* ── Bone & Charcoal Palette ── */
+  --color-bg: #F3EEE6;
+  --color-surface: #EDE8DF;
+  --color-surface-raised: #E4DED4;
+  --color-border: rgba(38, 38, 38, 0.12);
+  --color-border-strong: rgba(38, 38, 38, 0.25);
+  --color-border-active: rgba(38, 38, 38, 0.4);
+  --color-text: #262626;
+  --color-text-dim: #6B6B6B;
+  --color-text-ghost: #9A9A9A;
+  --color-accent: #262626;
+  --color-accent-warm: #B08968;
 
   /* ── Fluid Type Scale ── */
   --text-micro: clamp(0.5rem, 0.48rem + 0.1vw, 0.575rem);
@@ -53,8 +54,8 @@ body {
 }
 
 ::selection {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
+  background-color: #262626;
+  color: #F3EEE6;
 }
 
 /* ── Utilities ── */
@@ -70,6 +71,10 @@ body {
 
   .font-sans {
     font-family: var(--font-sans);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
   }
 
   /* TE-style label */
@@ -148,48 +153,17 @@ body {
   }
 }
 
-/* ── Grain Overlay (tape noise) ── */
+/* ── Paper Noise Texture ── */
 
-@keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-2%, -3%); }
-  30% { transform: translate(3%, -2%); }
-  50% { transform: translate(-3%, 2%); }
-  70% { transform: translate(1%, 3%); }
-  90% { transform: translate(2%, -1%); }
+.paper-noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }
-
-.film-grain {
-  animation: grain 0.5s steps(6) infinite;
-}
-
-/* ── Equalizer Bars ── */
-
-@keyframes eqBar1 {
-  0%, 100% { height: 30%; }
-  50% { height: 90%; }
-}
-
-@keyframes eqBar2 {
-  0%, 100% { height: 60%; }
-  50% { height: 20%; }
-}
-
-@keyframes eqBar3 {
-  0%, 100% { height: 45%; }
-  50% { height: 80%; }
-}
-
-.eq-bar {
-  width: 2px;
-  background-color: var(--color-text-dim);
-  display: inline-block;
-  vertical-align: bottom;
-}
-
-.eq-bar:nth-child(1) { animation: eqBar1 0.8s ease-in-out infinite; }
-.eq-bar:nth-child(2) { animation: eqBar2 0.6s ease-in-out infinite 0.1s; }
-.eq-bar:nth-child(3) { animation: eqBar3 0.7s ease-in-out infinite 0.2s; }
 
 /* ── Status Badge Pulse ── */
 
@@ -239,7 +213,7 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .film-grain {
-    animation: none;
+  .paper-noise {
+    display: none;
   }
 }
