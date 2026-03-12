@@ -9,6 +9,7 @@ import { PROJECTS } from "@/constants/projects";
 import Link from "next/link";
 import Image from "next/image";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import BeforeAfterSlider from "./BeforeAfterSlider";
 
 interface ScrollStageProps {
   project: Project;
@@ -153,9 +154,20 @@ function ProcessSection({ project }: { project: Project }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 sm:px-12 lg:px-0 mt-12">
-        {project.process.images?.map((img, i) => (
-          <ImageBlock key={i} src={img} index={i} placeholder="Sketch / Wireframe" />
-        )) || <PlaceholderFrame label="Process Media Pending" />}
+        {project.process.images?.length > 1 ? (
+           <div className="md:col-span-2 reveal-block">
+             <BeforeAfterSlider 
+               beforeImage={project.process.images[0]} 
+               afterImage={project.process.images[1]} 
+               beforeLabel="ROUGH SKETCH"
+               afterLabel="FINAL RENDER"
+             />
+           </div>
+        ) : (
+           project.process.images?.map((img, i) => (
+             <ImageBlock key={i} src={img} index={i} placeholder="Sketch / Wireframe" fullWidth />
+           )) || <PlaceholderFrame label="Process Media Pending" />
+        )}
       </div>
     </section>
   );

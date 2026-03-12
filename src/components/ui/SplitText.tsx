@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, createElement } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -118,17 +118,17 @@ export default function SplitText({
     );
   });
 
-  return createElement(
-    tag,
-    {
-      // eslint-disable-next-line react-hooks/refs
-      ref: containerRef,
-      className: `overflow-hidden ${className}`,
-      style: {
+  const Tag = tag;
+  return (
+    <Tag
+      ref={containerRef}
+      className={`overflow-hidden ${className}`}
+      style={{
         perspective: animation === "slide-up" ? "600px" : undefined,
         ...externalStyle,
-      },
-    },
-    children
+      }}
+    >
+      {children}
+    </Tag>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, AnimatePresence, useVelocity, useTransform } from "framer-motion";
+import { useLenis } from "lenis/react";
 
 /**
  * Cursor — Nothing OS / Teenage Engineering
@@ -24,9 +25,28 @@ export default function Cursor() {
   const smoothX = useSpring(cursorX, springConfig);
   const smoothY = useSpring(cursorY, springConfig);
 
+  const velX = useVelocity(smoothX);
+  const velY = useVelocity(smoothY);
+
+  // Microphysics: stretch cursor based on velocity
+  const stretchX = useTransform(velX, [-1500, 0, 1500], [1.6, 1, 1.6]);
+  const stretchY = useTransform(velY, [-1500, 0, 1500], [1.6, 1, 1.6]);
+
   const [cursorState, setCursorState] = useState<CursorState>("default");
   const [isVisible, setIsVisible] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
+  const [scrollVel, setScrollVel] = useState(0);
+
+  // Combine mouse Y velocity and scroll velocity for Y stretch
+  const combinedStretchY = useTransform(stretchY, (val) => {
+    const scrollStretch = 1 + Math.min(Math.abs(scrollVel) * 0.02, 1);
+    return Math.max(val, scrollStretch);
+  });
+
+  // Capture Lenis scroll velocity to skew Y axis when scrolling
+  useLenis((lenis) => {
+    setScrollVel(lenis.velocity);
+  });
 
   useEffect(() => {
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
@@ -89,6 +109,11 @@ export default function Cursor() {
     play: 50,
   };
 
+  // Determine final scale factors.
+  // Ring states stay perfectly circular. Default/link states stretch with movement/scroll.
+  const dynamicScaleX = isRing ? 1 : stretchX;
+  const dynamicScaleY = isRing ? 1 : combinedStretchY;
+
   return (
     <>
       {/* Click Ripple — accent red flash */}
@@ -118,6 +143,8 @@ export default function Cursor() {
         style={{
           x: smoothX,
           y: smoothY,
+          scaleX: dynamicScaleX,
+          scaleY: dynamicScaleY,
           translateX: "-50%",
           translateY: "-50%",
           mixBlendMode: isRing ? "normal" : "difference",

@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import CurtainPreloader from "@/components/CurtainPreloader";
 import Cursor from "@/components/Cursor";
 import GlobalNav from "@/components/GlobalNav";
+import BackgroundSurface from "@/components/BackgroundSurface";
+import GlobalMarks from "@/components/GlobalMarks";
 
 /* ── Typography ── */
 
@@ -71,11 +73,13 @@ export default function RootLayout({
         }}
       >
         <CurtainPreloader />
+        <GlobalMarks />
         <Cursor />
         <GlobalNav />
 
-        {/* Paper Noise Texture */}
+        {/* Paper Noise Texture & WebGL Fluid */}
         <div className="paper-noise" />
+        <BackgroundSurface />
 
         <SmoothScroll>{children}</SmoothScroll>
       </body>

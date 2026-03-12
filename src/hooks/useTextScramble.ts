@@ -19,7 +19,7 @@ export function useTextScramble(text: string) {
         iterationRef.current = 0;
 
         const update = () => {
-            setDisplayText(prev =>
+            setDisplayText(() =>
                 text.split("")
                     .map((char, index) => {
                         if (index < iterationRef.current) {

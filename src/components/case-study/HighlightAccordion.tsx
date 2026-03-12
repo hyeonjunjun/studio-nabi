@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ProjectHighlight } from "@/constants/projects";
 import NothingEqLoader from "@/components/ui/NothingEqLoader";

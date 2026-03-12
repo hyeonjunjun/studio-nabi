@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useLenis } from "lenis/react";
 import MobileMenu from "@/components/MobileMenu";
+import Link from "next/link";
 
 /* ─────────────────────────────────────────────
    GlobalNav — Brutalist / Minimalist hybrid
@@ -81,6 +82,13 @@ export default function GlobalNav() {
             >
               Work
             </button>
+            <Link
+              href="/lab"
+              className="font-mono uppercase tracking-[0.15em] hover:text-[#EB3300] transition-colors duration-300"
+              style={{ fontSize: "var(--text-micro)" }}
+            >
+              Lab
+            </Link>
             <button
               onClick={() => scrollTo("[data-section='about']")}
               className="font-mono uppercase tracking-[0.15em] hover:text-[#EB3300] transition-colors duration-300"
