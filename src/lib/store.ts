@@ -1,50 +1,71 @@
 import { create } from "zustand";
 
 export type OverlayType = "about" | "contact" | null;
-export type ViewMode = "list" | "grid";
+export type ActiveView = "index" | "selects" | "info";
 
 interface StudioState {
-    /** True once critical resources are loaded */
-    isLoaded: boolean;
-    setLoaded: (v: boolean) => void;
+  /** True once critical resources are loaded */
+  isLoaded: boolean;
+  setLoaded: (v: boolean) => void;
 
-    /** Currently visible section for nav tracking */
-    activeSection: string;
-    setActiveSection: (s: string) => void;
+  /** Currently visible section for nav tracking */
+  activeSection: string;
+  setActiveSection: (s: string) => void;
 
-    /** Project slug being transitioned to (for page transition) */
-    transitionProject: string | null;
-    setTransitionProject: (id: string | null) => void;
+  /** Project slug being transitioned to (for page transition) */
+  transitionProject: string | null;
+  setTransitionProject: (id: string | null) => void;
 
-    /** Active full-screen overlay (about / contact) */
-    activeOverlay: OverlayType;
-    setActiveOverlay: (overlay: OverlayType) => void;
+  /** Active full-screen overlay (contact only now — about moved to InfoView) */
+  activeOverlay: OverlayType;
+  setActiveOverlay: (overlay: OverlayType) => void;
 
-    /** Homepage gallery view mode */
-    viewMode: ViewMode;
-    setViewMode: (mode: ViewMode) => void;
+  /** Current homepage view */
+  activeView: ActiveView;
+  setActiveView: (view: ActiveView) => void;
 
-    /** True when hero-to-grid scroll animation has completed */
-    gridRevealed: boolean;
-    setGridRevealed: (v: boolean) => void;
+  /** Active project id for Now Playing panel + player bar */
+  activeProject: string | null;
+  setActiveProject: (id: string | null) => void;
+
+  /** Whether the Now Playing panel is open */
+  isPanelOpen: boolean;
+  setIsPanelOpen: (open: boolean) => void;
+
+  /** Global video play/pause state */
+  isPlaying: boolean;
+  togglePlayback: () => void;
+
+  /** Whether the player bar has been revealed */
+  playerVisible: boolean;
+  setPlayerVisible: (v: boolean) => void;
 }
 
 export const useStudioStore = create<StudioState>((set) => ({
-    isLoaded: false,
-    setLoaded: (v) => set({ isLoaded: v }),
+  isLoaded: false,
+  setLoaded: (v) => set({ isLoaded: v }),
 
-    activeSection: "hero",
-    setActiveSection: (s) => set({ activeSection: s }),
+  activeSection: "hero",
+  setActiveSection: (s) => set({ activeSection: s }),
 
-    transitionProject: null,
-    setTransitionProject: (id) => set({ transitionProject: id }),
+  transitionProject: null,
+  setTransitionProject: (id) => set({ transitionProject: id }),
 
-    activeOverlay: null,
-    setActiveOverlay: (overlay) => set({ activeOverlay: overlay }),
+  activeOverlay: null,
+  setActiveOverlay: (overlay) => set({ activeOverlay: overlay }),
 
-    viewMode: "grid",
-    setViewMode: (mode) => set({ viewMode: mode }),
+  activeView: "index",
+  setActiveView: (view) => set({ activeView: view }),
 
-    gridRevealed: false,
-    setGridRevealed: (v) => set({ gridRevealed: v }),
+  activeProject: null,
+  setActiveProject: (id) => set({ activeProject: id }),
+
+  isPanelOpen: false,
+  setIsPanelOpen: (open) => set({ isPanelOpen: open }),
+
+  isPlaying: true,
+  togglePlayback: () => set((s) => ({ isPlaying: !s.isPlaying })),
+
+  playerVisible: false,
+  setPlayerVisible: (v) => set({ playerVisible: v }),
 }));
