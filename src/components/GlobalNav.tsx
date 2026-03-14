@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { gsap } from "@/lib/gsap";
 import { useStudioStore } from "@/lib/store";
 import { NAV_LINKS, type NavLink } from "@/constants/navigation";
@@ -34,17 +35,23 @@ export default function GlobalNav() {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const isLoaded = useStudioStore((s) => s.isLoaded);
   const setActiveOverlay = useStudioStore((s) => s.setActiveOverlay);
+  const activeView = useStudioStore((s) => s.activeView);
+  const setActiveView = useStudioStore((s) => s.setActiveView);
+  const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
 
   const handleClick = useCallback(
     (e: React.MouseEvent, link: NavLink) => {
-      if (link.overlay) {
-        e.preventDefault();
+      e.preventDefault();
+      if (link.view) {
+        setActiveView(link.view);
+      } else if (link.overlay) {
         setActiveOverlay(link.overlay);
+      } else if (link.href) {
+        router.push(link.href);
       }
-      // href links navigate normally
     },
-    [setActiveOverlay]
+    [setActiveOverlay, setActiveView, router]
   );
 
   // GSAP stagger entrance after preloader
@@ -126,7 +133,7 @@ export default function GlobalNav() {
               <motion.span
                 className="absolute -bottom-[2px] left-0 right-0 h-[1px] bg-white origin-left"
                 initial={{ scaleX: 0 }}
-                animate={{ scaleX: hoveredLink === link.label ? 1 : 0 }}
+                animate={{ scaleX: link.view === activeView || hoveredLink === link.label ? 1 : 0 }}
                 transition={{
                   duration: 0.4,
                   ease: [0.16, 1, 0.3, 1],
