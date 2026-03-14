@@ -80,9 +80,15 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const router = useRouter();
   const lenis = useLenis();
   const setActiveOverlay = useStudioStore((s) => s.setActiveOverlay);
+  const setActiveView = useStudioStore((s) => s.setActiveView);
 
   const handleNavigate = useCallback(
     (link: NavLink) => {
+      if (link.view) {
+        onClose();
+        setTimeout(() => setActiveView(link.view!), 300);
+        return;
+      }
       if (link.overlay) {
         onClose();
         setTimeout(() => setActiveOverlay(link.overlay!), 300);
@@ -97,7 +103,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         }
       }
     },
-    [onClose, setActiveOverlay, router, lenis]
+    [onClose, setActiveOverlay, setActiveView, router, lenis]
   );
 
   return (
