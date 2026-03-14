@@ -17,7 +17,7 @@ interface ChapterSidebarProps {
 /**
  * ChapterSidebar — Pinned left sidebar with chapter dots.
  * Each dot lights up as the corresponding chapter enters view.
- * Nothing OS / Teenage Engineering aesthetic: minimal, precise, mechanical.
+ * Minimal, precise, mechanical.
  */
 export default function ChapterSidebar({ chapters }: ChapterSidebarProps) {
   const [activeId, setActiveId] = useState<string>("");

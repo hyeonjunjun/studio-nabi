@@ -43,23 +43,23 @@ The homepage is a persistent layout with three zones. Views swap via AnimatePres
 
 ## 3. Hero Section
 
-A system identification block at the top of the Index and Selects views. Matches the Nothing OS / Teenage Engineering aesthetic.
+A typographic identity block at the top of the Index and Selects views.
 
 ```
-                    HKJ STUDIO
+                    HKJ
                     ----------
-                    DESIGN ENGINEERING
-                    NYC & SEOUL
+                    design engineering
+                    nyc & seoul
 
-                    SYS.PORTFOLIO v2.0
-                    4 PROJECTS LOADED
-                    2 IN DEVELOPMENT
+                    portfolio v2.0
+                    4 projects loaded
+                    2 in development
 ```
 
-- Monospace-heavy, centered, generous letter-spacing
+- Mono typography, centered, generous letter-spacing, lowercase body lines
 - Grid background (existing `grid-lines` utility)
 - Height: ~40vh
-- "4 PROJECTS LOADED / 2 IN DEVELOPMENT" is a live count derived from `PROJECTS` array length and ghost count
+- "4 projects loaded / 2 in development" is a live count derived from `PROJECTS` array length and ghost count
 - Entrance: GSAP stagger on each line after preloader completes (existing pattern)
 
 ---
@@ -186,7 +186,7 @@ X -------------------------
 - 1px left border (no shadow)
 - Background: same as page bg
 - Close: minimal X top-right, mono
-- Typography: spec table uses mono labels + sans values (TE hardware spec sheet pattern)
+- Typography: spec table uses mono labels + sans values
 
 ### Responsive behavior
 
@@ -246,18 +246,48 @@ Fixed bottom media control bar. Part of the app shell chrome.
 
 ---
 
-## 9. Preloader Handoff
+## 9. Preloader (Rewrite)
 
-The existing StudioPreloader (image cycling box -> viewport fill) runs as-is. On completion:
+The current StudioPreloader (image cycling box -> viewport fill) is replaced with a typographic preloader that sets the tone for the index page.
 
-1. Preloader opacity fades to 0 (300ms)
-2. Index view is rendered beneath with hero section
-3. Hero lines entrance via GSAP stagger (600ms, stagger 0.08)
-4. Player bar remains hidden until first interaction
-5. Panel closed on initial load
-6. `isLoaded = true` set in store
+### Behavior
 
-No changes to StudioPreloader component.
+Full-viewport overlay (z-1000), page background color. Three-phase state machine:
+
+**Phase 1 — Loading** (~2-3s, or until fonts loaded):
+```
+    hkj
+    ━━━━━━━━━●━━━━━━━━  72%
+    loading...
+```
+- Centered mono text block, lowercase
+- Accent-colored progress bar animates left to right
+- Percentage counter increments (driven by `document.fonts.ready` + minimum duration)
+- Grid background (existing `grid-lines` utility)
+
+**Phase 2 — Ready** (~400ms hold):
+```
+    hkj
+    ━━━━━━━━━━━━━━━━━━  100%
+    ready
+```
+- Progress hits 100%, "loading..." swaps to "ready"
+- Brief hold before exit
+
+**Phase 3 — Exit** (300ms):
+- Preloader opacity fades to 0
+- Sets `isLoaded = true` in store
+- Hero lines entrance via GSAP stagger begins (600ms, stagger 0.08)
+
+### Completion triggers
+- `document.fonts.ready` resolves, OR
+- 4s timeout fallback (same as current preloader)
+- Minimum display time: 2s (prevents flash on fast connections)
+
+### Post-preloader state
+- Player bar hidden until first interaction
+- Panel closed
+- Index view visible with hero section
 
 ---
 
@@ -265,7 +295,7 @@ No changes to StudioPreloader component.
 
 ### Desktop GlobalNav
 
-Add `Index | Selects | Info` links to the existing nav bar. These function as view switchers (not route links).
+Add `Index | Selects | Info` links to the existing nav bar. These function as view switchers (not route links). **Keep existing nav typography and style** — view links integrate into the current design, not override it.
 
 - Active view has underline indicator (existing spring underline pattern)
 - Clicking active view is a no-op
@@ -347,6 +377,7 @@ Existing state that can be removed:
 | `MobileMenu.tsx` | Add view links as numbered menu items |
 | `store.ts` | Add new state (activeView, activeProject, isPanelOpen, isPlaying, playerVisible). Remove viewMode, gridRevealed. |
 | `page.tsx` | Rewrite to render AppShell |
+| `StudioPreloader.tsx` | Rewrite to typographic preloader (text-based, no image cycling) |
 
 ### Archived/removed
 
@@ -359,7 +390,7 @@ Existing state that can be removed:
 
 ### Unchanged
 
-StudioPreloader, Cursor, ContactOverlay, TransitionOverlay, SmoothScroll, all case study components, all hooks, all constants, globals.css, ProjectListView (archived as reference).
+Cursor, ContactOverlay, TransitionOverlay, SmoothScroll, all case study components, all hooks, all constants, globals.css, ProjectListView (archived as reference).
 
 ---
 
