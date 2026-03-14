@@ -1,15 +1,12 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import type { Project } from "@/constants/projects";
 
 interface ProjectRowProps {
   project: Project;
   index: number;
   isActive: boolean;
-  showThumbnail?: boolean;
   onClick: (id: string) => void;
 }
 
@@ -17,115 +14,87 @@ export default function ProjectRow({
   project,
   index,
   isActive,
-  showThumbnail = false,
   onClick,
 }: ProjectRowProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const num = String(index + 1).padStart(2, "0");
-  const hasVideo = project.videos && project.videos.length > 0;
-
-  // Video focus: play/pause based on viewport intersection
-  useEffect(() => {
-    if (!showThumbnail || !hasVideo) return;
-    const video = videoRef.current;
-    if (!video) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { rootMargin: "-40% 0px -40% 0px" }
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, [showThumbnail, hasVideo]);
 
   return (
     <motion.button
       data-project-row={project.id}
       data-cursor="project"
       onClick={() => onClick(project.id)}
-      className="project-card group w-full text-left flex items-center gap-6 transition-colors duration-200"
+      className="project-card group w-full text-left relative"
       style={{
-        padding: showThumbnail ? "20px var(--page-px)" : "24px var(--page-px)",
+        display: "grid",
+        gridTemplateColumns: "2.5rem 1fr auto auto",
+        alignItems: "baseline",
+        gap: "clamp(1rem, 2vw, 2rem)",
+        padding: "clamp(1.25rem, 2.5vh, 2rem) var(--page-px)",
         borderBottom: "1px solid var(--color-border)",
-        backgroundColor: isActive ? "rgba(0,0,0,0.03)" : "transparent",
-        borderLeft: isActive
-          ? "2px solid var(--color-accent)"
-          : "2px solid transparent",
       }}
-      whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
     >
-      {/* Thumbnail (Selects mode only) */}
-      {showThumbnail && (
-        <div
-          className="relative overflow-hidden flex-shrink-0"
-          style={{ width: 160, height: 100, borderRadius: 2 }}
-        >
-          {hasVideo ? (
-            <video
-              ref={videoRef}
-              src={project.videos![0].src}
-              poster={project.image}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="w-full h-full object-cover project-card-img"
-            />
-          ) : (
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              sizes="160px"
-              className="object-cover project-card-img"
-            />
-          )}
-        </div>
-      )}
-
-      {/* Number */}
+      {/* Active / hover accent bar */}
       <span
-        className="font-mono flex-shrink-0"
+        className="absolute left-0 top-0 bottom-0 transition-all duration-300"
+        style={{
+          width: 2,
+          backgroundColor: "var(--color-accent)",
+          opacity: isActive ? 1 : 0,
+          transform: isActive ? "scaleY(1)" : "scaleY(0)",
+          transformOrigin: "top",
+        }}
+      />
+
+      {/* Col 1: Number */}
+      <span
+        className="font-mono transition-colors duration-300"
+        style={{
+          fontSize: "var(--text-micro)",
+          letterSpacing: "0.1em",
+          color: isActive ? "var(--color-accent)" : "var(--color-text-ghost)",
+        }}
+      >
+        {num}
+      </span>
+
+      {/* Col 2: Title */}
+      <span
+        className="font-sans font-medium uppercase truncate group-hover:translate-x-1 transition-transform duration-300"
+        style={{
+          fontSize: "var(--text-lg)",
+          letterSpacing: "0.02em",
+          color: "var(--color-text)",
+          lineHeight: 1.2,
+        }}
+      >
+        {project.title}
+      </span>
+
+      {/* Col 3: Sector */}
+      <span
+        className="font-mono hidden md:block"
+        style={{
+          fontSize: "var(--text-micro)",
+          letterSpacing: "0.1em",
+          color: "var(--color-text-secondary)",
+          textAlign: "right",
+        }}
+      >
+        {project.sector}
+      </span>
+
+      {/* Col 4: Year */}
+      <span
+        className="font-mono"
         style={{
           fontSize: "var(--text-micro)",
           letterSpacing: "0.1em",
           color: "var(--color-text-ghost)",
-          width: "2.5em",
+          textAlign: "right",
         }}
       >
-        [{num}]
+        {project.year}
       </span>
-
-      {/* Text content */}
-      <div className="flex-1 min-w-0">
-        <div
-          className="font-sans font-medium uppercase truncate"
-          style={{
-            fontSize: "var(--text-base)",
-            letterSpacing: "0.04em",
-            color: "var(--color-text)",
-          }}
-        >
-          {project.title}
-        </div>
-        <div
-          className="font-mono mt-1"
-          style={{
-            fontSize: "var(--text-micro)",
-            letterSpacing: "0.1em",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          {project.sector} — {project.year}
-        </div>
-      </div>
     </motion.button>
   );
 }

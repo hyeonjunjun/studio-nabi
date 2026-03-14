@@ -11,8 +11,6 @@ export default function HeroBlock() {
   const isLoaded = useStudioStore((s) => s.isLoaded);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const projectCount = PROJECTS.length;
-
   // GSAP stagger entrance after preloader
   useEffect(() => {
     if (!isLoaded) return;
@@ -21,12 +19,12 @@ export default function HeroBlock() {
 
     gsap.fromTo(
       lines,
-      { opacity: 0, y: 20 },
+      { opacity: 0, y: 24 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.6,
-        stagger: 0.08,
+        duration: 0.8,
+        stagger: 0.1,
         ease: "power3.out",
       }
     );
@@ -35,92 +33,96 @@ export default function HeroBlock() {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-center justify-center text-center"
+      className="relative flex flex-col justify-end"
       style={{
-        minHeight: "40vh",
-        padding: "clamp(4rem, 10vh, 8rem) var(--page-px)",
+        height: "100vh",
+        padding: "0 var(--page-px) 0",
       }}
     >
-      <div
-        data-hero-line
-        className="font-mono uppercase tracking-[0.3em] opacity-0"
-        style={{
-          fontSize: "var(--text-lg)",
-          color: "var(--color-text)",
-          marginBottom: "0.75rem",
-        }}
-      >
-        HKJ
+      {/* Main headline — fills the lower portion */}
+      <div style={{ marginBottom: "clamp(2rem, 4vh, 3.5rem)" }}>
+        <h1
+          data-hero-line
+          className="opacity-0"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 500,
+            fontSize: "clamp(3.5rem, 2rem + 7vw, 9rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.04em",
+            color: "var(--color-text)",
+            textTransform: "uppercase",
+          }}
+        >
+          Design
+        </h1>
+        <h1
+          data-hero-line
+          className="opacity-0"
+          style={{
+            fontFamily: "var(--font-serif)",
+            fontWeight: 400,
+            fontStyle: "italic",
+            fontSize: "clamp(3.5rem, 2rem + 7vw, 9rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            color: "var(--color-text)",
+          }}
+        >
+          engineering.
+        </h1>
       </div>
 
+      {/* Bottom rail — micro details */}
       <div
         data-hero-line
-        className="opacity-0"
+        className="flex items-center opacity-0"
         style={{
-          width: "3rem",
-          height: "1px",
-          backgroundColor: "var(--color-border-strong)",
-          marginBottom: "1.5rem",
-        }}
-      />
-
-      <div
-        data-hero-line
-        className="font-mono lowercase tracking-[0.2em] opacity-0"
-        style={{
-          fontSize: "var(--text-sm)",
-          color: "var(--color-text-secondary)",
-          marginBottom: "0.25rem",
+          paddingBottom: "clamp(1.5rem, 3vh, 2.5rem)",
+          borderTop: "1px solid var(--color-border)",
+          paddingTop: "1rem",
+          gap: "clamp(1.5rem, 3vw, 3rem)",
         }}
       >
-        design engineering
-      </div>
+        <span
+          className="font-mono uppercase tracking-[0.15em]"
+          style={{
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-secondary)",
+          }}
+        >
+          NYC & Seoul
+        </span>
 
-      <div
-        data-hero-line
-        className="font-mono lowercase tracking-[0.2em] opacity-0"
-        style={{
-          fontSize: "var(--text-sm)",
-          color: "var(--color-text-secondary)",
-          marginBottom: "2rem",
-        }}
-      >
-        nyc & seoul
-      </div>
+        <span
+          className="font-mono uppercase tracking-[0.15em]"
+          style={{
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-ghost)",
+          }}
+        >
+          {PROJECTS.length} Projects
+        </span>
 
-      <div
-        data-hero-line
-        className="font-mono lowercase tracking-[0.15em] opacity-0"
-        style={{
-          fontSize: "var(--text-micro)",
-          color: "var(--color-text-ghost)",
-          marginBottom: "0.125rem",
-        }}
-      >
-        portfolio v2.0
-      </div>
+        <span
+          className="font-mono uppercase tracking-[0.15em]"
+          style={{
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-ghost)",
+          }}
+        >
+          {GHOST_COUNT} In Dev
+        </span>
 
-      <div
-        data-hero-line
-        className="font-mono lowercase tracking-[0.15em] opacity-0"
-        style={{
-          fontSize: "var(--text-micro)",
-          color: "var(--color-text-ghost)",
-          marginBottom: "0.125rem",
-        }}
-      >
-        {projectCount} projects loaded
-      </div>
-
-      <div
-        data-hero-line
-        className="font-mono lowercase tracking-[0.15em] opacity-0"
-        style={{
-          fontSize: "var(--text-micro)",
-          color: "var(--color-text-ghost)",
-        }}
-      >
-        {GHOST_COUNT} in development
+        <span
+          className="font-mono uppercase tracking-[0.15em] ml-auto hidden sm:block"
+          style={{
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-ghost)",
+          }}
+        >
+          Est. 2024
+        </span>
       </div>
     </div>
   );

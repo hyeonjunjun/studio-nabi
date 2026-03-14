@@ -4,7 +4,6 @@ interface GhostRowProps {
   index: number;
   year: string;
   tagline: string;
-  showThumbnail?: boolean;
 }
 
 const BLOCK_CHARS = "█";
@@ -21,7 +20,6 @@ export default function GhostRow({
   index,
   year,
   tagline,
-  showThumbnail = false,
 }: GhostRowProps) {
   const num = String(index + 1).padStart(2, "0");
   const ghostIndex = index - 4; // Ghosts start at position 5 (index 4)
@@ -29,72 +27,77 @@ export default function GhostRow({
 
   return (
     <div
-      className="flex items-center gap-6"
       style={{
-        padding: showThumbnail ? "20px var(--page-px)" : "24px var(--page-px)",
+        display: "grid",
+        gridTemplateColumns: "2.5rem 1fr auto auto",
+        alignItems: "baseline",
+        gap: "clamp(1rem, 2vw, 2rem)",
+        padding: "clamp(1.25rem, 2.5vh, 2rem) var(--page-px)",
         borderBottom: "1px solid var(--color-border)",
-        borderLeft: "2px solid transparent",
-        opacity: 0.4,
+        opacity: 0.35,
       }}
     >
-      {/* Ghost thumbnail placeholder */}
-      {showThumbnail && (
-        <div
-          className="flex-shrink-0"
-          style={{
-            width: 160,
-            height: 100,
-            borderRadius: 2,
-            backgroundColor: "var(--color-surface)",
-          }}
-        />
-      )}
-
-      {/* Number */}
+      {/* Col 1: Number */}
       <span
-        className="font-mono flex-shrink-0"
+        className="font-mono"
         style={{
           fontSize: "var(--text-micro)",
           letterSpacing: "0.1em",
           color: "var(--color-text-ghost)",
-          width: "2.5em",
         }}
       >
-        [{num}]
+        {num}
       </span>
 
-      {/* Text */}
-      <div className="flex-1 min-w-0">
-        <div
+      {/* Col 2: Title + tagline */}
+      <div className="min-w-0">
+        <span
           className="font-sans font-medium uppercase"
           style={{
-            fontSize: "var(--text-base)",
-            letterSpacing: "0.04em",
+            fontSize: "var(--text-lg)",
+            letterSpacing: "0.02em",
             color: "var(--color-text-ghost)",
+            lineHeight: 1.2,
           }}
         >
           {title}
-        </div>
+        </span>
         <div
-          className="font-mono mt-1"
+          className="font-serif italic mt-1"
           style={{
-            fontSize: "var(--text-micro)",
-            letterSpacing: "0.1em",
-            color: "var(--color-text-ghost)",
-          }}
-        >
-          ??? — {year}
-        </div>
-        <div
-          className="font-serif italic mt-0.5"
-          style={{
-            fontSize: "var(--text-micro)",
+            fontSize: "var(--text-xs)",
             color: "var(--color-text-ghost)",
           }}
         >
           {tagline}
         </div>
       </div>
+
+      {/* Col 3: Sector */}
+      <span
+        className="font-mono hidden md:block"
+        style={{
+          fontSize: "var(--text-micro)",
+          letterSpacing: "0.1em",
+          color: "var(--color-text-ghost)",
+          textAlign: "right",
+        }}
+      >
+        ???
+      </span>
+
+      {/* Col 4: Year */}
+      <span
+        className="font-mono"
+        style={{
+          fontSize: "var(--text-micro)",
+          letterSpacing: "0.1em",
+          color: "var(--color-text-ghost)",
+          textAlign: "right",
+        }}
+      >
+        {year}
+      </span>
     </div>
   );
 }

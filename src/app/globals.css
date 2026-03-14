@@ -44,7 +44,7 @@
   /* ── Spacing ── */
   --page-px: clamp(1.5rem, 5vw, 5rem);
   --section-py: clamp(6rem, 12vh, 10rem);
-  --body-frame: clamp(6px, 0.5vw, 12px);
+  --body-frame: 0px;
 }
 
 /* ── Base ── */

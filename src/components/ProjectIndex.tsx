@@ -24,7 +24,6 @@ export default function ProjectIndex() {
   const startTransition = useTransitionStore((s) => s.start);
 
   const handleRowClick = (id: string) => {
-    // Mobile: navigate directly to case study (no panel)
     if (window.innerWidth < 768) {
       const row = document.querySelector(`[data-project-row="${id}"]`);
       const rect = row?.getBoundingClientRect();
@@ -36,11 +35,9 @@ export default function ProjectIndex() {
       return;
     }
 
-    // First interaction: show player bar
     if (!playerVisible) setPlayerVisible(true);
 
     if (activeProject === id && isPanelOpen) {
-      // Toggle off if clicking same project
       setIsPanelOpen(false);
     } else {
       setActiveProject(id);
@@ -54,7 +51,26 @@ export default function ProjectIndex() {
     <div>
       <HeroBlock />
 
-      <div style={{ borderTop: "1px solid var(--color-border)" }}>
+      {/* Section label */}
+      <div
+        style={{
+          padding: "0.75rem var(--page-px)",
+          borderTop: "1px solid var(--color-border-strong)",
+        }}
+      >
+        <span
+          className="font-mono uppercase tracking-[0.15em]"
+          style={{
+            fontSize: "var(--text-micro)",
+            color: "var(--color-text-ghost)",
+          }}
+        >
+          Selected Work ({totalProjects})
+        </span>
+      </div>
+
+      {/* Project rows */}
+      <div className="subtractive-group">
         {PROJECTS.map((project, i) => (
           <ProjectRow
             key={project.id}
@@ -64,15 +80,17 @@ export default function ProjectIndex() {
             onClick={handleRowClick}
           />
         ))}
-        {GHOSTS.map((ghost, i) => (
-          <GhostRow
-            key={`ghost-${i}`}
-            index={totalProjects + i}
-            year={ghost.year}
-            tagline={ghost.tagline}
-          />
-        ))}
       </div>
+
+      {/* Ghost rows */}
+      {GHOSTS.map((ghost, i) => (
+        <GhostRow
+          key={`ghost-${i}`}
+          index={totalProjects + i}
+          year={ghost.year}
+          tagline={ghost.tagline}
+        />
+      ))}
     </div>
   );
 }
