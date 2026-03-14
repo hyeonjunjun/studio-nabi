@@ -1,37 +1,50 @@
 @import "tailwindcss";
 
 /**
- * HKJ Studio — Blank Canvas (1-1 Reference Foundation)
- * 
- * Target Specs:
- * - Voku: Archivo Typography, Slit-scan motion
- * - Jonite: 26.67px Serif rhythm, #e6e7e8 background
- * - Radiance: 24px Grid Gutter, Staggered Masonry
- * - SNP: Pure Black #000000, Giant Wordmark
+ * HKJ Studio — Warm Typographic Gallery
+ *
+ * Type: Neue Montreal (sans) + Newsreader (serif accent) + Space Mono (metadata)
+ * Palette: Warm off-white base, warm near-black text, muted terracotta accent
+ * Motion: Long decelerating curves, clip-path reveals, subtractive dimming
  */
 
 :root {
   /* ── Typography ── */
-  --font-serif: var(--font-editorial-new), "Georgia", serif;
-  --font-sans: var(--font-satoshi), system-ui, sans-serif;
-  --font-archivo: var(--font-archivo), sans-serif;
+  --font-sans: var(--font-neue-montreal, var(--font-dm-sans)), system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), "Georgia", serif;
   --font-mono: var(--font-space-mono), monospace;
 
-  /* ── Reference Colors ── */
-  --color-hero-bg: #e6e7e8;
-  --color-bg: #F7F3ED; /* Default Base */
-  --color-text: #1a1a1a;
-  --color-text-dim: #666666;
-  --color-border: rgba(0, 0, 0, 0.08);
-  --color-accent: #EB3300; /* Studio Accent */
-  --color-pure-black: #000000;
+  /* ── Type Scale ── */
+  --text-micro: 0.5625rem;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
+  --text-3xl: clamp(2.25rem, 1.5rem + 2.5vw, 3.5rem);
+  --text-display: clamp(3rem, 2rem + 4vw, 6rem);
 
-  /* ── Reference Metrics ── */
-  --hero-fs: 26.67px;
-  --hero-lh: 34.67px;
-  --preloader-fs: 21.33px;
-  --grid-gap: 24px;
-  --page-px: clamp(1.5rem, 5vw, 6rem);
+  /* ── HKJ Studio Palette ── */
+  --color-bg: #F5F1ED;
+  --color-bg-body: #1A1714;
+  --color-surface: #EDE8E2;
+  --color-surface-elevated: #F9F6F2;
+  --color-text: #1A1714;
+  --color-text-secondary: #8A837A;
+  --color-text-dim: var(--color-text-secondary);
+  --color-text-ghost: #B8B2A8;
+  --color-accent: #C4593E;
+  --color-accent-hover: #A8472F;
+  --color-accent-warm: #C4593E;
+  --color-border: rgba(26, 23, 20, 0.08);
+  --color-border-strong: rgba(26, 23, 20, 0.15);
+  --color-gold: #C4593E;
+
+  /* ── Spacing ── */
+  --page-px: clamp(1.5rem, 5vw, 5rem);
+  --section-py: clamp(6rem, 12vh, 10rem);
+  --body-frame: clamp(6px, 0.5vw, 12px);
 }
 
 /* ── Base ── */
@@ -45,7 +58,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Utility Classes (Blank Canvas) ── */
+/* ── Utility Classes ── */
 
 @layer utilities {
   .section-padding {
@@ -53,47 +66,120 @@ body {
     padding-right: var(--page-px);
   }
 
-  .font-archivo { font-family: var(--font-archivo); }
   .font-serif { font-family: var(--font-serif); }
   .font-mono { font-family: var(--font-mono); }
   .font-sans { font-family: var(--font-sans); }
+  .font-grotesk { font-family: var(--font-sans); }
 
-  /* Slit-scan mask for Voku */
-  .mask-reveal {
-    overflow: hidden;
-    position: relative;
+  .micro {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-text-ghost);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-secondary);
+  }
+
+  .hairline {
+    height: 1px;
+    background-color: var(--color-border);
+    width: 100%;
+  }
+
+  .editorial-display {
+    font-family: var(--font-serif);
+    font-style: italic;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 }
 
-/* ── Reference Specific Keyframes ── */
-
-@keyframes slitReveal {
-  0% { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
-  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+/* Mixed-font headline pattern (sans uppercase + serif italic) */
+.headline-mixed em,
+.headline-mixed i {
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-transform: lowercase;
+  font-weight: 400;
 }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+/* Subtractive hover — dim siblings, keep hovered at full */
+.subtractive-group > * {
+  transition: opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.subtractive-group:hover > * {
+  opacity: 0.2;
+}
+.subtractive-group:hover > *:hover {
+  opacity: 1;
 }
 
-.animate-marquee {
-  animation: marquee 40s linear infinite;
+/* ── Cursor Crosshair ── */
+
+.cursor-crosshair line {
+  stroke: currentColor;
+  stroke-width: 1px;
 }
 
-/* ── Paper Noise (SNP Style) ── */
+/* ── Project Grid Hover States ── */
 
-.paper-noise {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+.project-card-img {
+  filter: grayscale(100%);
+  transform: scale(1.05);
+  transition: filter 0.6s ease, transform 0.6s ease;
 }
 
-/* ── Layout Overrides ── */
+.project-card:hover .project-card-img {
+  filter: grayscale(0%);
+  transform: scale(1.0);
+}
+
+/* Full-bleed list card variant — larger scale for parallax headroom */
+.project-card-img-list {
+  filter: grayscale(80%);
+  transform: scale(1.15);
+  transition: filter 0.7s ease-out, transform 0.7s ease-out;
+}
+.project-card:hover .project-card-img-list {
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+/* ── Keyframes ── */
+
+@keyframes scrollLine {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(0%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Selection ── */
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* ── Focus Visible ── */
+
+:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Scrollbar ── */
 
 ::-webkit-scrollbar {
   display: none;

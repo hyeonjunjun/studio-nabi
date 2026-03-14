@@ -1,8 +1,7 @@
 import { create } from "zustand";
 
-export type ExperienceMode = "cinematic" | "recruiter";
-export type ColorPhase = "day" | "dusk" | "night";
-export type CursorMode = "default" | "caliper";
+export type OverlayType = "about" | "contact" | null;
+export type ViewMode = "list" | "grid";
 
 interface StudioState {
     /** True once critical resources are loaded */
@@ -17,23 +16,17 @@ interface StudioState {
     transitionProject: string | null;
     setTransitionProject: (id: string | null) => void;
 
-    /** Dual-rail: cinematic (immersive) or recruiter (minimal document) */
-    experienceMode: ExperienceMode;
-    setExperienceMode: (mode: ExperienceMode) => void;
+    /** Active full-screen overlay (about / contact) */
+    activeOverlay: OverlayType;
+    setActiveOverlay: (overlay: OverlayType) => void;
 
-    /** Current scroll-driven color phase for Day-to-Night system */
-    colorPhase: ColorPhase;
-    setColorPhase: (phase: ColorPhase) => void;
+    /** Homepage gallery view mode */
+    viewMode: ViewMode;
+    setViewMode: (mode: ViewMode) => void;
 
-    /** Cursor contextual mode */
-    cursorMode: CursorMode;
-    setCursorMode: (mode: CursorMode) => void;
-}
-
-// Read persisted experience mode from localStorage (client-side only)
-function getPersistedMode(): ExperienceMode {
-    if (typeof window === "undefined") return "cinematic";
-    return (localStorage.getItem("hkj-experience-mode") as ExperienceMode) || "cinematic";
+    /** True when hero-to-grid scroll animation has completed */
+    gridRevealed: boolean;
+    setGridRevealed: (v: boolean) => void;
 }
 
 export const useStudioStore = create<StudioState>((set) => ({
@@ -46,17 +39,12 @@ export const useStudioStore = create<StudioState>((set) => ({
     transitionProject: null,
     setTransitionProject: (id) => set({ transitionProject: id }),
 
-    experienceMode: getPersistedMode(),
-    setExperienceMode: (mode) => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("hkj-experience-mode", mode);
-        }
-        set({ experienceMode: mode });
-    },
+    activeOverlay: null,
+    setActiveOverlay: (overlay) => set({ activeOverlay: overlay }),
 
-    colorPhase: "day",
-    setColorPhase: (phase) => set({ colorPhase: phase }),
+    viewMode: "grid",
+    setViewMode: (mode) => set({ viewMode: mode }),
 
-    cursorMode: "default",
-    setCursorMode: (mode) => set({ cursorMode: mode }),
+    gridRevealed: false,
+    setGridRevealed: (v) => set({ gridRevealed: v }),
 }));

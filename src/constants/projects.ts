@@ -20,6 +20,13 @@ export interface LaunchVideo {
     type: "Short" | "Product Hunt" | "Full";
 }
 
+export interface VideoClip {
+    src: string;
+    poster?: string;
+    caption?: string;
+    aspect?: string; // e.g., "16/9", "9/16", "1/1", "4/3"
+}
+
 export interface Project {
     id: string;
     title: string;
@@ -64,6 +71,8 @@ export interface Project {
     gutPunch?: string;
     processSteps?: Array<{ title: string; copy: string; image?: string }>;
     has3dInspector?: boolean;
+    /** B-roll video clips for case study showcase */
+    videos?: VideoClip[];
 }
 
 export const PROJECTS: Project[] = [
@@ -249,36 +258,79 @@ export const PROJECTS: Project[] = [
     },
     {
         id: "gyeol",
-        title: "GYEOL",
+        title: "GYEOL: 결",
         client: "HKJ Studio",
         role: "Design & Engineering",
         sector: "Material Science",
         year: "2026",
-        tags: ["Coming Soon", "Material", "Texture"],
+        tags: ["Material", "Texture", "WebGL"],
         image: "/images/sift-v2.jpg",
         mood: "#A0A0A0",
         pitch: "A study in digital materiality and perceived textures. Exploring the boundary between screen-rendered surfaces and physical material memory.",
         editorial: {
-            headline: "Digital Grain",
+            headline: "Digital Grain.",
             subhead: "Where Pixels Meet Patina",
-            copy: "GYEOL explores the uncanny valley between digital rendering and physical material. By mapping real-world texture data onto WebGL surfaces, we create interfaces that feel tangibly present—like touching brushed aluminum or woven fabric through glass.",
+            copy: "결 (gyeol) is the Korean word for grain — the invisible pattern that gives wood its character, stone its identity, fabric its hand-feel. GYEOL explores the uncanny valley between digital rendering and physical material. By mapping real-world texture data onto WebGL surfaces, we create interfaces that feel tangibly present — like touching brushed aluminum or woven fabric through glass. The project began as a personal obsession: why does every screen feel the same?",
             images: ["/images/sift-v2.jpg"],
         },
-        process: { title: "Material Research", copy: "Sampling 200+ physical textures and converting displacement maps into GPU-accelerated shaders.", images: [] },
-        highlights: [],
-        engineering: { title: "Engineering", copy: "Custom PBR shader pipeline with real-time displacement mapping and subsurface scattering approximation.", signals: ["WebGL 2.0", "PBR Shading", "Displacement Maps"], images: [] },
-        statistics: [],
+        process: {
+            title: "Material Research",
+            copy: "We started by cataloging 200+ physical textures — scanning surfaces with a macro lens, extracting displacement maps, and converting them into GPU-accelerated shaders. Each material went through a 'feel test': could someone identify the material just by watching it respond to light and motion on screen?",
+            images: [],
+        },
+        highlights: [
+            {
+                id: "displacement",
+                title: "Displacement Mapping",
+                description: "Real-world surface data captured at sub-millimeter resolution drives the vertex shader. The displacement isn't decorative — it's data-driven, reproducing the actual topology of each material at interactive frame rates.",
+                challenge: "How do you render physically accurate surface displacement at 60fps on consumer GPUs without tessellation?",
+                recipe: "Custom LOD System + Parallax Occlusion Mapping + Deferred Rendering",
+                images: [],
+            },
+            {
+                id: "subsurface",
+                title: "Perceived Warmth",
+                description: "Materials have temperature. Marble feels cold, oak feels warm — even on screen. We built a subsurface scattering approximation that shifts light transmission based on material density, creating an instinctive sense of thermal character.",
+                challenge: "How do you make a flat screen communicate the thermal character of a physical material?",
+                recipe: "SSS Approximation + Color Temperature Mapping + Ambient Occlusion",
+                images: [],
+            },
+        ],
+        engineering: {
+            title: "Engineering",
+            copy: "The rendering pipeline uses a custom PBR shader stack built on Three.js with React Three Fiber for component architecture. Displacement maps drive vertex manipulation in real-time, while a deferred rendering pass handles subsurface scattering approximation. The entire system runs at 60fps on integrated GPUs through aggressive LOD management and texture streaming.",
+            signals: ["WebGL 2.0", "PBR Shading", "Displacement Maps", "SSS Approximation", "Texture Streaming"],
+            images: [],
+        },
+        statistics: [
+            { label: "Materials", value: "200+" },
+            { label: "Frame Rate", value: "60fps" },
+            { label: "Shader Lines", value: "2.4k" },
+            { label: "Texture Res", value: "4K" },
+        ],
         launchVideos: [],
-        contributors: [],
+        contributors: [{ name: "Ryan Jun", role: "Design & Engineering" }],
         schematic: {
             stack: ["Three.js", "React Three Fiber", "Custom GLSL"],
             grid: "Modular",
             typography: "Inter",
-            colors: ["#A0A0A0"],
+            colors: ["#A0A0A0", "#2C2C2C", "#E8E4DF"],
         },
         paradox: "Can a screen ever truly feel like a physical surface?",
-        stakes: "Every interface we touch is smooth glass. GYEOL asks: what if it wasn't?",
+        stakes: "Every interface we touch is smooth glass. GYEOL asks: what if it wasn't? The grain of a material carries its entire history — growth rings, geological pressure, woven thread count. Screens flatten all of this into uniform smoothness.",
         gutPunch: "The future of UI isn't flatter. It's textured.",
+        processSteps: [
+            { title: "Surface Cataloging", copy: "Macro photography of 200+ materials — wood, stone, metal, fabric, ceramic. Each surface scanned at multiple angles to capture how light reveals grain." },
+            { title: "Displacement Extraction", copy: "Converting high-resolution photographs into height maps and normal maps using photogrammetry. Building a library of GPU-ready material data." },
+            { title: "Shader Prototyping", copy: "Iterative GLSL development — testing each material's response to dynamic lighting, user interaction, and ambient conditions in real-time." },
+            { title: "Feel Testing", copy: "Blind tests with designers and non-designers: can they identify the material just by watching it on screen? Success rate drove shader refinement." },
+        ],
         has3dInspector: true,
+        videos: [
+            { src: "/videos/gyeol/material-study-01.mp4", caption: "oak grain displacement", aspect: "16/9" },
+            { src: "/videos/gyeol/material-study-02.mp4", caption: "marble subsurface scattering", aspect: "1/1" },
+            { src: "/videos/gyeol/material-study-03.mp4", caption: "brushed aluminum anisotropy", aspect: "1/1" },
+            { src: "/videos/gyeol/material-study-04.mp4", caption: "woven linen displacement", aspect: "16/9" },
+        ],
     },
 ];
