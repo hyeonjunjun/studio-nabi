@@ -8,11 +8,10 @@ import { MENU_LINKS } from "@/constants/navigation";
 import { CONTACT_EMAIL } from "@/constants/contact";
 
 /**
- * MobileMenu — GSAP-only, clipPath entrance
+ * MobileMenu — Editorial overlay with GSAP clipPath entrance
  *
- * Replaces Framer Motion AnimatePresence with GSAP timeline.
- * clipPath: inset(0 0 100% 0) → inset(0 0 0% 0)
- * Staggered menu items with GSAP .fromTo()
+ * Display serif link names with mono numbering. Accent line detail.
+ * Refined spacing and typography to match the dark editorial aesthetic.
  */
 
 interface MobileMenuProps {
@@ -43,13 +42,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     [onClose, router, lenis]
   );
 
-  // Animate open/close
   useEffect(() => {
     const el = overlayRef.current;
     if (!el) return;
 
     if (isOpen) {
-      // Show overlay
       el.style.display = "flex";
 
       const tl = gsap.timeline();
@@ -85,7 +82,6 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         );
       }
     } else {
-      // Hide overlay
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
@@ -129,16 +125,17 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </span>
         <button
           onClick={onClose}
-          className="font-mono"
+          className="group"
           style={{
-            fontSize: "var(--text-micro)",
+            fontSize: "clamp(16px, 1.4vw, 20px)",
             color: "var(--color-text-dim)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
+            lineHeight: 1,
           }}
           aria-label="Close menu"
         >
-          Close
+          <span className="group-hover:text-[var(--color-text)] transition-colors duration-300">
+            ✕
+          </span>
         </button>
       </div>
 
@@ -152,30 +149,36 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             key={link.label}
             onClick={() => handleNavigate(link.href)}
             data-menu-item
-            className="text-left py-4 group"
+            className="text-left group"
             style={{
-              borderBottom: i < MENU_LINKS.length - 1
-                ? "1px solid var(--color-border)"
-                : "none",
+              paddingTop: "clamp(1.25rem, 3vh, 2rem)",
+              paddingBottom: "clamp(1.25rem, 3vh, 2rem)",
+              borderBottom:
+                i < MENU_LINKS.length - 1
+                  ? "1px solid var(--color-border)"
+                  : "none",
             }}
           >
-            <div className="flex items-baseline gap-4">
+            <div className="flex items-baseline gap-5">
               <span
                 className="font-mono"
                 style={{
                   fontSize: "var(--text-micro)",
                   color: "var(--color-text-ghost)",
                   letterSpacing: "0.1em",
+                  minWidth: "2ch",
                 }}
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span
-                className="font-sans group-hover:text-[var(--color-accent)] transition-colors duration-300"
+                className="font-display group-hover:text-[var(--color-accent)] transition-colors duration-300"
                 style={{
-                  fontSize: "clamp(1.5rem, 6vw, 2.5rem)",
+                  fontSize: "clamp(1.6rem, 5vw, 2.4rem)",
                   color: "var(--color-text)",
-                  lineHeight: 1.2,
+                  lineHeight: 1.15,
+                  fontWeight: 300,
+                  letterSpacing: "-0.01em",
                 }}
               >
                 {link.label}
@@ -185,10 +188,20 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         ))}
       </nav>
 
+      {/* Accent line */}
+      <div
+        style={{
+          margin: "0 var(--page-px)",
+          height: "1px",
+          backgroundColor: "var(--color-accent)",
+          opacity: 0.2,
+        }}
+      />
+
       {/* Footer */}
       <div
         className="flex items-center justify-between"
-        style={{ padding: "1.5rem var(--page-px)" }}
+        style={{ padding: "clamp(1.25rem, 2.5vh, 1.75rem) var(--page-px)" }}
         data-menu-footer
       >
         <a

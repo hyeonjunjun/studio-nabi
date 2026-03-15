@@ -1,17 +1,61 @@
 "use client";
 
+import { useRef, useEffect } from "react";
+import { gsap } from "@/lib/gsap";
 import WobblyRule from "@/components/ui/WobblyRule";
 
 /**
  * Colophon — Quiet footer with hand-drawn rule
  *
- * WobblyRule above, then single line of credits.
+ * WobblyRule above with parallax drift, then single line of credits.
  * Deep bottom padding for breathing room at page end.
  */
 export default function Colophon() {
+  const ruleRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    // WobblyRule drifts at its own speed
+    if (ruleRef.current) {
+      gsap.fromTo(
+        ruleRef.current,
+        { yPercent: 0 },
+        {
+          yPercent: -30,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ruleRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        }
+      );
+    }
+
+    // Credits text fades in
+    if (textRef.current) {
+      gsap.fromTo(
+        textRef.current,
+        { opacity: 0.15 },
+        {
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: textRef.current,
+            start: "top 90%",
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
-    <footer>
-      <WobblyRule className="section-padding" />
+    <footer className="overflow-hidden">
+      <div ref={ruleRef}>
+        <WobblyRule className="section-padding" />
+      </div>
 
       <div
         className="section-padding"
@@ -21,6 +65,7 @@ export default function Colophon() {
         }}
       >
         <p
+          ref={textRef}
           className="font-mono"
           style={{
             fontSize: "var(--text-micro)",

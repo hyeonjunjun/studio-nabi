@@ -1,16 +1,18 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import WobblyRule from "@/components/ui/WobblyRule";
 
 /**
- * Capabilities — The most minimal section
+ * Capabilities — Minimal type list with layered parallax
  *
- * Two-column type list in mono/small sans.
- * Each: title in --text-small, tools beneath in --text-micro, --color-text-dim.
- * Hand-drawn SVG rule above and below (break margins — extends full width).
- * No accordions, no hovers, no icons.
+ * Depth layers:
+ *   - WobblyRules at ~0.4x (deepest, drift fastest)
+ *   - Section label at ~0.6x
+ *   - Left column items at ~0.85x
+ *   - Right column items at ~0.95x (closest to viewer)
+ *   Creates subtle staggered depth across the two columns
  */
 
 const CAPABILITIES = [
@@ -26,11 +28,18 @@ const CAPABILITIES = [
 
 export default function Capabilities() {
   const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+  const topRuleRef = useRef<HTMLDivElement>(null);
+  const bottomRuleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    const items = sectionRef.current.querySelectorAll("[data-cap-item]");
+    const section = sectionRef.current;
+
+    // Staggered opacity reveal
+    const items = section.querySelectorAll("[data-cap-item]");
     gsap.fromTo(
       items,
       { opacity: 0.15 },
@@ -39,27 +48,86 @@ export default function Capabilities() {
         duration: 0.8,
         stagger: 0.05,
         ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-        },
+        scrollTrigger: { trigger: section, start: "top 75%" },
       }
     );
+
+    // Grid items — left column drifts differently than right
+    if (gridRef.current) {
+      const allItems = gridRef.current.querySelectorAll("[data-cap-item]");
+      allItems.forEach((item, i) => {
+        const isLeftCol = i % 2 === 0;
+        gsap.fromTo(
+          item,
+          { yPercent: isLeftCol ? 8 : 4 },
+          {
+            yPercent: isLeftCol ? -8 : -4,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.3,
+            },
+          }
+        );
+      });
+    }
+
+    // Section label — drifts at a different speed
+    if (labelRef.current) {
+      gsap.fromTo(
+        labelRef.current,
+        { yPercent: 0 },
+        {
+          yPercent: -40,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        }
+      );
+    }
+
+    // WobblyRules — deepest layer, drift fastest
+    [topRuleRef.current, bottomRuleRef.current].forEach((rule) => {
+      if (!rule) return;
+      gsap.fromTo(
+        rule,
+        { yPercent: 0 },
+        {
+          yPercent: -50,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.2,
+          },
+        }
+      );
+    });
   }, []);
 
   return (
     <section
       ref={sectionRef}
       id="capabilities"
+      className="relative overflow-hidden"
       style={{
         paddingTop: "clamp(6rem, 10vh, 8rem)",
         paddingBottom: "clamp(6rem, 10vh, 8rem)",
       }}
     >
-      {/* Top rule — breaks margins (full width, no section-padding) */}
-      <WobblyRule className="section-padding" />
+      {/* Top rule — parallax layer */}
+      <div ref={topRuleRef}>
+        <WobblyRule className="section-padding" />
+      </div>
 
-      {/* Content — with section padding */}
+      {/* Content */}
       <div
         className="section-padding"
         style={{
@@ -67,8 +135,8 @@ export default function Capabilities() {
           paddingBottom: "clamp(3rem, 5vh, 4rem)",
         }}
       >
-        {/* Section label */}
-        <div className="max-w-[900px] mx-auto mb-10" data-cap-item>
+        {/* Section label — its own parallax depth */}
+        <div ref={labelRef} className="max-w-[900px] mx-auto mb-10" data-cap-item>
           <span
             className="font-mono uppercase"
             style={{
@@ -82,7 +150,7 @@ export default function Capabilities() {
         </div>
 
         <div className="max-w-[900px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
+          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
             {CAPABILITIES.map((cap) => (
               <div key={cap.title} data-cap-item>
                 <span
@@ -111,8 +179,10 @@ export default function Capabilities() {
         </div>
       </div>
 
-      {/* Bottom rule — breaks margins */}
-      <WobblyRule className="section-padding" />
+      {/* Bottom rule — parallax layer */}
+      <div ref={bottomRuleRef}>
+        <WobblyRule className="section-padding" />
+      </div>
     </section>
   );
 }

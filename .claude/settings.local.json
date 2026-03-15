@@ -35,7 +35,8 @@
       "WebFetch(domain:www.cathydolle.com)",
       "WebFetch(domain:www.serieseight.com)",
       "WebFetch(domain:fontsinuse.com)",
-      "WebFetch(domain:blazetype.eu)"
+      "WebFetch(domain:blazetype.eu)",
+      "Bash(npm install:*)"
     ]
   }
 }

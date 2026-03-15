@@ -1,17 +1,16 @@
 import Hero from "@/components/sections/Hero";
 import Viewfinder from "@/components/sections/Viewfinder";
-import About from "@/components/sections/About";
-import Capabilities from "@/components/sections/Capabilities";
 import Contact from "@/components/sections/Contact";
 import Colophon from "@/components/sections/Colophon";
+import SectionDivider from "@/components/ui/SectionDivider";
 
 export default function Home() {
   return (
     <main>
       <Hero />
+      <SectionDivider direction="left" />
       <Viewfinder />
-      <About />
-      <Capabilities />
+      <SectionDivider direction="right" />
       <Contact />
       <Colophon />
     </main>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface WobblyRuleProps {
@@ -20,6 +21,7 @@ export default function WobblyRule({
   strokeColor = "var(--color-border-strong)",
 }: WobblyRuleProps) {
   const prefersReduced = useReducedMotion();
+  const filterId = useId();
 
   if (prefersReduced) {
     return (
@@ -39,7 +41,7 @@ export default function WobblyRule({
       aria-hidden="true"
     >
       <defs>
-        <filter id="wobbly-rule">
+        <filter id={filterId}>
           <feTurbulence
             type="turbulence"
             baseFrequency="0.02"
@@ -63,7 +65,7 @@ export default function WobblyRule({
         y2="3"
         stroke={strokeColor}
         strokeWidth="1"
-        filter="url(#wobbly-rule)"
+        filter={`url(#${filterId})`}
       />
     </svg>
   );

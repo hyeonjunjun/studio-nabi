@@ -1,0 +1,255 @@
+"use client";
+
+import { useRef, useEffect } from "react";
+import Link from "next/link";
+import { gsap } from "@/lib/gsap";
+import Colophon from "@/components/sections/Colophon";
+
+/**
+ * About Page — Standalone editorial page
+ *
+ * Expanded version of the homepage about section.
+ * Full-page layout with generous whitespace, offset image,
+ * and restrained GSAP reveals.
+ */
+export default function AboutPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const reveals = containerRef.current.querySelectorAll("[data-reveal]");
+    gsap.fromTo(
+      reveals,
+      { opacity: 0.15, y: 15 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.12,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+        },
+      }
+    );
+  }, []);
+
+  return (
+    <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: "var(--color-bg)" }}>
+      {/* Hero area */}
+      <section
+        className="section-padding"
+        style={{
+          paddingTop: "clamp(10rem, 18vh, 14rem)",
+          paddingBottom: "clamp(4rem, 8vh, 6rem)",
+        }}
+      >
+        <div className="max-w-[900px] mx-auto">
+          {/* Back link */}
+          <Link
+            href="/"
+            className="font-mono transition-colors duration-300 hover:text-[var(--color-accent)] inline-block mb-16"
+            style={{
+              fontSize: "var(--text-micro)",
+              color: "var(--color-text-dim)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+            data-reveal
+          >
+            &larr; Back
+          </Link>
+
+          {/* Section label */}
+          <div className="mb-12" data-reveal>
+            <span
+              className="font-mono uppercase"
+              style={{
+                fontSize: "var(--text-micro)",
+                letterSpacing: "0.15em",
+                color: "var(--color-text-ghost)",
+              }}
+            >
+              About
+            </span>
+          </div>
+
+          <div className="relative">
+            {/* Text column */}
+            <div className="max-w-[900px]">
+              <p
+                className="font-sans"
+                style={{
+                  fontSize: "var(--text-body)",
+                  lineHeight: 1.8,
+                  color: "var(--color-text)",
+                  marginBottom: "clamp(1.5rem, 3vh, 2.5rem)",
+                }}
+                data-reveal
+              >
+                HKJ is a one-person design engineering practice based between
+                New York and Seoul. I build products that feel considered &mdash; from
+                system design to pixel-level detail.
+              </p>
+
+              <p
+                className="font-sans"
+                style={{
+                  fontSize: "var(--text-body)",
+                  lineHeight: 1.8,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "clamp(1.5rem, 3vh, 2.5rem)",
+                  maxWidth: "58ch",
+                }}
+                data-reveal
+              >
+                My work sits at the intersection of design craft and deep technical
+                execution. I care about type, motion, and the invisible details that
+                make software feel intentional. Every project is a chance to close
+                the gap between what designers envision and what engineers ship.
+              </p>
+
+              <p
+                className="font-sans"
+                style={{
+                  fontSize: "var(--text-body)",
+                  lineHeight: 1.8,
+                  color: "var(--color-text-secondary)",
+                  maxWidth: "58ch",
+                }}
+                data-reveal
+              >
+                Previously, I worked on products across mobile, AI, and design systems.
+                I believe the best digital work borrows from the rigor of print and the
+                warmth of physical objects.
+              </p>
+
+              {/* Personal aside */}
+              <p
+                className="font-mono mt-10"
+                style={{
+                  fontSize: "var(--text-micro)",
+                  lineHeight: 1.7,
+                  color: "var(--color-text-ghost)",
+                  letterSpacing: "0.04em",
+                  maxWidth: "48ch",
+                }}
+                data-reveal
+              >
+                When I&rsquo;m not pushing pixels, I&rsquo;m probably hunting for good
+                light to photograph, reading about material science, or making
+                pour-overs that take too long.
+              </p>
+            </div>
+
+            {/* FIG. 1 — offset image */}
+            <div
+              className="hidden lg:block absolute"
+              style={{
+                right: "-2rem",
+                top: "-2rem",
+                width: "260px",
+              }}
+              data-reveal
+            >
+              <div
+                className="w-full overflow-hidden"
+                style={{
+                  aspectRatio: "3/4",
+                  backgroundColor: "var(--color-surface)",
+                  clipPath: `polygon(
+                    0% 2%, 3% 0%, 8% 1%, 15% 0%, 22% 2%, 28% 0%, 35% 1%,
+                    42% 0%, 50% 2%, 58% 0%, 65% 1%, 72% 0%, 78% 2%, 85% 0%,
+                    92% 1%, 97% 0%, 100% 2%, 99% 8%, 100% 15%, 99% 22%,
+                    100% 28%, 99% 35%, 100% 42%, 99% 50%, 100% 58%, 99% 65%,
+                    100% 72%, 99% 78%, 100% 85%, 99% 92%, 100% 97%, 98% 100%,
+                    92% 99%, 85% 100%, 78% 99%, 72% 100%, 65% 99%, 58% 100%,
+                    50% 99%, 42% 100%, 35% 99%, 28% 100%, 22% 99%, 15% 100%,
+                    8% 99%, 3% 100%, 0% 98%, 1% 92%, 0% 85%, 1% 78%,
+                    0% 72%, 1% 65%, 0% 58%, 1% 50%, 0% 42%, 1% 35%,
+                    0% 28%, 1% 22%, 0% 15%, 1% 8%
+                  )`,
+                }}
+              />
+              <span
+                className="font-mono block mt-3 text-center"
+                style={{
+                  fontSize: "var(--text-micro)",
+                  color: "var(--color-text-ghost)",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                FIG. 1
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Capabilities — folded into about page */}
+      <section
+        className="section-padding"
+        style={{
+          paddingTop: "clamp(4rem, 8vh, 6rem)",
+          paddingBottom: "clamp(6rem, 10vh, 8rem)",
+          borderTop: "1px solid var(--color-border)",
+        }}
+      >
+        <div className="max-w-[900px] mx-auto">
+          <div className="mb-10" data-reveal>
+            <span
+              className="font-mono uppercase"
+              style={{
+                fontSize: "var(--text-micro)",
+                letterSpacing: "0.15em",
+                color: "var(--color-text-ghost)",
+              }}
+            >
+              Capabilities
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-8">
+            {[
+              { title: "Design Systems", tools: "Figma, Storybook, Tokens" },
+              { title: "React / Next.js", tools: "App Router, RSC, Turbopack" },
+              { title: "React Native", tools: "Expo, Reanimated, NativeWind" },
+              { title: "Motion Design", tools: "GSAP, Lenis, ScrollTrigger" },
+              { title: "Prototyping", tools: "Framer, Principle, Code" },
+              { title: "Visual Design", tools: "Typography, Layout, Color" },
+              { title: "WebGL / 3D", tools: "Three.js, R3F, GLSL" },
+              { title: "AI Integration", tools: "LLMs, Embeddings, RAG" },
+            ].map((cap) => (
+              <div key={cap.title} data-reveal>
+                <span
+                  className="font-sans block"
+                  style={{
+                    fontSize: "var(--text-small)",
+                    color: "var(--color-text)",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {cap.title}
+                </span>
+                <span
+                  className="font-mono block mt-1"
+                  style={{
+                    fontSize: "var(--text-micro)",
+                    color: "var(--color-text-dim)",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {cap.tools}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Colophon />
+    </div>
+  );
+}
