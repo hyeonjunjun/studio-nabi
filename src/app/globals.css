@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 /**
- * HKJ — Dark Warm Editorial
+ * HKJ — Light Warm Editorial
  *
  * Type: GT Alpina (display) + Söhne (body) + JetBrains Mono (metadata)
- * Palette: Dark warm base, muted text, burnished gold accent
+ * Palette: Warm off-white base, near-black text, burnished gold accent
  * Motion: GSAP-only, power3.out reveals, opacity from 0.15
  */
 
@@ -22,18 +22,20 @@
   --text-small: clamp(0.72rem, 0.82vw, 0.8rem);
   --text-micro: clamp(0.6rem, 0.68vw, 0.68rem);
 
-  /* ── Dark Warm Palette ── */
-  --color-bg: #111110;
-  --color-surface: #1A1917;
-  --color-border: #2D2B28;
-  --color-border-strong: #3D3833;
-  --color-text: #D4CFC7;
-  --color-text-secondary: #8C8579;
-  --color-text-dim: #8C8579;
-  --color-text-ghost: #5A5550;
+  /* ── Light Warm Palette ── */
+  --color-bg: #F5F2ED;
+  --color-bg-rgb: 245, 242, 237;
+  --color-surface: #EDE9E3;
+  --color-border: #D5D0C8;
+  --color-border-strong: #C2BBB0;
+  --color-text: #1A1917;
+  --color-text-rgb: 26, 25, 23;
+  --color-text-secondary: #4A4540;
+  --color-text-dim: #7A756D;
+  --color-text-ghost: #A8A29E;
   --color-accent: #B8956A;
   --color-accent-2: #7D6B5D;
-  --color-ink: #3D3833;
+  --color-ink: #E5E0D8;
 
   /* ── Spacing ── */
   --page-px: clamp(1.5rem, 5vw, 5rem);
@@ -114,7 +116,7 @@ body {
   opacity: 0.06;
   pointer-events: none;
   z-index: 1;
-  mix-blend-mode: overlay;
+  mix-blend-mode: multiply;
 }
 
 /* ── Keyframes ── */

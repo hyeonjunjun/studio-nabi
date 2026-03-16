@@ -16,6 +16,14 @@ interface StudioState {
   /** Whether the mobile menu is open */
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (v: boolean) => void;
+
+  /** Project hovered in R3F gallery */
+  hoveredProject: string | null;
+  setHoveredProject: (id: string | null) => void;
+
+  /** Page transition in progress */
+  isTransitioning: boolean;
+  setTransitioning: (v: boolean) => void;
 }
 
 export const useStudioStore = create<StudioState>((set) => ({
@@ -30,4 +38,10 @@ export const useStudioStore = create<StudioState>((set) => ({
 
   mobileMenuOpen: false,
   setMobileMenuOpen: (v) => set({ mobileMenuOpen: v }),
+
+  hoveredProject: null,
+  setHoveredProject: (id) => set({ hoveredProject: id }),
+
+  isTransitioning: false,
+  setTransitioning: (v) => set({ isTransitioning: v }),
 }));

@@ -1,356 +1,417 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useLenis } from "lenis/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import Image from "next/image";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useStudioStore } from "@/lib/store";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { NAV_LINKS } from "@/constants/navigation";
+import { PROJECTS } from "@/constants/projects";
 
-function useTime(tz: string) {
-  const [time, setTime] = useState("");
-  useEffect(() => {
-    const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: tz,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-    const update = () => setTime(fmt.format(new Date()));
-    update();
-    const id = setInterval(update, 1_000);
-    return () => clearInterval(id);
-  }, [tz]);
-  return time;
-}
+type ViewMode = "list" | "slider";
+
+/* ── Easing curves ── */
+const ease = [0.16, 1, 0.3, 1] as const; // expo out
+const easeIn = [0.4, 0, 1, 1] as const;
+
+/* ── Variants ── */
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.07, delayChildren: 0.15 },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease },
+  },
+};
+
+const clipReveal = {
+  hidden: { clipPath: "inset(100% 0 0 0)" },
+  show: {
+    clipPath: "inset(0% 0 0 0)",
+    transition: { duration: 1, ease },
+  },
+};
+
+const viewTransition = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    transition: { duration: 0.3, ease: easeIn },
+  },
+};
 
 /**
- * Hero — Jonite-inspired layout
+ * Hero — Cathydolle-style dual view with Framer Motion
  *
- * In-flow nav at top (logo left, links spread right).
- * Below: two-column split.
- *   Left (~48%): serif descriptor centered, metadata cluster at bottom.
- *   Right (~52%): video starting partway down, respecting all padding.
+ * LIST:   Two columns of project names, clip-revealed images in center
+ * SLIDER: Horizontal draggable full-height image gallery
  */
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
-  const videoWrapperRef = useRef<HTMLDivElement>(null);
-  const videoInnerRef = useRef<HTMLVideoElement>(null);
   const isLoaded = useStudioStore((s) => s.isLoaded);
-  const setMobileMenuOpen = useStudioStore((s) => s.setMobileMenuOpen);
-  const nycTime = useTime("America/New_York");
-  const seoulTime = useTime("Asia/Seoul");
-  const prefersReduced = useReducedMotion();
-  const lenis = useLenis();
-  const router = useRouter();
-
-  const handleNavClick = useCallback(
-    (href: string) => {
-      if (href.startsWith("#")) {
-        const target = document.querySelector(href) as HTMLElement | null;
-        if (target && lenis) {
-          lenis.scrollTo(target, { duration: 1.2 });
-        }
-      } else {
-        router.push(href);
-      }
-    },
-    [lenis, router]
-  );
-
-  // Entrance reveal
-  useEffect(() => {
-    if (!isLoaded || !containerRef.current) return;
-
-    const els = containerRef.current.querySelectorAll("[data-hero-reveal]");
-    gsap.fromTo(
-      els,
-      { opacity: 0 },
-      { opacity: 1, duration: 1.2, stagger: 0.15, ease: "power3.out" }
-    );
-  }, [isLoaded]);
-
-  // Mouse parallax
-  useEffect(() => {
-    if (prefersReduced || !videoInnerRef.current) return;
-
-    const video = videoInnerRef.current;
-    const moveX = gsap.quickTo(video, "x", {
-      duration: 0.8,
-      ease: "power3.out",
-    });
-    const moveY = gsap.quickTo(video, "y", {
-      duration: 0.8,
-      ease: "power3.out",
-    });
-
-    const onMove = (e: MouseEvent) => {
-      const cx = (e.clientX / window.innerWidth - 0.5) * 2;
-      const cy = (e.clientY / window.innerHeight - 0.5) * 2;
-      moveX(cx * -16);
-      moveY(cy * -10);
-    };
-
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [prefersReduced]);
-
-  // Scroll parallax
-  useEffect(() => {
-    if (prefersReduced || !videoInnerRef.current || !containerRef.current)
-      return;
-
-    const st = ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: "top top",
-      end: "bottom top",
-      scrub: 0.4,
-      animation: gsap.fromTo(
-        videoInnerRef.current,
-        { yPercent: -3 },
-        { yPercent: 5, ease: "none" }
-      ),
-    });
-
-    return () => st.kill();
-  }, [prefersReduced]);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   return (
-    <section
+    <motion.section
       ref={containerRef}
       id="hero"
-      className="relative h-screen flex flex-col overflow-hidden"
+      className="relative min-h-screen flex flex-col"
       style={{ backgroundColor: "var(--color-bg)" }}
+      variants={staggerContainer}
+      initial="hidden"
+      animate={isLoaded ? "show" : "hidden"}
     >
-      {/* Nav — in flow, full width */}
-      <div
-        className="section-padding flex justify-between items-center"
-        style={{ paddingTop: "clamp(1.5rem, 3vh, 2.5rem)", paddingBottom: 0 }}
-        data-hero-reveal
+      {/* ── Header bar ── */}
+      <motion.div
+        className="section-padding flex items-center gap-8"
+        style={{
+          paddingTop: "clamp(1.2rem, 2.5vh, 1.8rem)",
+          paddingBottom: "clamp(1.2rem, 2.5vh, 1.8rem)",
+        }}
+        variants={fadeUp}
       >
-        <span
-          className="font-display"
-          style={{
-            fontSize: "clamp(11px, 1vw, 13px)",
-            color: "var(--color-text-dim)",
-            letterSpacing: "0.05em",
-          }}
-        >
-          HKJ
-        </span>
+        <a href="/" className="shrink-0">
+          <span
+            className="font-display uppercase"
+            style={{
+              fontSize: "clamp(11px, 1vw, 13px)",
+              color: "var(--color-text)",
+              letterSpacing: "0.08em",
+            }}
+          >
+            HKJ
+          </span>
+        </a>
 
-        <div className="flex items-center gap-10 lg:gap-16">
-          <div className="hidden md:flex items-center gap-10 lg:gap-16">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.label}
-                onClick={() => handleNavClick(link.href)}
-                className="font-mono relative group/link"
-                style={{
-                  fontSize: "var(--text-micro)",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-dim)",
-                }}
-              >
-                <span className="transition-colors duration-300 group-hover/link:text-[var(--color-text)]">
-                  {link.label}
-                </span>
-                <span
-                  className="absolute -bottom-0.5 left-0 right-0 h-[1px] origin-left scale-x-0 group-hover/link:scale-x-100 transition-transform duration-500"
-                  style={{
-                    backgroundColor: "var(--color-accent)",
-                    transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                  }}
+        {/* View toggle */}
+        <div className="flex gap-3 ml-4 relative">
+          {(["list", "slider"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setViewMode(mode)}
+              className="font-mono uppercase relative"
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.1em",
+                color:
+                  viewMode === mode
+                    ? "var(--color-text)"
+                    : "var(--color-text-ghost)",
+                transition: "color 0.3s ease",
+              }}
+            >
+              {mode}
+              {viewMode === mode && (
+                <motion.div
+                  layoutId="viewIndicator"
+                  className="absolute -bottom-1 left-0 right-0 h-[1px]"
+                  style={{ backgroundColor: "var(--color-text)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="group"
-            style={{
-              fontSize: "clamp(16px, 1.4vw, 20px)",
-              color: "var(--color-text-dim)",
-              lineHeight: 1,
-            }}
-            aria-label="Open menu"
-          >
-            <span className="group-hover:text-[var(--color-text)] transition-colors duration-300">
-              ※
-            </span>
-          </button>
+              )}
+            </button>
+          ))}
         </div>
+      </motion.div>
+
+      {/* ── Content ── */}
+      <div id="work" className="flex-1 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          {viewMode === "list" ? (
+            <motion.div
+              key="list"
+              variants={viewTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="h-full"
+            >
+              <ListView />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="slider"
+              variants={viewTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="h-full"
+            >
+              <SliderView />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Content — two columns */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
-        {/* Left column — descriptor + metadata */}
-        <div
-          className="order-2 md:order-1 flex-1 md:flex-none md:w-[48%] flex flex-col"
+      {/* ── Bottom contact ── */}
+      <motion.div
+        className="section-padding flex justify-end"
+        style={{ paddingBottom: "clamp(1rem, 2vh, 1.5rem)" }}
+        variants={fadeUp}
+      >
+        <a
+          href="#contact"
+          className="font-mono uppercase transition-colors duration-300 hover:text-[var(--color-text)]"
           style={{
-            paddingLeft: "var(--page-px)",
-            paddingRight: "clamp(2rem, 3vw, 3rem)",
-            paddingBottom: "clamp(2rem, 4vh, 3rem)",
+            fontSize: "11px",
+            letterSpacing: "0.1em",
+            color: "var(--color-text-ghost)",
           }}
-          data-hero-reveal
         >
-          {/* Descriptor — centered vertically */}
-          <div className="flex-1 flex items-center">
-            <p
-              className="font-display"
-              style={{
-                fontSize: "clamp(1.3rem, 2vw, 1.9rem)",
-                lineHeight: 1.4,
-                color: "var(--color-text)",
-                fontWeight: 300,
-                maxWidth: "22ch",
-              }}
-            >
-              Designing things that feel
-              considered, from system
-              to surface.
-            </p>
-          </div>
+          Contact
+        </a>
+      </motion.div>
+    </motion.section>
+  );
+}
 
-          {/* Metadata cluster — bottom */}
-          <div className="flex items-end gap-10 flex-wrap">
-            <div>
-              <span
-                className="font-mono block"
-                style={{
-                  fontSize: "var(--text-micro)",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-ghost)",
-                }}
-              >
-                New York
-              </span>
-              <span
-                className="font-mono block mt-1"
-                style={{
-                  fontSize: "var(--text-micro)",
-                  letterSpacing: "0.06em",
-                  color: "var(--color-text-dim)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {nycTime || "--:--:--"}
-              </span>
-            </div>
+/* ═══════════════════════════════════════════
+   LIST VIEW — Two-column names + clip-revealed images
+   ═══════════════════════════════════════════ */
 
-            <div>
-              <span
-                className="font-mono block"
-                style={{
-                  fontSize: "var(--text-micro)",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-ghost)",
-                }}
-              >
-                Seoul
-              </span>
-              <span
-                className="font-mono block mt-1"
-                style={{
-                  fontSize: "var(--text-micro)",
-                  letterSpacing: "0.06em",
-                  color: "var(--color-text-dim)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {seoulTime || "--:--:--"}
-              </span>
-            </div>
+function ListView() {
+  const router = useRouter();
+  const midpoint = Math.ceil(PROJECTS.length / 2);
+  const leftProjects = PROJECTS.slice(0, midpoint);
+  const rightProjects = PROJECTS.slice(midpoint);
+  const activeProjects = PROJECTS.filter((p) => !p.wip);
 
-            <span
-              className="font-mono ml-auto hidden md:block"
-              style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "var(--color-text-ghost)",
-              }}
-            >
-              Est. &rsquo;26
-            </span>
-          </div>
-
-          {/* Scroll indicator — anchored in left column */}
-          <div
-            className="flex items-center gap-3 mt-6"
-          >
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "var(--color-text-ghost)",
-              }}
-            >
-              Scroll
-            </span>
-            <div
-              className="overflow-hidden"
-              style={{ width: 24, height: 1 }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: 1,
-                  backgroundColor: "var(--color-text-dim)",
-                  animation: "scrollLineHorizontal 2s ease-in-out infinite",
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Right column — video, respects all padding */}
-        <div
-          className="order-1 md:order-2 h-[40vh] md:h-auto flex-none md:flex-1 relative"
-          style={{
-            paddingRight: "var(--page-px)",
-            paddingBottom: "clamp(2rem, 4vh, 3rem)",
-          }}
-          data-hero-reveal
+  return (
+    <div className="relative h-[calc(100vh-8rem)]">
+      {/* Two-column project names */}
+      <div className="absolute inset-0 grid grid-cols-2 section-padding pointer-events-none z-10">
+        {/* Left column */}
+        <motion.div
+          className="flex flex-col justify-around py-8"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
         >
-          <div
-            ref={videoWrapperRef}
-            className="absolute overflow-hidden"
-            style={{
-              top: "18%",
-              left: 0,
-              right: "var(--page-px)",
-              bottom: "clamp(2rem, 4vh, 3rem)",
-              willChange: "transform",
-            }}
-          >
-            <video
-              ref={videoInnerRef}
-              src="/assets/cloudsatsea.mp4"
-              muted
-              autoPlay
-              loop
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover"
-              style={{
-                backgroundColor: "var(--color-surface)",
-                transform: "scale(1.1)",
-                willChange: "transform",
-              }}
+          {leftProjects.map((project, i) => (
+            <ProjectRow
+              key={project.id}
+              num={String(i + 1).padStart(2, "0")}
+              title={project.title}
+              wip={project.wip}
+              align="left"
+              onClick={() => !project.wip && router.push(`/work/${project.id}`)}
             />
-          </div>
-        </div>
+          ))}
+        </motion.div>
+
+        {/* Right column */}
+        <motion.div
+          className="flex flex-col justify-around py-8"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+        >
+          {rightProjects.map((project, i) => (
+            <ProjectRow
+              key={project.id}
+              num={String(midpoint + i + 1).padStart(2, "0")}
+              title={project.title}
+              wip={project.wip}
+              align="right"
+              onClick={() => !project.wip && router.push(`/work/${project.id}`)}
+            />
+          ))}
+        </motion.div>
       </div>
 
-    </section>
+      {/* Centered stacked images — clip-path reveal */}
+      <motion.div
+        className="absolute inset-0 flex flex-col items-center justify-center gap-4 pointer-events-none"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+      >
+        {activeProjects.map((project) => (
+          <motion.div
+            key={project.id}
+            variants={clipReveal}
+            className="relative overflow-hidden pointer-events-auto cursor-pointer"
+            style={{
+              width: "clamp(280px, 30vw, 480px)",
+              aspectRatio: "4/5",
+            }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            onClick={() => router.push(`/work/${project.id}`)}
+          >
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 80vw, 30vw"
+              quality={90}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   SLIDER VIEW — Horizontal draggable gallery
+   ═══════════════════════════════════════════ */
+
+function SliderView() {
+  const router = useRouter();
+  const activeProjects = PROJECTS.filter((p) => !p.wip);
+  const dragX = useMotionValue(0);
+  const dragXSmooth = useSpring(dragX, { stiffness: 200, damping: 30 });
+  const wasDragged = useRef(false);
+
+  return (
+    <div className="h-[calc(100vh-8rem)] overflow-hidden section-padding">
+      <motion.div
+        className="flex h-full gap-3"
+        drag="x"
+        dragConstraints={{ left: -600, right: 0 }}
+        dragElastic={0.15}
+        style={{ x: dragXSmooth }}
+        onDragStart={() => {
+          wasDragged.current = false;
+        }}
+        onDrag={() => {
+          wasDragged.current = true;
+        }}
+      >
+        {activeProjects.map((project, i) => {
+          // Parallax: each image shifts slightly based on drag
+          const imgX = useTransform(dragXSmooth, (v) => v * 0.05 * (i + 1));
+
+          return (
+            <motion.div
+              key={project.id}
+              className="relative shrink-0 h-full overflow-hidden cursor-grab active:cursor-grabbing"
+              style={{ width: "clamp(300px, 33vw, 500px)" }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.7,
+                delay: i * 0.1,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              whileHover={{ scale: 1.015 }}
+              onClick={() => {
+                if (!wasDragged.current) router.push(`/work/${project.id}`);
+              }}
+            >
+              <motion.div className="relative w-full h-full" style={{ x: imgX }}>
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 80vw, 33vw"
+                  quality={90}
+                  draggable={false}
+                />
+              </motion.div>
+
+              {/* Project label overlay */}
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 p-5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <span
+                  className="font-mono uppercase"
+                  style={{
+                    fontSize: "11px",
+                    letterSpacing: "0.1em",
+                    color: "#fff",
+                    textShadow: "0 1px 4px rgba(0,0,0,0.4)",
+                  }}
+                >
+                  {project.title}
+                </span>
+              </motion.div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   PROJECT ROW — Animated name entry
+   ═══════════════════════════════════════════ */
+
+function ProjectRow({
+  num,
+  title,
+  wip,
+  align,
+  onClick,
+}: {
+  num: string;
+  title: string;
+  wip?: boolean;
+  align: "left" | "right";
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={wip}
+      variants={fadeUp}
+      className="group pointer-events-auto flex items-baseline gap-4"
+      style={{
+        justifyContent: align === "right" ? "flex-end" : "flex-start",
+        textAlign: align,
+      }}
+      whileHover={!wip ? { x: align === "left" ? 6 : -6 } : undefined}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+    >
+      <span
+        className="font-mono italic"
+        style={{
+          fontSize: "11px",
+          color: "var(--color-text-ghost)",
+          order: align === "right" ? 1 : 0,
+        }}
+      >
+        {num}/
+      </span>
+      <span
+        className="font-mono uppercase"
+        style={{
+          fontSize: "11px",
+          letterSpacing: "0.08em",
+          color: wip ? "var(--color-text-ghost)" : "var(--color-text-dim)",
+          transition: "color 0.3s ease",
+        }}
+      >
+        <span className="group-hover:text-[var(--color-text)]">
+          {title}
+        </span>
+        {wip && <span style={{ opacity: 0.4, marginLeft: 8 }}>WIP</span>}
+      </span>
+    </motion.button>
   );
 }

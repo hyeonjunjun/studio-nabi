@@ -8,19 +8,26 @@ import { gsap } from "@/lib/gsap";
 import { PROJECTS } from "@/constants/projects";
 import GutPunchCloser from "@/components/case-study/GutPunchCloser";
 import VideoShowcase from "@/components/case-study/VideoShowcase";
-import WobblyRule from "@/components/ui/WobblyRule";
 import Colophon from "@/components/sections/Colophon";
 
 /* ─── Helpers ─── */
 
-function ImageBlock({ src, placeholder }: { src: string; placeholder?: string }) {
+function MediaBlock({
+  src,
+  placeholder,
+  aspect = "16/10",
+}: {
+  src: string;
+  placeholder?: string;
+  aspect?: string;
+}) {
   if (src.startsWith("/placeholder")) {
     return (
       <div
-        className="w-full aspect-[16/10] flex items-center justify-center"
+        className="w-full flex items-center justify-center"
         style={{
+          aspectRatio: aspect,
           backgroundColor: "var(--color-surface)",
-          border: "1px dashed var(--color-border)",
         }}
       >
         <span className="micro">{placeholder || "Media Pending"}</span>
@@ -28,7 +35,7 @@ function ImageBlock({ src, placeholder }: { src: string; placeholder?: string })
     );
   }
   return (
-    <div className="relative w-full aspect-[16/10] overflow-hidden">
+    <div className="relative w-full overflow-hidden" style={{ aspectRatio: aspect }}>
       <Image
         src={src}
         alt=""
@@ -42,7 +49,7 @@ function ImageBlock({ src, placeholder }: { src: string; placeholder?: string })
 }
 
 /* ═══════════════════════════════════════════
-   ProjectDetail — GSAP-only, simplified structure
+   ProjectDetail — Magazine-spread layout
    ═══════════════════════════════════════════ */
 
 export default function ProjectDetail() {
@@ -64,9 +71,10 @@ export default function ProjectDetail() {
     reveals.forEach((el) => {
       gsap.fromTo(
         el,
-        { opacity: 0.15 },
+        { opacity: 0.15, y: 20 },
         {
           opacity: 1,
+          y: 0,
           duration: 0.8,
           ease: "power3.out",
           scrollTrigger: {
@@ -95,8 +103,10 @@ export default function ProjectDetail() {
 
   return (
     <div ref={containerRef} className="min-h-screen" style={{ backgroundColor: "var(--color-bg)" }}>
-      {/* ── Hero ── */}
-      <section className="relative w-full min-h-[80vh] flex flex-col justify-end section-padding pb-16">
+      {/* ══════════════════════════════════════
+          HERO — Full-bleed image
+          ══════════════════════════════════════ */}
+      <section className="relative w-full min-h-[85vh] flex flex-col justify-end">
         <div className="absolute inset-0">
           <Image
             src={project.image}
@@ -105,22 +115,22 @@ export default function ProjectDetail() {
             priority
             sizes="100vw"
             className="object-cover"
-            style={{ filter: "brightness(0.7)" }}
+            style={{ filter: "brightness(0.65)" }}
           />
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to top, var(--color-bg) 0%, transparent 60%)",
+              background: "linear-gradient(to top, var(--color-bg) 0%, transparent 50%)",
             }}
           />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 section-padding pb-20">
           <span
-            className="font-mono uppercase block mb-4"
+            className="font-mono uppercase block mb-6"
             style={{
               fontSize: "var(--text-micro)",
-              letterSpacing: "0.15em",
+              letterSpacing: "0.2em",
               color: "var(--color-text-dim)",
             }}
           >
@@ -129,42 +139,41 @@ export default function ProjectDetail() {
           <h1
             className="font-display"
             style={{
-              fontSize: "var(--text-display)",
+              fontSize: "clamp(2.4rem, 5vw, 4.5rem)",
               color: "var(--color-text)",
-              lineHeight: 1.1,
+              lineHeight: 1.05,
+              maxWidth: "14ch",
             }}
           >
             {project.title}
           </h1>
-          <div className="flex gap-6 mt-6">
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-micro)",
-                color: "var(--color-text-ghost)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              {project.client}
-            </span>
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-micro)",
-                color: "var(--color-text-ghost)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              {project.role}
-            </span>
+          <div className="flex gap-8 mt-8">
+            <div>
+              <span className="micro block mb-1" style={{ color: "var(--color-text-ghost)" }}>Client</span>
+              <span
+                className="font-mono"
+                style={{ fontSize: "var(--text-small)", color: "var(--color-text-dim)" }}
+              >
+                {project.client}
+              </span>
+            </div>
+            <div>
+              <span className="micro block mb-1" style={{ color: "var(--color-text-ghost)" }}>Role</span>
+              <span
+                className="font-mono"
+                style={{ fontSize: "var(--text-small)", color: "var(--color-text-dim)" }}
+              >
+                {project.role}
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Back button ── */}
-      <div className="section-padding pt-8">
+      {/* ══════════════════════════════════════
+          BACK BUTTON
+          ══════════════════════════════════════ */}
+      <div className="section-padding pt-8 pb-4">
         <button
           onClick={() => router.back()}
           className="font-mono transition-colors duration-300 hover:text-[var(--color-accent)]"
@@ -179,11 +188,15 @@ export default function ProjectDetail() {
         </button>
       </div>
 
-      {/* ── Body ── */}
-      <div className="max-w-[900px] mx-auto section-padding">
-        {/* Paradox */}
-        {project.paradox && (
-          <section className="pt-24 pb-16" data-reveal>
+      {/* ══════════════════════════════════════
+          PARADOX — Narrow column, offset right
+          ══════════════════════════════════════ */}
+      {project.paradox && (
+        <section
+          className="section-padding grid grid-cols-1 md:grid-cols-12 gap-8 pt-24 pb-20"
+          data-reveal
+        >
+          <div className="md:col-span-7 md:col-start-1">
             <h2
               className="font-display italic"
               style={{
@@ -194,28 +207,39 @@ export default function ProjectDetail() {
             >
               {project.paradox}
             </h2>
-            {project.stakes && (
+          </div>
+          {project.stakes && (
+            <div className="md:col-span-4 md:col-start-9 flex items-end">
               <p
-                className="font-sans mt-6"
+                className="font-sans"
                 style={{
                   fontSize: "var(--text-body)",
                   color: "var(--color-text-dim)",
                   lineHeight: 1.7,
-                  maxWidth: "60ch",
                 }}
               >
                 {project.stakes}
               </p>
-            )}
-          </section>
-        )}
+            </div>
+          )}
+        </section>
+      )}
 
-        <WobblyRule />
+      {/* ══════════════════════════════════════
+          EDITORIAL — Text left, image right
+          ══════════════════════════════════════ */}
+      <div className="hairline mx-[var(--page-padding)]" />
 
-        {/* Editorial */}
-        <section className="py-20" data-reveal>
+      <section
+        className="section-padding grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 py-24"
+        data-reveal
+      >
+        <div className="md:col-span-5">
+          <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
+            Overview
+          </span>
           <h2
-            className="font-display italic mb-4"
+            className="font-display italic mb-6"
             style={{
               fontSize: "var(--text-h2)",
               color: "var(--color-text)",
@@ -230,45 +254,65 @@ export default function ProjectDetail() {
               fontSize: "var(--text-body)",
               color: "var(--color-text-dim)",
               lineHeight: 1.7,
-              maxWidth: "60ch",
             }}
           >
             {project.editorial.copy}
           </p>
-        </section>
+        </div>
 
-        {/* Editorial images */}
         {project.editorial.images?.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-20" data-reveal>
-            {project.editorial.images.map((img, i) => (
-              <ImageBlock key={i} src={img} placeholder="Editorial Media" />
-            ))}
+          <div className="md:col-span-6 md:col-start-7">
+            <MediaBlock src={project.editorial.images[0]} placeholder="Editorial Media" />
           </div>
         )}
+      </section>
 
-        <WobblyRule />
+      {/* ── Editorial image grid — full-bleed ── */}
+      {project.editorial.images?.length > 1 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-4" data-reveal>
+          {project.editorial.images.slice(1).map((img, i) => (
+            <MediaBlock key={i} src={img} placeholder="Editorial Media" />
+          ))}
+        </div>
+      )}
 
-        {/* Process */}
-        <section className="py-20" data-reveal>
-          <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
-            Process
-          </span>
-          <p
-            className="font-sans mb-8"
-            style={{
-              fontSize: "var(--text-body)",
-              color: "var(--color-text-dim)",
-              lineHeight: 1.7,
-              maxWidth: "60ch",
-            }}
-          >
-            {project.process.copy}
-          </p>
+      {/* ══════════════════════════════════════
+          PROCESS — Side-by-side steps
+          ══════════════════════════════════════ */}
+      <div className="hairline mx-[var(--page-padding)]" />
+
+      <section className="section-padding py-24" data-reveal>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          <div className="md:col-span-4">
+            <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
+              Process
+            </span>
+            <p
+              className="font-sans"
+              style={{
+                fontSize: "var(--text-body)",
+                color: "var(--color-text-dim)",
+                lineHeight: 1.7,
+              }}
+            >
+              {project.process.copy}
+            </p>
+          </div>
 
           {project.processSteps && project.processSteps.length > 0 && (
-            <div className="space-y-8 mt-12">
+            <div className="md:col-span-7 md:col-start-6 grid grid-cols-1 sm:grid-cols-2 gap-8">
               {project.processSteps.map((step, i) => (
                 <div key={i} data-reveal>
+                  <span
+                    className="font-mono block mb-3"
+                    style={{
+                      fontSize: "var(--text-micro)",
+                      color: "var(--color-accent)",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <h4
                     className="font-sans mb-2"
                     style={{ fontSize: "var(--text-small)", color: "var(--color-text)" }}
@@ -285,44 +329,56 @@ export default function ProjectDetail() {
                   >
                     {step.copy}
                   </p>
+                  {step.image && (
+                    <div className="mt-4">
+                      <MediaBlock src={step.image} aspect="4/3" />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
-        </section>
+        </div>
+      </section>
 
-        {/* Video showcase */}
-        {hasVideos && (
-          <>
-            <WobblyRule />
-            <section className="py-20" data-reveal>
-              <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
-                B-Roll
-              </span>
-              <VideoShowcase videos={project.videos!} />
-            </section>
-          </>
-        )}
+      {/* ══════════════════════════════════════
+          B-ROLL — Full-bleed video showcase
+          ══════════════════════════════════════ */}
+      {hasVideos && (
+        <>
+          <div className="hairline mx-[var(--page-padding)]" />
+          <section className="section-padding py-24" data-reveal>
+            <span className="micro block mb-8" style={{ color: "var(--color-text-ghost)" }}>
+              B-Roll
+            </span>
+            <VideoShowcase videos={project.videos!} />
+          </section>
+        </>
+      )}
 
-        <WobblyRule />
+      {/* ══════════════════════════════════════
+          ENGINEERING — Narrow text + signal tags
+          ══════════════════════════════════════ */}
+      <div className="hairline mx-[var(--page-padding)]" />
 
-        {/* Engineering */}
-        <section className="py-20" data-reveal>
-          <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
-            Engineering
-          </span>
-          <p
-            className="font-sans mb-8"
-            style={{
-              fontSize: "var(--text-body)",
-              color: "var(--color-text-dim)",
-              lineHeight: 1.7,
-              maxWidth: "60ch",
-            }}
-          >
-            {project.engineering.copy}
-          </p>
-          <div className="flex flex-wrap gap-2">
+      <section className="section-padding py-24" data-reveal>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          <div className="md:col-span-5">
+            <span className="micro block mb-6" style={{ color: "var(--color-text-ghost)" }}>
+              Engineering
+            </span>
+            <p
+              className="font-sans"
+              style={{
+                fontSize: "var(--text-body)",
+                color: "var(--color-text-dim)",
+                lineHeight: 1.7,
+              }}
+            >
+              {project.engineering.copy}
+            </p>
+          </div>
+          <div className="md:col-span-6 md:col-start-7 flex flex-wrap gap-2 content-start">
             {project.engineering.signals?.map((signal) => (
               <span
                 key={signal}
@@ -331,7 +387,7 @@ export default function ProjectDetail() {
                   fontSize: "var(--text-micro)",
                   letterSpacing: "0.12em",
                   color: "var(--color-text-dim)",
-                  padding: "4px 10px",
+                  padding: "6px 14px",
                   border: "1px solid var(--color-border)",
                 }}
               >
@@ -339,80 +395,97 @@ export default function ProjectDetail() {
               </span>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Stats */}
-        {project.statistics?.length > 0 && (
-          <>
-            <WobblyRule />
-            <section className="py-20" data-reveal>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-                {project.statistics.map((stat) => (
-                  <div key={stat.label}>
-                    <span className="micro block mb-2">{stat.label}</span>
-                    <span
-                      className="font-display"
-                      style={{ fontSize: "var(--text-h3)", color: "var(--color-text)" }}
-                    >
-                      {stat.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-
-        {/* Gut punch */}
-        <GutPunchCloser text={project.gutPunch} />
-
-        {/* Schematic */}
-        <div
-          className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 mb-20"
+      {/* ══════════════════════════════════════
+          STATS — Full-width bar
+          ══════════════════════════════════════ */}
+      {project.statistics?.length > 0 && (
+        <section
+          className="py-16 section-padding"
           style={{
             backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
+            borderTop: "1px solid var(--color-border)",
+            borderBottom: "1px solid var(--color-border)",
           }}
           data-reveal
         >
-          <div className="flex flex-col gap-1">
-            <span className="micro">Typography</span>
-            <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
-              {project.schematic.typography}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="micro">Grid</span>
-            <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
-              {project.schematic.grid}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="micro">Stack</span>
-            <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
-              {project.schematic.stack.join(", ")}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="micro">Palette</span>
-            <div className="flex gap-1 mt-1">
-              {project.schematic.colors?.map((c) => (
-                <div
-                  key={c}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {project.statistics.map((stat) => (
+              <div key={stat.label}>
+                <span className="micro block mb-2">{stat.label}</span>
+                <span
+                  className="font-display"
                   style={{
-                    width: 14,
-                    height: 14,
-                    backgroundColor: c,
-                    border: "1px solid var(--color-border)",
+                    fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                    color: "var(--color-text)",
+                    lineHeight: 1,
                   }}
-                />
-              ))}
-            </div>
+                >
+                  {stat.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════
+          GUT PUNCH — Full-width, massive whitespace
+          ══════════════════════════════════════ */}
+      <GutPunchCloser text={project.gutPunch} />
+
+      {/* ══════════════════════════════════════
+          SCHEMATIC — Technical specs bar
+          ══════════════════════════════════════ */}
+      <div
+        className="section-padding grid grid-cols-2 sm:grid-cols-4 gap-6 py-10"
+        style={{
+          backgroundColor: "var(--color-surface)",
+          borderTop: "1px solid var(--color-border)",
+        }}
+        data-reveal
+      >
+        <div className="flex flex-col gap-1">
+          <span className="micro">Typography</span>
+          <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
+            {project.schematic.typography}
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="micro">Grid</span>
+          <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
+            {project.schematic.grid}
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="micro">Stack</span>
+          <span className="font-mono" style={{ fontSize: "var(--text-micro)", color: "var(--color-text)" }}>
+            {project.schematic.stack.join(", ")}
+          </span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="micro">Palette</span>
+          <div className="flex gap-1 mt-1">
+            {project.schematic.colors?.map((c) => (
+              <div
+                key={c}
+                style={{
+                  width: 14,
+                  height: 14,
+                  backgroundColor: c,
+                  border: "1px solid var(--color-border)",
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* ── Prev / Next Navigation ── */}
+      {/* ══════════════════════════════════════
+          PREV / NEXT NAV
+          ══════════════════════════════════════ */}
       <div
         className="grid grid-cols-2"
         style={{ borderTop: "1px solid var(--color-border)" }}

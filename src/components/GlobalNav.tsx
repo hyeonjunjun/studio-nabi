@@ -107,7 +107,7 @@ export default function GlobalNav() {
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
         style={{
           padding: "clamp(0.75rem, 2vh, 1.25rem) var(--page-px)",
-          backgroundColor: "rgba(17, 17, 16, 0.92)",
+          backgroundColor: "rgba(var(--color-bg-rgb), 0.92)",
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
         }}
