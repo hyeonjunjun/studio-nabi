@@ -310,7 +310,115 @@ These are defined as Tailwind `@layer utilities` in `globals.css`.
 
 ---
 
-## 7. Navigation Changes
+## 7. Case Study Pages
+
+Rewrite `src/app/work/[slug]/page.tsx` to match cathydolle's case study pattern: narrow content column, sequential media gallery with scroll reveals, and scroll-to-navigate between projects.
+
+### 7.1 Layout
+
+- Content width: `span-w-7` (~57vw desktop) with left margin `span-ml-2-wide` (~17vw)
+- Mobile: full width, no left margin, `padding-x-1`
+- Vertical padding: `py-[10vh]`
+- Background: `var(--color-bg)` (matching homepage)
+
+### 7.2 Page Structure (Top to Bottom)
+
+```
+Fixed Header (GlobalNav — always visible on case study pages)
+└─ Content column (span-w-7, offset span-ml-2-wide)
+   ├─ Project Metadata
+   │   ├─ Title — JetBrains Mono, 11px, uppercase
+   │   ├─ Description — JetBrains Mono, 11px, `leading-[110%]`
+   │   ├─ Roles list — JetBrains Mono, 11px
+   │   ├─ Year
+   │   └─ External URL (if applicable)
+   │
+   ├─ Media Gallery (sequential blocks)
+   │   ├─ Full-width images (landscape, ~16:9)
+   │   ├─ Portrait images (~2:3)
+   │   ├─ Double-image layouts (two portraits side-by-side)
+   │   └─ Video blocks (autoPlay, muted, loop, playsInline)
+   │
+   └─ Scroll Progress ("0 %" in footer area)
+
+Scroll Navigation Overlay (fixed position)
+   ├─ "Scroll Up to Previous Project" (top boundary)
+   └─ "Scroll Down to Next Project" (bottom boundary)
+```
+
+### 7.3 Typography on Case Study
+
+**Same 11px baseline as homepage.** All text stays JetBrains Mono, 11px, uppercase. No larger display type on case study pages — the restraint is the point. The project title is the same size as everything else.
+
+### 7.4 Media Gallery — Scroll Reveal Animations (GSAP)
+
+Each media block reveals on scroll entry:
+
+| Animation | Properties | Duration | Easing | Trigger |
+|---|---|---|---|---|
+| Image reveal | `opacity: 0→1`, `y: 75→0` | `1.5s` | `power3.out` | ScrollTrigger `"top 75%"`, once |
+| Video container | `scale: 2→1` (in addition to opacity/y) | `1.5s` | `power3.out` | ScrollTrigger `"top 75%"`, once |
+| Double-image | `scale: 1.15→1` synced with parent opacity | `1.75s` | synced | ScrollTrigger |
+| Stagger | `0.1s` per media block index | — | — | Sequential |
+
+### 7.5 Text Reveal Animation
+
+Project metadata text reveals on page mount:
+
+- Properties: `y: 5→0`, `opacity: 0→1`, `filter: blur(4px)→blur(0)`
+- Duration: `1.75s`
+- Stagger: `0.122s` per line
+- Roles list stagger: `0.2s * index`
+- Link element: `1.0s` delay
+
+### 7.6 Scroll-to-Navigate Between Projects
+
+The key interaction: scrolling past page boundaries navigates to adjacent projects.
+
+**Detection:**
+- Monitor wheel events when scroll position is within 25px of document top or bottom
+- Accumulate wheel delta toward a threshold
+
+**Progress calculation:**
+- `progress = Math.min(accumulatedDelta / 1750 * 100, 100)%`
+- Visual: width-based progress bar with percentage text display
+- Resets if user scrolls away from boundary or reverses direction
+
+**On 100% threshold — navigate:**
+
+| Direction | Transition | Duration | Easing | Delay |
+|---|---|---|---|---|
+| Next (scroll down) | `opacity: 0→1`, `y: 50%→0%`, `blur: 2px→0` | `0.6s` | `power2.out` | `0.1s` |
+| Previous (scroll up) | `opacity: 0→1`, `y: -50%→0%`, `blur: 2px→0` | `0.6s` | `power2.out` | `0.1s` |
+
+**Wrapping:** last project scrolls to first, first project scrolls to last.
+
+**Mobile (< 768px):** Replace scroll-accumulation with static "Previous Project" / "Next Project" buttons.
+
+### 7.7 Scroll Progress Indicator
+
+- Calculation: `window.pageYOffset / (scrollHeight - clientHeight) * 100`
+- Display: percentage text `"0 %"` — JetBrains Mono, 11px
+- Position: fixed footer area, right-aligned
+- Color: `var(--color-text-ghost)`
+
+### 7.8 Image Treatment
+
+- Images served via Next.js Image optimization (WebP)
+- Sizes: full-width landscapes (~1440x810), portraits (~2000x3000), double-image pairs (~600x826 each)
+- All images: `object-fit: cover`
+- Videos: `autoPlay`, `muted`, `loop`, `playsInline`, poster image
+- No parallax on scroll — only the reveal animation
+
+### 7.9 Keyboard Navigation
+
+- Arrow Up/Down: scroll to adjacent media block
+- Spacebar: toggle video play/pause
+- Escape: navigate back to homepage
+
+---
+
+## 8. Navigation Changes
 
 ### 7.1 GlobalNav
 
