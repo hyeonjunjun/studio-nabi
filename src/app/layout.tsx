@@ -3,10 +3,8 @@ import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
 import GlobalNav from "@/components/GlobalNav";
 import StudioPreloader from "@/components/StudioPreloader";
-import ScrollProgress from "@/components/ui/ScrollProgress";
 import PageTransition from "@/components/PageTransition";
 
 /* ── Fonts ── */
@@ -79,9 +77,7 @@ export default function RootLayout({
         className={`${gtAlpina.variable} ${sohne.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <StudioPreloader />
-        <Cursor />
         <GlobalNav />
-        <ScrollProgress />
 
         {/* Grain overlay */}
         <div className="noise-grain" />

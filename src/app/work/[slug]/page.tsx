@@ -6,8 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap";
 import { PROJECTS } from "@/constants/projects";
-import GutPunchCloser from "@/components/case-study/GutPunchCloser";
-import VideoShowcase from "@/components/case-study/VideoShowcase";
 import Colophon from "@/components/sections/Colophon";
 
 /* ─── Helpers ─── */
@@ -61,7 +59,6 @@ export default function ProjectDetail() {
   const currentIndex = project ? PROJECTS.findIndex((p) => p.id === project.id) : -1;
   const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
   const prevProject = PROJECTS[(currentIndex - 1 + PROJECTS.length) % PROJECTS.length];
-  const hasVideos = !!(project?.videos && project.videos.length > 0);
 
   // GSAP scroll reveals
   useEffect(() => {
@@ -342,21 +339,6 @@ export default function ProjectDetail() {
       </section>
 
       {/* ══════════════════════════════════════
-          B-ROLL — Full-bleed video showcase
-          ══════════════════════════════════════ */}
-      {hasVideos && (
-        <>
-          <div className="hairline mx-[var(--page-padding)]" />
-          <section className="section-padding py-24" data-reveal>
-            <span className="micro block mb-8" style={{ color: "var(--color-text-ghost)" }}>
-              B-Roll
-            </span>
-            <VideoShowcase videos={project.videos!} />
-          </section>
-        </>
-      )}
-
-      {/* ══════════════════════════════════════
           ENGINEERING — Narrow text + signal tags
           ══════════════════════════════════════ */}
       <div className="hairline mx-[var(--page-padding)]" />
@@ -430,11 +412,6 @@ export default function ProjectDetail() {
           </div>
         </section>
       )}
-
-      {/* ══════════════════════════════════════
-          GUT PUNCH — Full-width, massive whitespace
-          ══════════════════════════════════════ */}
-      <GutPunchCloser text={project.gutPunch} />
 
       {/* ══════════════════════════════════════
           SCHEMATIC — Technical specs bar

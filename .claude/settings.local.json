@@ -40,7 +40,14 @@
       "WebFetch(domain:baothiento.com)",
       "Bash(npm run build:*)",
       "WebFetch(domain:cathydolle.com)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(git diff-tree:*)",
+      "WebFetch(domain:fontofweb.com)",
+      "WebFetch(domain:jonite.com)",
+      "WebFetch(domain:library.obys.agency)",
+      "WebFetch(domain:cappen.com)",
+      "WebFetch(domain:elliott.mangham.dev)",
+      "Bash(python:*)"
     ]
   }
 }
