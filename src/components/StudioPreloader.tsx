@@ -17,18 +17,20 @@ export default function StudioPreloader() {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [shouldRender, setShouldRender] = useState(true);
+  const [shouldRender, setShouldRender] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem(SESSION_KEY);
+    }
+    return true;
+  });
 
   const activeProjects = PROJECTS.filter((p) => !p.wip);
 
   useEffect(() => {
     // Skip if already visited or prefers-reduced-motion
-    if (typeof window !== "undefined") {
-      if (sessionStorage.getItem(SESSION_KEY) || prefersReduced) {
-        setLoaded(true);
-        setShouldRender(false);
-        return;
-      }
+    if (!shouldRender || prefersReduced) {
+      setLoaded(true);
+      return;
     }
 
     const el = containerRef.current;

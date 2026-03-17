@@ -125,7 +125,7 @@ export default function CaseStudy() {
         videos.forEach((v) => {
           const rect = v.getBoundingClientRect();
           if (rect.top < window.innerHeight && rect.bottom > 0) {
-            v.paused ? v.play() : v.pause();
+            if (v.paused) { v.play(); } else { v.pause(); }
           }
         });
       }

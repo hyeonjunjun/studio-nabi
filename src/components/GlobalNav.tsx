@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLenis } from "lenis/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
@@ -25,9 +26,6 @@ export default function GlobalNav() {
   const lenis = useLenis();
   const router = useRouter();
   const pathname = usePathname();
-
-  // Don't render on homepage — homepage has its own header
-  if (pathname === "/") return null;
 
   const handleNavClick = useCallback(
     (href: string) => {
@@ -81,6 +79,9 @@ export default function GlobalNav() {
     );
   }, [isLoaded]);
 
+  // Don't render on homepage — homepage has its own header
+  if (pathname === "/") return null;
+
   return (
     <>
       <nav
@@ -94,7 +95,7 @@ export default function GlobalNav() {
         }}
       >
         {/* Studio mark */}
-        <a href="/" data-nav-el>
+        <Link href="/" data-nav-el>
           <span
             className="font-display"
             style={{
@@ -105,7 +106,7 @@ export default function GlobalNav() {
           >
             HKJ
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-6" data-nav-el>
