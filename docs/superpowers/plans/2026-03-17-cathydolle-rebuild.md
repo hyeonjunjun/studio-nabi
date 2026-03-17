@@ -82,16 +82,16 @@
 
 - [ ] **Step 1: Remove Cursor and ScrollProgress from layout.tsx**
 
-In `src/app/layout.tsx`, remove these import lines:
-```typescript
-// DELETE: import Cursor from "@/components/Cursor";
-// DELETE: import ScrollProgress from "@/components/ui/ScrollProgress";
+In `src/app/layout.tsx`, **delete** these import lines entirely (do not comment them out):
+```
+import Cursor from "@/components/Cursor";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 ```
 
-Remove from JSX body:
-```tsx
-{/* DELETE: <Cursor /> */}
-{/* DELETE: <ScrollProgress /> */}
+**Delete** these JSX elements from the body:
+```
+<Cursor />
+<ScrollProgress />
 ```
 
 The result should be:
@@ -524,7 +524,7 @@ export default function ListView() {
         >
           {/* Number */}
           <span
-            className="font-mono italic"
+            className="font-mono uppercase italic"
             style={{
               fontSize: "11px",
               color: "var(--color-text-ghost)",
@@ -616,7 +616,8 @@ export default function SliderView() {
   const dragX = useMotionValue(0);
   const dragXSmooth = useSpring(dragX, { stiffness: 200, damping: 30 });
   const wasDragged = useRef(false);
-  const [dragLeft, setDragLeft] = useState(-600);
+  const [dragLeft, setDragLeft] = useState(0);
+  const [canDrag, setCanDrag] = useState(false);
 
   // Measure scroll width after mount for drag constraints (SSR-safe)
   useEffect(() => {
@@ -624,13 +625,14 @@ export default function SliderView() {
     const container = containerRef.current;
     const scrollW = container.scrollWidth - container.clientWidth;
     setDragLeft(-scrollW);
+    setCanDrag(true);
   }, []);
 
   return (
     <div ref={containerRef} className="h-full overflow-hidden padding-x-1">
       <motion.div
         className="flex h-full gutter-gap"
-        drag="x"
+        drag={canDrag ? "x" : false}
         dragConstraints={{ left: dragLeft, right: 0 }}
         dragElastic={0.15}
         style={{ x: dragXSmooth }}
@@ -644,8 +646,7 @@ export default function SliderView() {
         {activeProjects.map((project, i) => (
           <motion.div
             key={project.id}
-            className="relative shrink-0 h-full overflow-hidden cursor-grab active:cursor-grabbing"
-            style={{ width: "32.59vw" }}
+            className="relative shrink-0 h-full overflow-hidden cursor-grab active:cursor-grabbing span-w-4"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
@@ -698,8 +699,8 @@ export default function SliderView() {
         {PROJECTS.filter((p) => p.wip).map((project, i) => (
           <motion.div
             key={project.id}
-            className="relative shrink-0 h-full overflow-hidden"
-            style={{ width: "32.59vw", opacity: 0.5 }}
+            className="relative shrink-0 h-full overflow-hidden span-w-4"
+            style={{ opacity: 0.5 }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 0.5, scale: 1 }}
             transition={{
@@ -1012,8 +1013,6 @@ export default function StudioPreloader() {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const [shouldRender, setShouldRender] = useState(true);
 
   const activeProjects = PROJECTS.filter((p) => !p.wip);
@@ -1033,7 +1032,7 @@ export default function StudioPreloader() {
     if (!el || !box) return;
 
     const tl = gsap.timeline({
-      defaults: { ease: "power3.inOut" },
+      defaults: { ease: CINEMATIC },
       onComplete: () => {
         gsap.to(el, {
           opacity: 0,
@@ -1186,7 +1185,7 @@ git commit -m "feat: rewrite StudioPreloader — cathydolle-style image-split an
 
 import { useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { motion, animate, useMotionValue } from "framer-motion";
+import { motion, animate, useMotionValue, useTransform } from "framer-motion";
 
 /**
  * PageTransition — Cathydolle-faithful clip-path + scale transition
@@ -1233,7 +1232,7 @@ export default function PageTransition() {
       className="fixed inset-0 z-[999] pointer-events-none"
       style={{
         opacity: overlayOpacity,
-        clipPath: useMotionValue(0) as never, // handled below
+        clipPath: useTransform(clipProgress, (v) => `inset(${v}% 0 0 0)`),
         backgroundColor: "var(--color-bg)",
       }}
     />
@@ -1436,8 +1435,10 @@ export default function CaseStudy() {
   }, []);
 
   // GSAP scroll reveals for media (spec Section 7.4)
+  const hasAnimated = useRef(false);
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || hasAnimated.current) return;
+    hasAnimated.current = true;
 
     // Image reveals: opacity + y
     const imageEls = containerRef.current.querySelectorAll("[data-media-reveal='image']");
@@ -1498,15 +1499,24 @@ export default function CaseStudy() {
         );
         if (!blocks.length) return;
 
-        const scrollY = window.scrollY + window.innerHeight / 2;
-        const currentIdx = blocks.findIndex(
-          (el) => (el as HTMLElement).offsetTop > scrollY
-        );
+        const viewportCenter = window.scrollY + window.innerHeight / 2;
+        // Find the block closest to viewport center
+        let closestIdx = 0;
+        let closestDist = Infinity;
+        blocks.forEach((el, idx) => {
+          const rect = (el as HTMLElement).getBoundingClientRect();
+          const elCenter = window.scrollY + rect.top + rect.height / 2;
+          const dist = Math.abs(elCenter - viewportCenter);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestIdx = idx;
+          }
+        });
 
         const targetIdx =
           e.key === "ArrowDown"
-            ? Math.min(currentIdx >= 0 ? currentIdx : blocks.length - 1, blocks.length - 1)
-            : Math.max((currentIdx >= 0 ? currentIdx : blocks.length) - 2, 0);
+            ? Math.min(closestIdx + 1, blocks.length - 1)
+            : Math.max(closestIdx - 1, 0);
 
         blocks[targetIdx]?.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
@@ -1614,7 +1624,7 @@ export default function CaseStudy() {
           </p>
 
           <div className="flex gap-8 mt-6">
-            <div data-text-reveal>
+            <div data-role-reveal>
               <span
                 className="font-mono uppercase block"
                 style={{
@@ -1636,7 +1646,7 @@ export default function CaseStudy() {
               </span>
             </div>
 
-            <div data-text-reveal>
+            <div data-role-reveal>
               <span
                 className="font-mono uppercase block"
                 style={{
