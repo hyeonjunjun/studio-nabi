@@ -149,6 +149,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             key={link.label}
             onClick={() => handleNavigate(link.href)}
             data-menu-item
+            aria-label={`Navigate to ${link.label}`}
             className="text-left group"
             style={{
               paddingTop: "clamp(1.25rem, 3vh, 2rem)",

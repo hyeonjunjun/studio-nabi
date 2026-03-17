@@ -129,7 +129,7 @@ export default function StudioPreloader() {
           >
             <Image
               src={project.image}
-              alt=""
+              alt={project.title}
               fill
               className="object-cover"
               sizes="33vw"

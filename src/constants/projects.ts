@@ -97,7 +97,7 @@ export const PROJECTS: Project[] = [
             headline: "Digital Grain.",
             subhead: "Where Pixels Meet Patina",
             copy: "결 (gyeol) is the Korean word for grain — the invisible pattern that gives wood its character, stone its identity, fabric its hand-feel. GYEOL explores the uncanny valley between digital rendering and physical material. By mapping real-world texture data onto WebGL surfaces, we create interfaces that feel tangibly present — like touching brushed aluminum or woven fabric through glass. The project began as a personal obsession: why does every screen feel the same?",
-            images: ["/images/gyeol-hero.jpg"],
+            images: ["/images/gyeol-spring.png"],
         },
         process: {
             title: "Material Research",
@@ -160,10 +160,10 @@ export const PROJECTS: Project[] = [
             "/assets/gyeol-broll4.mp4",
         ],
         videos: [
-            { src: "/videos/gyeol/material-study-01.mp4", poster: "/images/gyeol-hero.jpg", caption: "oak grain displacement", aspect: "16/9" },
-            { src: "/videos/gyeol/material-study-02.mp4", poster: "/images/gyeol-hero.jpg", caption: "marble subsurface scattering", aspect: "1/1" },
-            { src: "/videos/gyeol/material-study-03.mp4", poster: "/images/gyeol-hero.jpg", caption: "brushed aluminum anisotropy", aspect: "1/1" },
-            { src: "/videos/gyeol/material-study-04.mp4", poster: "/images/gyeol-hero.jpg", caption: "woven linen displacement", aspect: "16/9" },
+            { src: "/assets/gyeol-broll1.mp4", poster: "/images/gyeol-spring.png", caption: "oak grain displacement", aspect: "16/9" },
+            { src: "/assets/gyeol-broll2.mp4", poster: "/images/gyeol-spring.png", caption: "marble subsurface scattering", aspect: "1/1" },
+            { src: "/assets/gyeol-broll3.mp4", poster: "/images/gyeol-spring.png", caption: "brushed aluminum anisotropy", aspect: "1/1" },
+            { src: "/assets/gyeol-broll4.mp4", poster: "/images/gyeol-spring.png", caption: "woven linen displacement", aspect: "16/9" },
         ],
     },
     {
@@ -174,19 +174,19 @@ export const PROJECTS: Project[] = [
         sector: "Design Systems",
         year: "2026",
         tags: ["Tooling", "Canvas API", "Low-Latency"],
-        image: "/images/caliper-main.png",
+        image: "/images/gyeol-spring.png",
         mood: "#FF4400",
         pitch: "Real-time visual guidance for structured thinking inside text fields.",
         editorial: {
             headline: "Precision measurement for thought.",
             subhead: "Automotive-Grade Input",
             copy: "Caliper lives inside existing text fields, providing real-time visual guidance. Designed with the rigor of high-end automotive displays, it enforces structured thinking through live color coding and floating dial controls. A rejection of playfulness in favor of pure instrument precision.",
-            images: ["/images/caliper-main.png", "/images/caliper-main.png", "/images/caliper-main.png"],
+            images: ["/images/gyeol-spring.png", "/images/gyeol-spring.png", "/images/gyeol-spring.png"],
         },
         process: {
             title: "The Rough",
             copy: "Inspired by vernier calipers and automotive dashboards. The initial sketches focused on the 'dial' metaphor—how to quantify semantic weight within a standard text input.",
-            images: ["/placeholder-rough-3.png"]
+            images: []
         },
         highlights: [
             {
@@ -195,14 +195,14 @@ export const PROJECTS: Project[] = [
                 description: "The UI acts as a vernier caliper for text, measuring semantic density in real-time.",
                 challenge: "How do you provide complex visual feedback without distracting the user from the writing process?",
                 recipe: "Canvas API + Low-Latency Input Buffers",
-                images: ["/images/caliper-main.png"],
+                images: [],
             }
         ],
         engineering: {
             title: "Engineering",
             copy: "The core measurement engine uses a custom buffer that intercepts keystrokes before they hit the DOM, calculating semantic density and returning coordinate shifts for the floating UI dials with <2ms jitter.",
             signals: ["Input Buffer Interception", "Jitter <2ms", "Canvas Rendering"],
-            images: ["/placeholder-eng-3.png"]
+            images: []
         },
         statistics: [
             { label: "Latency", value: "2ms" },
@@ -241,7 +241,7 @@ export const PROJECTS: Project[] = [
         process: {
             title: "Quiet Luxury",
             copy: "The design language pursues a 'Digital Tactility' aesthetic—avoiding tech-cold blues and aggressive gamification in favor of warm earth tones (espresso, oat, clay). We paired classical serif typefaces (Playfair Display) with a modern humanist sans-serif (Satoshi) to position the app as a digital literary journal. Generous whitespace, organic radii, and subtle noise textures create a physical, calming experience.",
-            images: ["/placeholder-rough-1.png"]
+            images: []
         },
         highlights: [
             {
@@ -265,7 +265,7 @@ export const PROJECTS: Project[] = [
             title: "Engineering",
             copy: "The backend utilizes a multi-stage scavenging pipeline using Apify for headless scraping and GPT-4o for AI extraction. On the frontend, a bespoke design system named 'Gentle SIFT' relies on Reanimated 4.1 and Moti for declarative, ease-in-out animations—strictly avoiding spring physics to maintain a calm brand personality. The UI consumes an OKLCH color scale dynamically mapped to hex values.",
             signals: ["Vector Search", "OKLCH Theme Context API", "Declarative Animation", "Headless Scraping"],
-            images: ["/placeholder-eng-1.png"]
+            images: []
         },
         statistics: [
             { label: "Color Space", value: "OKLCH" },

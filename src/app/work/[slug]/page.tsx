@@ -296,7 +296,7 @@ export default function CaseStudy() {
                   ) : (
                     <Image
                       src={item.src}
-                      alt=""
+                      alt={`${project.title} — media ${i + 1}`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 95vw, 57vw"

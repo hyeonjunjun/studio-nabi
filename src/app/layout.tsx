@@ -75,6 +75,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${gtAlpina.variable} ${sohne.variable} ${jetbrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <StudioPreloader />
         <GlobalNav />

@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { PROJECTS } from "@/constants/projects";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { PROJECTS, type Project } from "@/constants/projects";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -25,10 +27,21 @@ const fadeUp = {
 export default function ListView() {
   const router = useRouter();
   const needsScroll = PROJECTS.length > 8;
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const hasMedia = (project: Project) =>
+    project.cardVideo || (project.cardVideos && project.cardVideos.length > 0) || project.image;
 
   return (
     <motion.div
-      className="flex flex-col justify-center h-full"
+      ref={containerRef}
+      className="flex flex-col justify-center h-full relative"
       style={{
         padding: "10vh var(--page-px)",
         overflowY: needsScroll ? "auto" : "hidden",
@@ -37,6 +50,7 @@ export default function ListView() {
       variants={staggerContainer}
       initial="hidden"
       animate="show"
+      onMouseMove={handleMouseMove}
     >
       {PROJECTS.map((project, i) => (
         <motion.button
@@ -49,6 +63,11 @@ export default function ListView() {
             height: `clamp(4vh, ${60 / PROJECTS.length}vh, 10vh)`,
             cursor: project.wip ? "default" : "pointer",
           }}
+          onMouseEnter={() => {
+            if (!project.wip && hasMedia(project)) setHoveredProject(project);
+          }}
+          onMouseLeave={() => setHoveredProject(null)}
+          aria-label={`View project: ${project.title}${project.wip ? " (work in progress)" : ""}`}
         >
           {/* Number */}
           <span
@@ -95,6 +114,45 @@ export default function ListView() {
           </span>
         </motion.button>
       ))}
+
+      {/* Floating hover preview */}
+      <AnimatePresence>
+        {hoveredProject && (
+          <motion.div
+            key={hoveredProject.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25, ease }}
+            className="pointer-events-none fixed z-50 overflow-hidden"
+            style={{
+              left: mousePos.x + 20,
+              top: mousePos.y - 120,
+              width: "clamp(240px, 20vw, 360px)",
+              aspectRatio: "4/3",
+            }}
+          >
+            {hoveredProject.cardVideo ? (
+              <video
+                src={hoveredProject.cardVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={hoveredProject.image}
+                alt={hoveredProject.title}
+                fill
+                className="object-cover"
+                sizes="20vw"
+              />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

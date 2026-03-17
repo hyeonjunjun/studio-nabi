@@ -107,25 +107,36 @@ export default function Hero() {
           ))}
         </div>
 
-        {/* About link — pushed right */}
-        <Link
-          href="/about"
-          className="font-mono uppercase ml-auto"
-          style={{
-            fontSize: "11px",
-            letterSpacing: "0.1em",
-            color: "var(--color-text-ghost)",
-            transition: "color 0.3s ease",
-          }}
-          onMouseEnter={(e) =>
-            ((e.target as HTMLElement).style.color = "var(--color-text)")
-          }
-          onMouseLeave={(e) =>
-            ((e.target as HTMLElement).style.color = "var(--color-text-ghost)")
-          }
-        >
-          About
-        </Link>
+        {/* Nav links — pushed right */}
+        <div className="flex gap-4 ml-auto">
+          {(
+            [
+              { label: "Explore", href: "/explore" },
+              { label: "About", href: "/about" },
+            ] as const
+          ).map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="font-mono uppercase"
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.1em",
+                color: "var(--color-text-ghost)",
+                transition: "color 0.3s ease",
+              }}
+              onMouseEnter={(e) =>
+                ((e.target as HTMLElement).style.color = "var(--color-text)")
+              }
+              onMouseLeave={(e) =>
+                ((e.target as HTMLElement).style.color =
+                  "var(--color-text-ghost)")
+              }
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </motion.div>
 
       {/* ── Content ── */}
