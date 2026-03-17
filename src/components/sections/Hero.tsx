@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStudioStore } from "@/lib/store";
 import { CONTACT_EMAIL } from "@/constants/contact";
@@ -107,7 +108,7 @@ export default function Hero() {
         </div>
 
         {/* About link — pushed right */}
-        <a
+        <Link
           href="/about"
           className="font-mono uppercase ml-auto"
           style={{
@@ -124,7 +125,7 @@ export default function Hero() {
           }
         >
           About
-        </a>
+        </Link>
       </motion.div>
 
       {/* ── Content ── */}

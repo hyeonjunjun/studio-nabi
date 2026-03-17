@@ -28,9 +28,9 @@ export default function ListView() {
 
   return (
     <motion.div
-      className="flex flex-col justify-center h-full padding-x-1"
+      className="flex flex-col justify-center h-full"
       style={{
-        padding: "10vh 0",
+        padding: "10vh var(--page-px)",
         overflowY: needsScroll ? "auto" : "hidden",
         scrollbarWidth: "none",
       }}
@@ -46,7 +46,7 @@ export default function ListView() {
           variants={fadeUp}
           className="flex items-center gutter-gap"
           style={{
-            height: `clamp(8vh, ${80 / PROJECTS.length}vh, 18vh)`,
+            height: `clamp(4vh, ${60 / PROJECTS.length}vh, 10vh)`,
             cursor: project.wip ? "default" : "pointer",
           }}
         >

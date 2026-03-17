@@ -47,7 +47,9 @@
       "WebFetch(domain:library.obys.agency)",
       "WebFetch(domain:cappen.com)",
       "WebFetch(domain:elliott.mangham.dev)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }
