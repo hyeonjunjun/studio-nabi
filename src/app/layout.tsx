@@ -5,6 +5,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import GlobalNav from "@/components/GlobalNav";
 import PageTransition from "@/components/PageTransition";
+import Preloader from "@/components/Preloader";
 
 /* ── Fonts ── */
 
@@ -76,6 +77,7 @@ export default function RootLayout({
         className={`${gtAlpina.variable} ${sohne.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        <Preloader />
         <GlobalNav />
         <PageTransition />
 
