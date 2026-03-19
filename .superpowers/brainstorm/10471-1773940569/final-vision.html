@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HKJ — Cinematic Direction</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #08090b;
+    color: #d4d0ca;
+    overflow-x: hidden;
+  }
+
+  /* --- Page structure --- */
+  .section {
+    padding: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px;
+    color: #d4d0ca;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.7;
+    max-width: 580px;
+    margin-bottom: 28px;
+  }
+
+  /* --- Mockup chrome --- */
+  .browser {
+    border: 1px solid rgba(255,255,255,0.07);
+    overflow: hidden;
+    max-width: 900px;
+  }
+  .browser-bar {
+    height: 28px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+  .url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.18);
+    margin-left: auto;
+    letter-spacing: 0.03em;
+  }
+
+  /* ========================================
+     HOMEPAGE — LIST MODE (Cathydolle-style)
+     ======================================== */
+  .home-list {
+    height: 480px;
+    background: #0c0d10;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Nav bar */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  .nav-links span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* Toggle */
+  .mode-toggle {
+    position: absolute;
+    top: 44px;
+    right: 32px;
+    display: flex;
+    gap: 12px;
+    z-index: 5;
+  }
+  .mode-toggle span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .mode-toggle .active-mode { color: rgba(255,255,255,0.6); }
+  .mode-toggle .inactive-mode { color: rgba(255,255,255,0.15); }
+
+  /* Project list */
+  .project-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 32px;
+  }
+  .project-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .project-row.faded { opacity: 0.08; }
+  .project-row.hovered { opacity: 1; }
+  .project-row .p-left {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .project-row .p-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.15);
+    min-width: 20px;
+  }
+  .project-row .p-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: -0.01em;
+  }
+  .project-row.hovered .p-title {
+    color: rgba(212,208,202,0.9);
+  }
+  .project-row .p-right {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .project-row .p-sector {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.12);
+  }
+  .project-row .p-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.15);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .bottom-bar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.08em;
+  }
+
+  /* ========================================
+     HOMEPAGE — SLIDER MODE
+     ======================================== */
+  .home-slider {
+    height: 480px;
+    background: #0c0d10;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .slider-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  .slide {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+  }
+  .slide-main {
+    width: 72%;
+  }
+  .slide-next {
+    width: 28%;
+    opacity: 0.3;
+    border-left: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* Cinematic video card */
+  .video-card {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .video-card .gradient {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .slide-main .video-card .gradient {
+    background:
+      linear-gradient(to top, rgba(12,13,16,0.95) 0%, rgba(12,13,16,0.4) 30%, transparent 60%),
+      linear-gradient(to right, rgba(12,13,16,0.3), transparent 40%);
+  }
+  .slide-next .video-card .gradient {
+    background: rgba(12,13,16,0.6);
+  }
+  .video-card .vid-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Atmospheric bg for video placeholder */
+  .slide-main .vid-placeholder {
+    background:
+      linear-gradient(175deg, #12161e 0%, #1a2030 35%, #1e2840 55%, #161c28 75%, #0e1218 100%);
+  }
+  .slide-main .vid-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 55% 35%, rgba(120,145,180,0.1), transparent 55%);
+  }
+  .slide-next .vid-placeholder {
+    background: linear-gradient(175deg, #101418, #0e1218);
+  }
+
+  .vid-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    z-index: 2;
+    position: relative;
+  }
+
+  /* Letterbox bars */
+  .letterbox {
+    position: absolute;
+    left: 0; right: 0;
+    height: 24px;
+    background: #0c0d10;
+    z-index: 3;
+  }
+  .letterbox-top { top: 0; }
+  .letterbox-bottom { bottom: 0; }
+
+  /* Slide text overlay */
+  .slide-text {
+    position: relative;
+    z-index: 4;
+  }
+  .slide-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .slide-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: rgba(212,208,202,0.9);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .slide-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .slide-pitch {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 8px;
+    max-width: 360px;
+    line-height: 1.6;
+  }
+
+  /* Slider counter */
+  .slider-count {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.08em;
+    z-index: 5;
+  }
+  .slider-count em {
+    font-style: normal;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ========================================
+     PALETTE REFERENCE
+     ======================================== */
+  .palette-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .swatch-color {
+    width: 56px;
+    height: 56px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .swatch-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  /* --- Flow diagram --- */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .flow-box {
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.05em;
+  }
+  .flow-box.cinematic {
+    border-color: rgba(120,145,180,0.2);
+    color: rgba(139,164,184,0.6);
+  }
+  .flow-box.professional {
+    border-color: rgba(180,160,120,0.15);
+    color: rgba(180,160,120,0.5);
+  }
+  .flow-arrow {
+    font-size: 14px;
+    color: rgba(255,255,255,0.12);
+  }
+
+  .confirm-bar {
+    padding: 32px 48px;
+    text-align: center;
+  }
+  .confirm-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    border: 1px solid rgba(139,164,184,0.25);
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(139,164,184,0.6);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .confirm-btn:hover {
+    background: rgba(139,164,184,0.08);
+    border-color: rgba(139,164,184,0.4);
+    color: rgba(139,164,184,0.9);
+  }
+  .confirm-btn.clicked {
+    background: rgba(139,164,184,0.12);
+    border-color: rgba(139,164,184,0.5);
+    color: #8ba4b8;
+  }
+  .confirm-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.15);
+    margin-top: 12px;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<!-- SECTION 1: LIST MODE -->
+<div class="section">
+  <div class="section-label">Homepage — List Mode</div>
+  <div class="section-title">Cathydolle pattern, cooler palette</div>
+  <div class="section-desc">Full-viewport, no scroll. Clean project list with hover fade. Toggle to switch to slider. Same minimal UX, shifted to atmospheric cool tones.</div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="url">hkjstudio.com</span>
+    </div>
+    <div class="home-list">
+      <div class="nav">
+        <span class="nav-logo">HKJ Studio</span>
+        <div class="nav-links">
+          <span>About</span>
+          <span>Coddiwomple</span>
+          <span>Menu</span>
+        </div>
+      </div>
+      <div class="mode-toggle">
+        <span class="active-mode">List</span>
+        <span class="inactive-mode">Slider</span>
+      </div>
+      <div class="project-list">
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">01</span>
+            <span class="p-title">GYEOL · 결</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Material · Digital</span>
+            <span class="p-year">2024</span>
+          </div>
+        </div>
+        <div class="project-row hovered">
+          <div class="p-left">
+            <span class="p-num">02</span>
+            <span class="p-title">Conductor</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Design System</span>
+            <span class="p-year">WIP</span>
+          </div>
+        </div>
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">03</span>
+            <span class="p-title">Sift: Digital Sanctuary</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Mobile · AI</span>
+            <span class="p-year">2025</span>
+          </div>
+        </div>
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">04</span>
+            <span class="p-title">Moji</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Design Systems</span>
+            <span class="p-year">2025</span>
+          </div>
+        </div>
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">05</span>
+            <span class="p-title">하나 Hana</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Editorial · NUI</span>
+            <span class="p-year">2025</span>
+          </div>
+        </div>
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">06</span>
+            <span class="p-title">Pour</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">IoT · Hardware</span>
+            <span class="p-year">2024</span>
+          </div>
+        </div>
+        <div class="project-row faded">
+          <div class="p-left">
+            <span class="p-num">07</span>
+            <span class="p-title">Atlas</span>
+          </div>
+          <div class="p-right">
+            <span class="p-sector">Spatial · Data</span>
+            <span class="p-year">2024</span>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <span>hello@hkjstudio.com</span>
+        <span>New York / Seoul</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: SLIDER MODE -->
+<div class="section">
+  <div class="section-label">Homepage — Slider Mode</div>
+  <div class="section-title">Cinematic video cards</div>
+  <div class="section-desc">Toggle from list to slider. Each project becomes a cinematic video card — an ambient loop that captures the project's visual identity. Letterboxed. Next card peeks from the right. Drag or arrow keys to navigate.</div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span class="url">hkjstudio.com</span>
+    </div>
+    <div class="home-slider">
+      <div class="nav">
+        <span class="nav-logo">HKJ Studio</span>
+        <div class="nav-links">
+          <span>About</span>
+          <span>Coddiwomple</span>
+          <span>Menu</span>
+        </div>
+      </div>
+      <div class="mode-toggle">
+        <span class="inactive-mode">List</span>
+        <span class="active-mode">Slider</span>
+      </div>
+      <div class="slider-viewport">
+        <!-- Main slide -->
+        <div class="slide slide-main">
+          <div class="video-card">
+            <div class="vid-placeholder">
+              <span class="vid-label">Ambient video loop · cinematic 21:9</span>
+            </div>
+            <div class="gradient"></div>
+          </div>
+          <div class="letterbox letterbox-top"></div>
+          <div class="letterbox letterbox-bottom"></div>
+          <div class="slide-text">
+            <div class="slide-num">01 / 07</div>
+            <div class="slide-title">GYEOL · 결</div>
+            <div class="slide-meta">Material · Digital &nbsp; 2024</div>
+            <div class="slide-pitch">A study in digital materiality — exploring the boundary between screen-rendered surfaces and physical memory.</div>
+          </div>
+        </div>
+        <!-- Peek slide -->
+        <div class="slide slide-next">
+          <div class="video-card">
+            <div class="vid-placeholder"></div>
+            <div class="gradient"></div>
+          </div>
+          <div class="slide-text">
+            <div class="slide-num" style="font-size:8px;">02</div>
+            <div class="slide-title" style="font-size:14px;opacity:0.5;">Conductor</div>
+          </div>
+        </div>
+      </div>
+      <div class="slider-count"><em>01</em> / 07</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: PALETTE -->
+<div class="section">
+  <div class="section-label">Palette Shift</div>
+  <div class="section-title">Cool atmospheric tones</div>
+  <div class="section-desc">Shifting from warm off-white (#F5F2ED) to a cool, dark atmospheric palette. Warm accents remain for punctuation.</div>
+
+  <div class="palette-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0c0d10;"></div>
+      <div class="swatch-label">BG<br>#0C0D10</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#141619;"></div>
+      <div class="swatch-label">Surface<br>#141619</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1a1e26;"></div>
+      <div class="swatch-label">Elevated<br>#1A1E26</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#d4d0ca;"></div>
+      <div class="swatch-label">Text<br>#D4D0CA</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#8a8580;"></div>
+      <div class="swatch-label">Secondary<br>#8A8580</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#555250;"></div>
+      <div class="swatch-label">Dim<br>#555250</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#333130;"></div>
+      <div class="swatch-label">Ghost<br>#333130</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#8ba4b8;"></div>
+      <div class="swatch-label">Accent<br>#8BA4B8</div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#b89a78;"></div>
+      <div class="swatch-label">Warm<br>#B89A78</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: SITE FLOW -->
+<div class="section">
+  <div class="section-label">Site Architecture</div>
+  <div class="section-title">Two registers</div>
+  <div class="section-desc">Cinematic register for the homepage and transitions. Professional register for case studies and about. Coddiwomple bridges both.</div>
+
+  <div class="flow">
+    <div class="flow-box cinematic">Homepage<br><small>List / Slider</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box professional">Case Study<br><small>Clean editorial</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box cinematic">Next Project<br><small>Cinematic transition</small></div>
+  </div>
+  <div class="flow" style="margin-top:16px;">
+    <div class="flow-box professional">About<br><small>Typography-forward</small></div>
+    <div class="flow-arrow">&nbsp;</div>
+    <div class="flow-box cinematic" style="border-color:rgba(180,160,120,0.2);color:rgba(180,160,120,0.5);">Coddiwomple<br><small>Visual / atmospheric</small></div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-bar">
+  <button class="confirm-btn" onclick="confirmVision(this)">This is the direction</button>
+  <div class="confirm-hint">Click to approve · then respond in terminal with any notes</div>
+</div>
+
+<script>
+  function confirmVision(btn) {
+    btn.classList.add('clicked');
+    btn.textContent = 'Direction confirmed';
+    fetch('/.events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'click', choice: 'approved', text: 'Direction confirmed', timestamp: Math.floor(Date.now()/1000) })
+    }).catch(() => {});
+  }
+</script>
+
+</body>
+</html>

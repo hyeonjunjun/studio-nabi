@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Works Page Approaches</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0a0a0a;
+    color: #e0ddd8;
+  }
+
+  .page-header {
+    padding: 40px 48px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .page-header h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 12px;
+  }
+  .page-header h2 {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 400;
+    color: #e0ddd8;
+  }
+  .page-header p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 8px;
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  .approaches {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .approach {
+    padding: 40px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .approach:hover { background: rgba(255,255,255,0.02); }
+  .approach.selected { background: rgba(139,164,184,0.04); }
+  .approach.selected .approach-label { color: #8ba4b8; }
+
+  .approach-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  .approach-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    transition: color 0.3s;
+  }
+  .approach-rec {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: #8ba4b8;
+    padding: 2px 6px;
+    border: 1px solid rgba(139,164,184,0.3);
+  }
+  .approach-title {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: #e0ddd8;
+    margin-bottom: 8px;
+  }
+  .approach-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+
+  /* Mockup frames */
+  .mockup-row {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .mockup-frame {
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .mockup-bar {
+    height: 20px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .mockup-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+  .mockup-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.15);
+    margin-left: auto;
+  }
+
+  /* === APPROACH A: Cinematic Scroll === */
+  .scene-scroll {
+    width: 560px;
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 24px 32px;
+  }
+  .scroll-scene-1 {
+    background: linear-gradient(175deg, #1a1e2a, #0f1420 40%, #151b28 70%, #0d1117);
+  }
+  .scroll-scene-1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 35%, rgba(100,130,170,0.08), transparent 55%);
+  }
+  .scroll-scene-1 .img-placeholder {
+    position: absolute;
+    top: 20px; left: 32px; right: 32px; bottom: 70px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scroll-scene-1 .img-placeholder span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.12);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scroll-scene .scene-text {
+    position: relative;
+    z-index: 2;
+  }
+  .scroll-scene .scene-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .scroll-scene .scene-title {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 24px;
+    color: rgba(224,221,216,0.85);
+    letter-spacing: -0.01em;
+  }
+  .scroll-scene .scene-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* Progress dots */
+  .scroll-progress {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 3;
+  }
+  .scroll-progress .dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .scroll-progress .dot.active {
+    background: rgba(255,255,255,0.5);
+    box-shadow: 0 0 6px rgba(139,164,184,0.3);
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    z-index: 3;
+  }
+
+  /* Second scene (next project peeking) */
+  .scroll-scene-2 {
+    top: auto;
+    bottom: 0;
+    height: 40px;
+    background: linear-gradient(to top, #0d1117, rgba(13,17,23,0.7));
+    align-items: center;
+    padding: 0 32px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .scroll-scene-2 .peek-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* === APPROACH B: Horizontal Slider === */
+  .scene-slider {
+    width: 560px;
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+    background: #0d1117;
+  }
+  .slider-track {
+    display: flex;
+    height: 100%;
+    position: relative;
+  }
+  .slider-card {
+    min-width: 360px;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 28px;
+  }
+  .slider-card-1 {
+    background: linear-gradient(175deg, #151c28, #0f1520 50%, #0d1117);
+  }
+  .slider-card-1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 55% 30%, rgba(100,130,170,0.06), transparent 50%);
+  }
+  .slider-card .card-img {
+    position: absolute;
+    top: 16px; left: 24px; right: 24px; bottom: 80px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slider-card .card-img span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .slider-card .card-text {
+    position: relative;
+    z-index: 2;
+  }
+  .slider-card .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+  }
+  .slider-card .card-title {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: rgba(224,221,216,0.85);
+    margin-top: 2px;
+  }
+  .slider-card .card-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  /* Next card peeking */
+  .slider-card-2 {
+    min-width: 200px;
+    background: linear-gradient(175deg, #12181f, #0d1117);
+    opacity: 0.4;
+    border-left: 1px solid rgba(255,255,255,0.04);
+  }
+  /* Slider controls */
+  .slider-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    display: flex;
+    gap: 12px;
+    z-index: 3;
+  }
+  .slider-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    cursor: pointer;
+  }
+  .slider-counter {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.08em;
+    z-index: 3;
+  }
+
+  /* === APPROACH C: Hybrid === */
+  .scene-hybrid {
+    width: 560px;
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+    background: #0d1117;
+    display: flex;
+  }
+  .hybrid-list {
+    width: 220px;
+    padding: 20px 16px;
+    border-right: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .hybrid-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px;
+    transition: background 0.3s;
+  }
+  .hybrid-row.active {
+    background: rgba(139,164,184,0.06);
+  }
+  .hybrid-row .h-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.15);
+    min-width: 16px;
+  }
+  .hybrid-row .h-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+  }
+  .hybrid-row.active .h-title {
+    color: rgba(224,221,216,0.8);
+  }
+  .hybrid-row .h-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.12);
+    margin-left: auto;
+  }
+  .hybrid-preview {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px 24px;
+    background: linear-gradient(175deg, #151c28, #0f1520 50%, #0d1117);
+  }
+  .hybrid-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 35%, rgba(100,130,170,0.06), transparent 55%);
+  }
+  .hybrid-preview .preview-img {
+    position: absolute;
+    top: 16px; left: 20px; right: 20px; bottom: 70px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hybrid-preview .preview-img span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hybrid-preview .preview-text {
+    position: relative;
+    z-index: 2;
+  }
+  .hybrid-preview .preview-title {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: rgba(224,221,216,0.85);
+  }
+  .hybrid-preview .preview-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  .hybrid-toggle {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    z-index: 3;
+  }
+
+  .pros-cons {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+  }
+  .pros, .cons {
+    flex: 1;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .pros h4, .cons h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .pros h4 { color: rgba(139,184,164,0.6); }
+  .cons h4 { color: rgba(184,139,139,0.6); }
+  .pros li, .cons li {
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 3px;
+    list-style: none;
+    padding-left: 12px;
+    position: relative;
+  }
+  .pros li::before { content: '+'; position: absolute; left: 0; color: rgba(139,184,164,0.4); }
+  .cons li::before { content: '−'; position: absolute; left: 0; color: rgba(184,139,139,0.4); }
+
+  .click-hint {
+    text-align: center;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Works Page</h1>
+  <h2>How projects are experienced</h2>
+  <p>Three approaches for the project index — all within the cooler cinematic palette. Click the one that resonates most.</p>
+</div>
+
+<div class="approaches">
+
+  <!-- APPROACH A: Cinematic Scroll (Okada-inspired) -->
+  <div class="approach" data-choice="scroll" onclick="selectApproach(this)">
+    <div class="approach-header">
+      <span class="approach-label">Approach A</span>
+      <span class="approach-rec">Recommended</span>
+    </div>
+    <div class="approach-title">Cinematic scroll — Okada-inspired</div>
+    <div class="approach-desc">
+      Each project is a full-viewport scene. Scroll drives you through them like chapters of a film. Parallax depth on images, titles reveal on entry, progress dots on the side. Inspired by Tomoya Okada's scroll-linked storytelling.
+    </div>
+
+    <div class="mockup-row">
+      <div class="mockup-frame">
+        <div class="mockup-bar">
+          <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
+          <span class="mockup-label">Scene 1 of 7</span>
+        </div>
+        <div class="scene-scroll">
+          <div class="scroll-scene scroll-scene-1">
+            <div class="img-placeholder"><span>Project hero image · parallax</span></div>
+            <div class="scene-text">
+              <span class="scene-num">01</span>
+              <div class="scene-title">GYEOL · 결</div>
+              <div class="scene-meta">Material · Digital &nbsp; 2024</div>
+            </div>
+          </div>
+          <div class="scroll-progress">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="scroll-hint">Scroll to explore</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Strengths</h4>
+        <ul>
+          <li>Most cinematic — each project is an experience</li>
+          <li>Parallax and scroll-driven reveals feel premium</li>
+          <li>Natural progression (scroll = advance)</li>
+          <li>Strong alignment with Okada's approach</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Trade-offs</h4>
+        <ul>
+          <li>Requires hero images for every project</li>
+          <li>Slower browsing — can't quickly scan all projects</li>
+          <li>Complex scroll-jacking can feel heavy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH B: Horizontal Slider (Cathydolle-inspired) -->
+  <div class="approach" data-choice="slider" onclick="selectApproach(this)">
+    <div class="approach-header">
+      <span class="approach-label">Approach B</span>
+    </div>
+    <div class="approach-title">Horizontal slider — Cathydolle-inspired</div>
+    <div class="approach-desc">
+      Projects arranged as horizontal cards you swipe/drag through. Each card shows a cinematic hero image with metadata overlay. Next card peeks from the right. Drag or arrow keys to navigate. Like flipping through film stills.
+    </div>
+
+    <div class="mockup-row">
+      <div class="mockup-frame">
+        <div class="mockup-bar">
+          <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
+          <span class="mockup-label">Drag to browse</span>
+        </div>
+        <div class="scene-slider">
+          <div class="slider-counter">01 / 07</div>
+          <div class="slider-track">
+            <div class="slider-card slider-card-1">
+              <div class="card-img"><span>Project hero · cinematic crop</span></div>
+              <div class="card-text">
+                <div class="card-num">01</div>
+                <div class="card-title">GYEOL · 결</div>
+                <div class="card-meta">Material · Digital &nbsp; 2024</div>
+              </div>
+            </div>
+            <div class="slider-card slider-card-2">
+              <div class="card-img"><span>Next project</span></div>
+              <div class="card-text">
+                <div class="card-num">02</div>
+                <div class="card-title">Conductor</div>
+              </div>
+            </div>
+          </div>
+          <div class="slider-controls">
+            <span class="slider-arrow">←</span>
+            <span class="slider-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Strengths</h4>
+        <ul>
+          <li>Direct Cathydolle lineage — proven pattern</li>
+          <li>Horizontal = distinctly cinematic (film strip feel)</li>
+          <li>Drag interaction feels tactile and engaging</li>
+          <li>Peek of next card creates anticipation</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Trade-offs</h4>
+        <ul>
+          <li>Horizontal scroll can feel unnatural on desktop</li>
+          <li>Also requires hero images for every project</li>
+          <li>No quick overview of all projects at once</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH C: Hybrid List + Preview -->
+  <div class="approach" data-choice="hybrid" onclick="selectApproach(this)">
+    <div class="approach-header">
+      <span class="approach-label">Approach C</span>
+    </div>
+    <div class="approach-title">Hybrid — list index with cinematic preview</div>
+    <div class="approach-desc">
+      Split layout: text list on the left (scannable), cinematic preview panel on the right that updates as you navigate the list. Best of both — you can quickly scan projects while getting a visual moment for each. Clicking enters the case study.
+    </div>
+
+    <div class="mockup-row">
+      <div class="mockup-frame">
+        <div class="mockup-bar">
+          <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
+          <span class="mockup-label">Click a project to preview</span>
+        </div>
+        <div class="scene-hybrid">
+          <div class="hybrid-toggle">List · Slider</div>
+          <div class="hybrid-list">
+            <div class="hybrid-row active">
+              <span class="h-num">01</span>
+              <span class="h-title">GYEOL · 결</span>
+              <span class="h-year">2024</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">02</span>
+              <span class="h-title">Conductor</span>
+              <span class="h-year">WIP</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">03</span>
+              <span class="h-title">Sift</span>
+              <span class="h-year">2025</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">04</span>
+              <span class="h-title">Moji</span>
+              <span class="h-year">2025</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">05</span>
+              <span class="h-title">하나 Hana</span>
+              <span class="h-year">2025</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">06</span>
+              <span class="h-title">Pour</span>
+              <span class="h-year">2024</span>
+            </div>
+            <div class="hybrid-row">
+              <span class="h-num">07</span>
+              <span class="h-title">Atlas</span>
+              <span class="h-year">2024</span>
+            </div>
+          </div>
+          <div class="hybrid-preview">
+            <div class="preview-img"><span>Active project hero</span></div>
+            <div class="preview-text">
+              <div class="preview-title">GYEOL · 결</div>
+              <div class="preview-meta">Material · Digital &nbsp; 2024</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>Strengths</h4>
+        <ul>
+          <li>Scannable — see all projects at a glance</li>
+          <li>Preview gives visual context without leaving</li>
+          <li>Can toggle to full slider mode (Cathydolle-style)</li>
+          <li>Works well with projects that don't have hero images yet</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>Trade-offs</h4>
+        <ul>
+          <li>Less cinematic than full-viewport scenes</li>
+          <li>Split layout can feel cramped on smaller screens</li>
+          <li>More complex to build (two modes)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="click-hint">Click an approach to select · then respond in terminal</div>
+
+<script>
+  function selectApproach(el) {
+    document.querySelectorAll('.approach').forEach(a => a.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.getAttribute('data-choice');
+    const text = el.querySelector('.approach-title').textContent;
+    fetch('/.events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'click', choice, text, timestamp: Math.floor(Date.now()/1000) })
+    }).catch(() => {});
+  }
+</script>
+
+</body>
+</html>
