@@ -9,7 +9,6 @@ import { useTransitionNavigate } from "@/hooks/useTransitionNavigate";
 import { NAV_LINKS } from "@/constants/navigation";
 import TransitionLink from "@/components/TransitionLink";
 import MobileMenu from "@/components/MobileMenu";
-import PixelArt from "@/components/PixelArt";
 
 export default function GlobalNav() {
   const mobileMenuOpen = useStudioStore((s) => s.mobileMenuOpen);
@@ -74,7 +73,7 @@ export default function GlobalNav() {
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
+        className="fixed top-0 left-0 right-0 z-[500] flex items-center justify-between"
         style={{
           height: 48, /* matches Hero paddingTop — 4×12 baseline */
           padding: "0 var(--page-px)",
@@ -85,7 +84,6 @@ export default function GlobalNav() {
       >
         {/* Studio mark */}
         <div className="flex items-center gap-2" data-nav-el>
-          <PixelArt />
           <TransitionLink href="/">
             <span
               className="font-mono"
@@ -96,7 +94,7 @@ export default function GlobalNav() {
                 color: "var(--color-text-dim)",
               }}
             >
-              HKJ Studio
+              hkj
             </span>
           </TransitionLink>
         </div>

@@ -5,7 +5,6 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import GlobalNav from "@/components/GlobalNav";
 import PageTransition from "@/components/PageTransition";
-import TimeProvider from "@/components/TimeProvider";
 
 /* ── Fonts ── */
 
@@ -77,7 +76,6 @@ export default function RootLayout({
         className={`${gtAlpina.variable} ${sohne.variable} ${jetbrainsMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <TimeProvider />
         <GlobalNav />
         <PageTransition />
 

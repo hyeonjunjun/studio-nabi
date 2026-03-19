@@ -93,7 +93,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[60] flex-col"
+      className="fixed inset-0 z-[9500] flex-col"
       style={{
         backgroundColor: "var(--color-bg)",
         display: "none",

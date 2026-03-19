@@ -1,18 +1,21 @@
 import { create } from "zustand";
-import type { TimePeriod } from "@/lib/time";
 
 interface StudioState {
+  /** Whether the initial preloader has played */
+  isLoaded: boolean;
+  setIsLoaded: (v: boolean) => void;
+
   /** Whether the mobile menu is open */
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (v: boolean) => void;
 
-  /** Current time period for dynamic theming */
-  timePeriod: TimePeriod;
-  setTimePeriod: (v: TimePeriod) => void;
+  /** Homepage view mode */
+  viewMode: "list" | "slider";
+  setViewMode: (v: "list" | "slider") => void;
 
-  /** Manual time override (click-to-cycle pixel art) — null = use clock */
-  timeOverride: TimePeriod | null;
-  setTimeOverride: (v: TimePeriod | null) => void;
+  /** Active project index in slider mode */
+  activeProjectIndex: number;
+  setActiveProjectIndex: (v: number) => void;
 
   /** Page transition state */
   isTransitioning: boolean;
@@ -22,14 +25,17 @@ interface StudioState {
 }
 
 export const useStudioStore = create<StudioState>((set) => ({
+  isLoaded: false,
+  setIsLoaded: (v) => set({ isLoaded: v }),
+
   mobileMenuOpen: false,
   setMobileMenuOpen: (v) => set({ mobileMenuOpen: v }),
 
-  timePeriod: "day",
-  setTimePeriod: (v) => set({ timePeriod: v }),
+  viewMode: "list",
+  setViewMode: (v) => set({ viewMode: v }),
 
-  timeOverride: null,
-  setTimeOverride: (v) => set({ timeOverride: v }),
+  activeProjectIndex: 0,
+  setActiveProjectIndex: (v) => set({ activeProjectIndex: v }),
 
   isTransitioning: false,
   pendingRoute: null,
