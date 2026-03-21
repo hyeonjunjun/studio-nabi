@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { usePathname } from "next/navigation";
 import { useLenis } from "lenis/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useStudioStore } from "@/lib/store";
@@ -16,7 +15,6 @@ export default function GlobalNav() {
   const navRef = useRef<HTMLElement>(null);
   const lenis = useLenis();
   const navigate = useTransitionNavigate();
-  const pathname = usePathname();
   const handleNavClick = useCallback(
     (href: string) => {
       if (href.startsWith("#")) {
@@ -54,7 +52,7 @@ export default function GlobalNav() {
     return () => {
       directionTrigger.kill();
     };
-  }, [isHome]);
+  }, []);
 
   // Entrance on mount
   useEffect(() => {
@@ -65,7 +63,7 @@ export default function GlobalNav() {
       { opacity: 0 },
       { opacity: 1, duration: 0.6, stagger: 0.1, ease: "power3.out" }
     );
-  }, [isHome]);
+  }, []);
 
   // TODO: Replace the "hkj" text mark with a proper logotype/monogram component
 
