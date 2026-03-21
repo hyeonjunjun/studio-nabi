@@ -9,14 +9,6 @@ interface StudioState {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (v: boolean) => void;
 
-  /** Homepage view mode */
-  viewMode: "list" | "slider";
-  setViewMode: (v: "list" | "slider") => void;
-
-  /** Active project index in slider mode */
-  activeProjectIndex: number;
-  setActiveProjectIndex: (v: number) => void;
-
   /** Page transition state */
   isTransitioning: boolean;
   pendingRoute: string | null;
@@ -30,12 +22,6 @@ export const useStudioStore = create<StudioState>((set) => ({
 
   mobileMenuOpen: false,
   setMobileMenuOpen: (v) => set({ mobileMenuOpen: v }),
-
-  viewMode: "list",
-  setViewMode: (v) => set({ viewMode: v }),
-
-  activeProjectIndex: 0,
-  setActiveProjectIndex: (v) => set({ activeProjectIndex: v }),
 
   isTransitioning: false,
   pendingRoute: null,

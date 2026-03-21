@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 /**
- * HKJ — Cool Atmospheric Dark
+ * HKJ — Warm Light
  *
  * Type: GT Alpina (display) + Söhne (body) + JetBrains Mono (metadata)
- * Palette: Cool dark base, warm off-white text, steel-blue accent
- * Motion: GSAP (ScrollTrigger) + Framer Motion (AnimatePresence, layoutId, drag)
+ * Palette: Warm off-white base, dark text, steel-blue accent
+ * Motion: GSAP (ScrollTrigger) + Framer Motion (AnimatePresence, layoutId)
  */
 
 :root {
@@ -22,28 +22,28 @@
   --text-small: clamp(0.72rem, 0.8vw, 0.78rem);
   --text-micro: 10px;
 
-  /* ── Ink Opacity Scale ── */
-  --ink: 212, 208, 202;
+  /* ── Ink Opacity Scale (dark ink on light ground) ── */
+  --ink: 26, 25, 23;
   --ink-primary: rgba(var(--ink), 0.85);
   --ink-secondary: rgba(var(--ink), 0.55);
   --ink-muted: rgba(var(--ink), 0.38);
-  --ink-faint: rgba(var(--ink), 0.22);
-  --ink-ghost: rgba(var(--ink), 0.12);
-  --ink-whisper: rgba(var(--ink), 0.06);
+  --ink-faint: rgba(var(--ink), 0.18);
+  --ink-ghost: rgba(var(--ink), 0.10);
+  --ink-whisper: rgba(var(--ink), 0.05);
 
-  /* ── Cool Atmospheric Palette ── */
-  --color-bg: #0C0D10;
-  --color-bg-rgb: 12, 13, 16;
-  --color-surface: #141619;
-  --color-elevated: #1A1E26;
-  --color-border: rgba(var(--color-text-rgb), 0.06);
-  --color-border-strong: rgba(var(--color-text-rgb), 0.12);
-  --color-text: #D4D0CA;
-  --color-text-rgb: 212, 208, 202;
-  --color-text-secondary: #8A8580;
-  --color-text-dim: #555250;
-  --color-text-ghost: #333130;
-  --color-accent: #8BA4B8;
+  /* ── Warm Light Palette ── */
+  --color-bg: #F5F2ED;
+  --color-bg-rgb: 245, 242, 237;
+  --color-surface: #EEEAE4;
+  --color-elevated: #E8E3DB;
+  --color-border: rgba(var(--ink), 0.08);
+  --color-border-strong: rgba(var(--ink), 0.15);
+  --color-text: #1A1917;
+  --color-text-rgb: 26, 25, 23;
+  --color-text-secondary: #5C5A56;
+  --color-text-dim: #8A8780;
+  --color-text-ghost: #B8B4AD;
+  --color-accent: #5E84A0;
   --color-warm: #B89A78;
 
   /* ── Spacing ── */
@@ -143,10 +143,10 @@ body {
   background-image: url('/assets/grain-200x200.png');
   background-repeat: repeat;
   background-size: 200px 200px;
-  opacity: 0.03;
+  opacity: 0.04;
   pointer-events: none;
   z-index: 100;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
 }
 
 /* ── Cover Grain ── */
@@ -158,8 +158,8 @@ body {
   background-image: url('/assets/grain-200x200.png');
   background-repeat: repeat;
   background-size: 200px 200px;
-  opacity: 0.06;
-  mix-blend-mode: screen;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -174,7 +174,7 @@ body {
 
 ::selection {
   background-color: var(--color-accent);
-  color: var(--color-bg);
+  color: #fff;
 }
 
 /* ── Focus Visible ── */

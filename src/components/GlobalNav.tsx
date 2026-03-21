@@ -17,8 +17,6 @@ export default function GlobalNav() {
   const lenis = useLenis();
   const navigate = useTransitionNavigate();
   const pathname = usePathname();
-  const isHome = pathname === "/";
-
   const handleNavClick = useCallback(
     (href: string) => {
       if (href.startsWith("#")) {
@@ -33,9 +31,9 @@ export default function GlobalNav() {
     [lenis, navigate]
   );
 
-  // Scroll-direction show/hide (non-homepage only)
+  // Scroll-direction show/hide
   useEffect(() => {
-    if (!navRef.current || isHome) return;
+    if (!navRef.current) return;
 
     const nav = navRef.current;
     gsap.set(nav, { y: 0, opacity: 1 });
@@ -60,7 +58,7 @@ export default function GlobalNav() {
 
   // Entrance on mount
   useEffect(() => {
-    if (!navRef.current || isHome) return;
+    if (!navRef.current) return;
 
     gsap.fromTo(
       navRef.current.querySelectorAll("[data-nav-el]"),
@@ -69,15 +67,7 @@ export default function GlobalNav() {
     );
   }, [isHome]);
 
-  // Homepage has its own chrome (HomepageChrome) — only render MobileMenu here
-  if (isHome) {
-    return (
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-      />
-    );
-  }
+  // TODO: Replace the "hkj" text mark with a proper logotype/monogram component
 
   return (
     <>
@@ -87,9 +77,9 @@ export default function GlobalNav() {
         style={{
           height: 48, /* matches Hero paddingTop — 4×12 baseline */
           padding: "0 var(--page-px)",
-          backgroundColor: isHome ? "transparent" : "rgba(var(--color-bg-rgb), 0.92)",
-          backdropFilter: isHome ? "none" : "blur(8px)",
-          WebkitBackdropFilter: isHome ? "none" : "blur(8px)",
+          backgroundColor: "rgba(var(--color-bg-rgb), 0.92)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
         }}
       >
         {/* Studio mark */}
