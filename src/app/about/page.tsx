@@ -53,8 +53,8 @@ export default function AboutPage() {
             }}
             data-reveal
           >
-            HKJ is a one-person design engineering practice based between
-            New York and Seoul. I care about type, motion, and the invisible
+            HKJ is a one-person design engineering practice based in
+            New York. I care about type, motion, and the invisible
             details that make software feel intentional.
           </p>
 
@@ -188,7 +188,7 @@ export default function AboutPage() {
                 marginTop: 8,
               }}
             >
-              New York / Seoul &middot; Available for select projects
+              New York &middot; Available for select projects
             </p>
           </div>
 

@@ -1,10 +1,15 @@
 "use client";
 
 import { use, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink";
 import { gsap } from "@/lib/gsap";
 import { EXPLORATIONS } from "@/constants/explorations";
+
+const CloudCanvas = dynamic(() => import("@/components/CloudCanvas"), {
+  ssr: false,
+});
 
 export default function CoddiwomplePiecePage({
   params,
@@ -64,7 +69,19 @@ export default function CoddiwomplePiecePage({
           overflow: "hidden",
         }}
       >
-        {piece.heroType === "video" ? (
+        {piece.heroType === "interactive" ? (
+          <>
+            <CloudCanvas
+              className="w-full h-full"
+              style={{ position: "absolute", inset: 0 }}
+            />
+            {/* Paper grain overlay */}
+            <div
+              className="cover-grain"
+              style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+            />
+          </>
+        ) : piece.heroType === "video" ? (
           <video
             src={piece.hero}
             autoPlay
@@ -85,14 +102,17 @@ export default function CoddiwomplePiecePage({
           />
         )}
 
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%)",
-          }}
-        />
+        {/* Gradient overlay — skip for interactive (light canvas) */}
+        {piece.heroType !== "interactive" && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 40%)",
+            }}
+          />
+        )}
 
         {/* Back link */}
         <TransitionLink
@@ -104,16 +124,12 @@ export default function CoddiwomplePiecePage({
             left: "var(--page-px)",
             fontSize: 10,
             letterSpacing: "0.1em",
-            color: "rgba(255,255,255,0.7)",
+            color: piece.heroType === "interactive"
+              ? "var(--color-text-dim)"
+              : "rgba(255,255,255,0.7)",
             zIndex: 10,
             transition: "color 0.3s ease",
           }}
-          onMouseEnter={(e) =>
-            ((e.target as HTMLElement).style.color = "#fff")
-          }
-          onMouseLeave={(e) =>
-            ((e.target as HTMLElement).style.color = "rgba(255,255,255,0.7)")
-          }
         >
           Coddiwomple
         </TransitionLink>
@@ -132,9 +148,13 @@ export default function CoddiwomplePiecePage({
             className="font-display italic"
             style={{
               fontSize: "clamp(2rem, 4vw, 3.5rem)",
-              color: "#fff",
+              color: piece.heroType === "interactive"
+                ? "var(--color-text)"
+                : "#fff",
               lineHeight: 1.1,
-              textShadow: "0 2px 12px rgba(0,0,0,0.25)",
+              textShadow: piece.heroType === "interactive"
+                ? "none"
+                : "0 2px 12px rgba(0,0,0,0.25)",
             }}
           >
             {piece.title}
@@ -244,7 +264,7 @@ export default function CoddiwomplePiecePage({
           cursor: "pointer",
         }}
       >
-        {nextPiece.heroType === "video" ? (
+        {nextPiece.heroType === "video" || nextPiece.heroType === "interactive" ? (
           <video
             src={nextPiece.hero}
             autoPlay

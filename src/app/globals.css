@@ -163,16 +163,19 @@ body {
   .span-w-7 { width: 95.73vw; }
   .span-w-8 { width: 95.73vw; }
   .span-w-12 { width: 95.73vw; }
-  .span-ml-1 { margin-left: 14.18vw; }
-  .span-ml-2 { margin-left: 32.62vw; }
+  .span-ml-1 { margin-left: var(--page-px); }
+  .span-ml-2 { margin-left: var(--page-px); }
+
+  /* Coddiwomple gallery: stack on mobile */
+  [data-explore-grid] { grid-template-columns: 1fr !important; }
+  [data-explore-item] { grid-column: 1 / -1 !important; }
 }
 
 /* ── Card Hover ── */
 
 [data-project-card] article {
-  transition:
-    transform var(--duration-fast) var(--ease-out-expo),
-    box-shadow var(--duration-fast) var(--ease-out-expo);
+  transition: transform var(--duration-fast) var(--ease-out-expo),
+              box-shadow var(--duration-fast) var(--ease-out-expo);
   box-shadow: var(--shadow-sm);
 }
 

@@ -7,7 +7,11 @@ import { gsap } from "@/lib/gsap";
 import { REVEAL_MEDIA } from "@/lib/animations";
 import { PROJECTS } from "@/constants/projects";
 
-const visibleProjects = PROJECTS.filter((p) => !p.wip);
+/* ── Only show projects with real images and case study content ── */
+const READY_IDS = new Set(["gyeol", "sift"]);
+const visibleProjects = PROJECTS.filter(
+  (p) => !p.wip && READY_IDS.has(p.id)
+);
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -16,22 +20,38 @@ export default function Home() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    /* ── Hero: word-by-word stagger with clip mask ── */
     if (heroRef.current) {
-      const els = heroRef.current.querySelectorAll("[data-hero-el]");
+      const words = heroRef.current.querySelectorAll("[data-word]");
       gsap.fromTo(
-        els,
-        { opacity: 0, y: 12 },
+        words,
+        { yPercent: 100, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.04,
+          ease: "expo.out",
+          delay: 0.2,
+        }
+      );
+
+      const rest = heroRef.current.querySelectorAll("[data-hero-el]");
+      gsap.fromTo(
+        rest,
+        { opacity: 0, y: 14 },
         {
           opacity: 1,
           y: 0,
           duration: 0.7,
-          stagger: 0.06,
+          stagger: 0.08,
           ease: "expo.out",
-          delay: 0.15,
+          delay: 0.5,
         }
       );
     }
 
+    /* ── Grid: stagger reveal ── */
     if (gridRef.current) {
       const cards = gridRef.current.querySelectorAll("[data-project-card]");
       gsap.fromTo(cards, REVEAL_MEDIA.from, { ...REVEAL_MEDIA.to });
@@ -50,10 +70,11 @@ export default function Home() {
       <header
         ref={heroRef}
         className="section-padding"
-        style={{ marginBottom: "clamp(4rem, 8vh, 7rem)" }}
+        style={{
+          marginBottom: "clamp(4rem, 8vh, 7rem)",
+        }}
       >
         <h1
-          data-hero-el
           className="font-display italic"
           style={{
             fontSize: "clamp(2.2rem, 4vw, 3.6rem)",
@@ -64,7 +85,25 @@ export default function Home() {
             maxWidth: "18ch",
           }}
         >
-          Design engineering practice
+          {"Design engineering practice".split(" ").map((word, i) => (
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                overflow: "hidden",
+                verticalAlign: "top",
+                paddingBottom: "0.05em",
+              }}
+            >
+              <span
+                data-word
+                style={{ display: "inline-block", opacity: 0 }}
+              >
+                {word}
+              </span>
+              {i < 2 && "\u00A0"}
+            </span>
+          ))}
         </h1>
         <p
           data-hero-el
@@ -76,6 +115,7 @@ export default function Home() {
             letterSpacing: "var(--tracking-snug)",
             lineHeight: "var(--leading-relaxed)",
             maxWidth: "38ch",
+            opacity: 0,
           }}
         >
           Building products that feel considered — from system
@@ -89,6 +129,7 @@ export default function Home() {
             gap: "1.5rem",
             alignItems: "center",
             marginTop: "clamp(1.5rem, 3vh, 2.5rem)",
+            opacity: 0,
           }}
         >
           <span
@@ -99,7 +140,7 @@ export default function Home() {
               color: "var(--color-text-dim)",
             }}
           >
-            New York / Seoul
+            New York
           </span>
           <span
             style={{
@@ -147,7 +188,7 @@ export default function Home() {
         className="section-padding"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))",
           gap: "clamp(1.5rem, 3vw, 2.5rem)",
         }}
       >
@@ -254,7 +295,7 @@ export default function Home() {
           borderTop: "1px solid var(--color-border)",
         }}
       >
-        <div className="flex items-end justify-between">
+        <div className="flex items-end justify-between" style={{ flexWrap: "wrap", gap: "0.5rem" }}>
           <div>
             <h2
               className="font-display italic"

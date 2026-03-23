@@ -4,9 +4,9 @@ export interface Exploration {
   medium: string;
   date: string;
   description: string;
-  /** Hero media — image or video */
+  /** Hero media — image, video, or interactive component */
   hero: string;
-  heroType: "image" | "video";
+  heroType: "image" | "video" | "interactive";
   /** Optional thumbnail override for gallery (defaults to hero) */
   thumbnail?: string;
   /** Dominant palette color for mood background */
@@ -19,12 +19,14 @@ export const EXPLORATIONS: Exploration[] = [
   {
     id: "clouds-at-sea",
     title: "Clouds at Sea",
-    medium: "video",
+    medium: "WebGL shader",
     date: "2026-03",
     description: "Somewhere between water and sky, the horizon dissolves.",
     hero: "/assets/cloudsatsea.mp4",
-    heroType: "video",
+    heroType: "interactive",
     mood: "#8BA4B8",
+    process:
+      "Procedural clouds rendered in real-time using layered fractional Brownian motion. Five octaves of value noise with per-octave rotation create organic structure. Move your cursor to create wind. Click to clear.",
   },
   {
     id: "gyeol-spring",

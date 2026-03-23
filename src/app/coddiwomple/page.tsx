@@ -59,6 +59,7 @@ export default function CoddiwomplePage() {
       <div
         ref={gridRef}
         className="section-padding"
+        data-explore-grid
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
@@ -89,7 +90,7 @@ export default function CoddiwomplePage() {
                   position: "relative",
                 }}
               >
-                {piece.heroType === "video" ? (
+                {piece.heroType === "video" || piece.heroType === "interactive" ? (
                   <video
                     src={piece.hero}
                     autoPlay
@@ -132,7 +133,7 @@ export default function CoddiwomplePage() {
                       alt={piece.title}
                       fill
                       className="object-cover"
-                      sizes={isWide ? "58vw" : "42vw"}
+                      sizes={`(max-width: 767px) 100vw, ${isWide ? "58vw" : "42vw"}`}
                       quality={90}
                     />
                   </div>

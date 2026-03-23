@@ -76,7 +76,21 @@
       "Bash(where:*)",
       "Bash(dir:*)",
       "Bash(timeout /t 30 /nobreak:*)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(cd:*)",
+      "WebFetch(domain:baoto.me)",
+      "WebFetch(domain:www.baothiento.com)",
+      "WebFetch(domain:rauno.me)",
+      "WebFetch(domain:lynnandtonic.com)",
+      "WebFetch(domain:robbowen.digital)",
+      "WebFetch(domain:lusion.co)",
+      "WebFetch(domain:activetheory.net)",
+      "WebFetch(domain:immersive-g.com)",
+      "WebFetch(domain:14islands.com)",
+      "WebFetch(domain:resn.co.nz)",
+      "WebFetch(domain:tomb.wtf)",
+      "WebFetch(domain:yuriartiukh.com)",
+      "Bash(ls \"c:\\\\Users\\\\Ryan Jun\\\\.gemini\\\\antigravity\\\\scratch\\\\hkjstudio\\\\public\\\\assets\"\" 2>/dev/null; ls \"c:UsersRyan Jun.geminiantigravityscratchhkjstudiopublicimages\"\")"
     ]
   }
 }
