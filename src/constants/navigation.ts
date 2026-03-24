@@ -1,16 +1,7 @@
-export interface NavLink {
-  label: string;
-  href: string;
-}
-
-export const NAV_LINKS: NavLink[] = [
+export const NAV_LINKS = [
+  { label: "Work", href: "/#work" },
+  { label: "Experiments", href: "/experiments" },
   { label: "About", href: "/about" },
-  { label: "Journal", href: "/journal" },
-  { label: "Coddiwomple", href: "/coddiwomple" },
-];
+] as const;
 
-export const MENU_LINKS: NavLink[] = [
-  { label: "About", href: "/about" },
-  { label: "Journal", href: "/journal" },
-  { label: "Coddiwomple", href: "/coddiwomple" },
-];
+export const FOOTER_LINKS = NAV_LINKS;
