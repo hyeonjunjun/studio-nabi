@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
       { source: "/coddiwomple/:slug",   destination: "/exploration", permanent: true },
       { source: "/experiments",         destination: "/exploration", permanent: true },
       { source: "/experiments/:slug",   destination: "/exploration", permanent: true },
-      { source: "/journal",             destination: "/",            permanent: true },
-      { source: "/journal/:slug",       destination: "/",            permanent: true },
+      { source: "/journal",             destination: "/writing",      permanent: true },
+      { source: "/journal/:slug",       destination: "/writing/:slug", permanent: true },
     ];
   },
 };
