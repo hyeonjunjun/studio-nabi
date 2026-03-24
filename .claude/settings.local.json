@@ -90,7 +90,8 @@
       "WebFetch(domain:resn.co.nz)",
       "WebFetch(domain:tomb.wtf)",
       "WebFetch(domain:yuriartiukh.com)",
-      "Bash(ls \"c:\\\\Users\\\\Ryan Jun\\\\.gemini\\\\antigravity\\\\scratch\\\\hkjstudio\\\\public\\\\assets\"\" 2>/dev/null; ls \"c:UsersRyan Jun.geminiantigravityscratchhkjstudiopublicimages\"\")"
+      "Bash(ls \"c:\\\\Users\\\\Ryan Jun\\\\.gemini\\\\antigravity\\\\scratch\\\\hkjstudio\\\\public\\\\assets\"\" 2>/dev/null; ls \"c:UsersRyan Jun.geminiantigravityscratchhkjstudiopublicimages\"\")",
+      "WebSearch"
     ]
   }
 }
