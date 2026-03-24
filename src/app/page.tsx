@@ -86,7 +86,7 @@ export default function Home() {
     }
   }, []);
 
-  const tagline = "Design engineering practice";
+  const tagline = "Hyeon Jun";
 
   return (
     <div className="page-container">
@@ -144,8 +144,8 @@ export default function Home() {
             opacity: 0,
           }}
         >
-          Building products that feel considered — from system
-          design to pixel-level detail.
+          design engineer building interfaces, systems, and the
+          things between them.
         </p>
 
         <div
@@ -187,7 +187,7 @@ export default function Home() {
               color: "var(--ink-muted)",
             }}
           >
-            Available for select projects
+            Open to work
           </span>
         </div>
       </header>
@@ -204,7 +204,7 @@ export default function Home() {
             marginBottom: "var(--space-comfortable)",
           }}
         >
-          Selected Work
+          Work
         </p>
         <div ref={gridRef} className="cover-grid">
           {PROJECTS.map((project, i) => (
@@ -261,7 +261,7 @@ export default function Home() {
                   lineHeight: "var(--leading-body)",
                 }}
               >
-                Visual studies, material research, and things that caught the light.
+                texture studies, generative work, and other small things.
               </p>
               <Link
                 href="/exploration"
@@ -335,10 +335,8 @@ export default function Home() {
               lineHeight: "var(--leading-body)",
             }}
           >
-            Currently finishing up Conductor — a design system built to scale
-            across surfaces — while exploring new directions in material
-            typography. Based in New York, available for select projects starting
-            mid-2026.
+            finishing conductor, a design system for product surfaces.
+            exploring material typography on the side. open to new work.
           </p>
         </section>
 
