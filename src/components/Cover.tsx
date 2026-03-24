@@ -6,12 +6,6 @@ export function Cover({ project, index }: { project: Project; index: number }) {
   const isDark = isDarkColor(project.cover.bg);
   const number = String(index + 1).padStart(2, "0");
 
-  const metaParts = [
-    project.sector,
-    project.year,
-    project.status === "wip" ? "In progress" : null,
-  ].filter(Boolean).join(" · ");
-
   return (
     <Link
       href={`/work/${project.slug}`}
@@ -20,65 +14,110 @@ export function Cover({ project, index }: { project: Project; index: number }) {
       style={{
         display: "block",
         textDecoration: "none",
-        backgroundColor: project.cover.bg,
         borderRadius: "4px",
         overflow: "hidden",
         position: "relative",
-        aspectRatio: "4 / 3",
       }}
     >
-      {/* Grain texture layer */}
-      <GrainTexture dark={isDark} />
-
-      {/* Project number — top-left */}
-      <span
-        className="font-mono"
-        style={{
-          position: "absolute",
-          top: "var(--space-comfortable)",
-          left: "var(--space-comfortable)",
-          fontSize: "var(--text-meta)",
-          letterSpacing: "var(--tracking-label)",
-          color: project.cover.accent,
-          zIndex: 3,
-          userSelect: "none",
-        }}
-      >
-        {number}
-      </span>
-
-      {/* Bottom area — title + meta */}
+      {/* Cover visual */}
       <div
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "var(--space-comfortable)",
-          zIndex: 3,
+          backgroundColor: project.cover.bg,
+          aspectRatio: "4 / 3",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <p
-          className="font-display"
-          style={{
-            fontSize: "var(--text-title)",
-            lineHeight: "var(--leading-display)",
-            color: project.cover.text,
-            marginBottom: "var(--space-small)",
-          }}
-        >
-          {project.title}
-        </p>
-        <p
+        <GrainTexture dark={isDark} />
+
+        {/* Number — top-left */}
+        <span
           className="font-mono"
           style={{
+            position: "absolute",
+            top: "var(--space-comfortable)",
+            left: "var(--space-comfortable)",
             fontSize: "var(--text-meta)",
             letterSpacing: "var(--tracking-label)",
-            textTransform: "uppercase",
             color: project.cover.accent,
+            zIndex: 3,
+            userSelect: "none",
           }}
         >
-          {metaParts}
+          {number}
+        </span>
+
+        {/* Title — bottom area */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "var(--space-comfortable)",
+            zIndex: 3,
+          }}
+        >
+          <p
+            className="font-display"
+            style={{
+              fontSize: "var(--text-title)",
+              lineHeight: "var(--leading-display)",
+              color: project.cover.text,
+            }}
+          >
+            {project.title}
+          </p>
+        </div>
+      </div>
+
+      {/* Meta — below cover */}
+      <div
+        style={{
+          padding: "var(--space-compact) 0",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: "var(--space-micro)",
+          }}
+        >
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+            }}
+          >
+            {project.sector}
+          </span>
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              color: "var(--ink-muted)",
+            }}
+          >
+            {project.year}
+          </span>
+        </div>
+        <p
+          style={{
+            fontSize: 14,
+            color: "var(--ink-secondary)",
+            lineHeight: 1.5,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical" as const,
+            overflow: "hidden",
+          }}
+        >
+          {project.description}
         </p>
       </div>
     </Link>

@@ -1,143 +1,362 @@
+"use client";
+
+import { useRef, useEffect } from "react";
+import Link from "next/link";
+import { gsap } from "@/lib/gsap";
 import { PROJECTS } from "@/constants/projects";
 import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
 import { Cover } from "@/components/Cover";
 
 export default function Home() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /* ── Hero: word-by-word stagger ── */
+    if (heroRef.current) {
+      const words = heroRef.current.querySelectorAll("[data-word]");
+      gsap.fromTo(
+        words,
+        { yPercent: 100, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.04,
+          ease: "expo.out",
+          delay: 0.15,
+        }
+      );
+
+      const els = heroRef.current.querySelectorAll("[data-hero-el]");
+      gsap.fromTo(
+        els,
+        { opacity: 0, y: 14 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "expo.out",
+          delay: 0.4,
+        }
+      );
+    }
+
+    /* ── Grid: stagger reveal ── */
+    if (gridRef.current) {
+      const cards = gridRef.current.querySelectorAll("[data-cover]");
+      gsap.fromTo(
+        cards,
+        { autoAlpha: 0, y: 32 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: "expo.out",
+          delay: 0.6,
+        }
+      );
+    }
+
+    /* ── Below-fold sections: scroll-triggered ── */
+    if (sectionsRef.current) {
+      const sections = sectionsRef.current.querySelectorAll("[data-reveal]");
+      sections.forEach((section) => {
+        gsap.fromTo(
+          section,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 88%",
+              once: true,
+            },
+          }
+        );
+      });
+    }
+  }, []);
+
+  const tagline = "Design engineering practice";
+
   return (
     <div className="page-container">
 
-      {/* ── Identity ── */}
-      <section
-        className="section text-column"
-        style={{ marginTop: "var(--space-breath)" }}
+      {/* ── Hero ── */}
+      <header
+        ref={heroRef}
+        style={{
+          paddingTop: "var(--space-breath)",
+          marginBottom: "clamp(3rem, 8vh, 5rem)",
+          maxWidth: "var(--max-text)",
+        }}
       >
         <h1
-          className="font-display ink-full"
+          className="font-display"
           style={{
-            fontSize: "var(--text-name)",
-            lineHeight: "var(--leading-display)",
+            fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
             fontWeight: 400,
-            marginBottom: "var(--space-compact)",
+            fontStyle: "italic",
+            color: "var(--ink-full)",
+            lineHeight: 1.15,
+            letterSpacing: "-0.02em",
+            maxWidth: "16ch",
           }}
         >
-          Hyeon Jun
+          {tagline.split(" ").map((word, i) => (
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                overflow: "hidden",
+                verticalAlign: "top",
+                paddingBottom: "0.05em",
+              }}
+            >
+              <span
+                data-word
+                style={{ display: "inline-block", opacity: 0 }}
+              >
+                {word}
+              </span>
+              {i < tagline.split(" ").length - 1 && "\u00A0"}
+            </span>
+          ))}
         </h1>
+
         <p
-          className="font-body ink-secondary"
+          data-hero-el
           style={{
-            fontSize: "var(--text-nav)",
+            fontSize: "var(--text-body)",
+            color: "var(--ink-secondary)",
+            marginTop: "var(--space-standard)",
+            lineHeight: "var(--leading-body)",
+            maxWidth: "38ch",
+            opacity: 0,
+          }}
+        >
+          Building products that feel considered — from system
+          design to pixel-level detail.
+        </p>
+
+        <div
+          data-hero-el
+          style={{
+            display: "flex",
+            gap: "var(--space-standard)",
+            alignItems: "center",
+            marginTop: "var(--space-comfortable)",
+            opacity: 0,
+          }}
+        >
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+            }}
+          >
+            New York
+          </span>
+          <span
+            style={{
+              width: 3,
+              height: 3,
+              borderRadius: "50%",
+              backgroundColor: "var(--ink-muted)",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+            }}
+          >
+            Available for select projects
+          </span>
+        </div>
+      </header>
+
+      {/* ── Work ── */}
+      <section id="work" style={{ maxWidth: "var(--max-cover)" }}>
+        <p
+          className="font-mono"
+          style={{
+            fontSize: "var(--text-meta)",
             letterSpacing: "var(--tracking-label)",
             textTransform: "uppercase",
+            color: "var(--ink-muted)",
             marginBottom: "var(--space-comfortable)",
           }}
         >
-          Design Engineer
+          Selected Work
         </p>
-        <p
-          className="ink-primary"
-          style={{
-            fontSize: "var(--text-body)",
-            lineHeight: "var(--leading-body)",
-            maxWidth: "var(--max-text)",
-          }}
-        >
-          I design and build digital products where craft and systems thinking
-          meet — translating ideas from first sketch through shipped code. My
-          work lives at the intersection of interaction design, typography, and
-          engineering detail.
-        </p>
-      </section>
-
-      {/* ── Work ── */}
-      <section
-        id="work"
-        className="section"
-        style={{ maxWidth: "var(--max-cover)" }}
-      >
-        <p
-          className="section-label font-mono ink-muted"
-          style={{ marginBottom: "var(--space-comfortable)" }}
-        >
-          Work
-        </p>
-        <div className="cover-grid">
-          {PROJECTS.map((project, i) => (
-            <Cover key={project.id} project={project} index={i} />
+        <div ref={gridRef} className="cover-grid">
+          {PROJECTS.filter((p) => p.status === "shipped").map((project, i) => (
+            <div key={project.id} style={{ visibility: "hidden" }}>
+              <Cover project={project} index={i} />
+            </div>
           ))}
         </div>
       </section>
 
-      {/* ── Now ── */}
-      <section className="section text-column">
-        <p
-          className="section-label font-mono ink-muted"
-          style={{ marginBottom: "var(--space-comfortable)" }}
-        >
-          Now
-        </p>
-        <p
-          className="ink-primary"
-          style={{
-            fontSize: "var(--text-body)",
-            lineHeight: "var(--leading-body)",
-          }}
-        >
-          Currently finishing up Conductor — a design system built to scale
-          across surfaces — while exploring new directions in material
-          typography. Based in New York, available for select projects starting
-          mid-2026.
-        </p>
-      </section>
+      {/* ── Below-fold content ── */}
+      <div ref={sectionsRef}>
 
-      {/* ── Contact ── */}
-      <section
-        className="section text-column"
-        style={{ marginBottom: "var(--space-breath)" }}
-      >
-        <p
-          className="section-label font-mono ink-muted"
-          style={{ marginBottom: "var(--space-comfortable)" }}
-        >
-          Contact
-        </p>
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          className="font-display ink-full hover-step"
+        {/* ── Exploration Teaser ── */}
+        <section
+          data-reveal
           style={{
-            fontSize: "var(--text-title)",
-            lineHeight: "var(--leading-display)",
-            display: "block",
-            marginBottom: "var(--space-comfortable)",
+            maxWidth: "var(--max-text)",
+            paddingTop: "var(--space-breath)",
+            paddingBottom: "var(--space-section)",
+            borderTop: "1px solid rgba(var(--ink-rgb), 0.08)",
+            marginTop: "var(--space-breath)",
+            opacity: 0,
           }}
         >
-          {CONTACT_EMAIL}
-        </a>
-        <div
-          style={{
-            display: "flex",
-            gap: "var(--space-comfortable)",
-            flexWrap: "wrap",
-          }}
-        >
-          {SOCIALS.map((social) => (
-            <a
-              key={social.label}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono hover-step"
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-small)" }}>
+            <div>
+              <h2
+                className="font-display"
+                style={{
+                  fontSize: "var(--text-title)",
+                  fontStyle: "italic",
+                  color: "var(--ink-full)",
+                  lineHeight: "var(--leading-display)",
+                }}
+              >
+                Exploration
+              </h2>
+              <p
+                style={{
+                  fontSize: "var(--text-body)",
+                  color: "var(--ink-secondary)",
+                  marginTop: "var(--space-small)",
+                  maxWidth: "36ch",
+                }}
+              >
+                Visual studies, material research, and things that caught the light.
+              </p>
+            </div>
+            <Link
+              href="/exploration"
+              className="font-mono hover-step-muted"
               style={{
                 fontSize: "var(--text-meta)",
                 letterSpacing: "var(--tracking-label)",
                 textTransform: "uppercase",
+                flexShrink: 0,
               }}
             >
-              {social.label}
-            </a>
-          ))}
-        </div>
-      </section>
+              View all &rarr;
+            </Link>
+          </div>
+        </section>
 
+        {/* ── Now ── */}
+        <section
+          data-reveal
+          style={{
+            maxWidth: "var(--max-text)",
+            paddingBottom: "var(--space-section)",
+            opacity: 0,
+          }}
+        >
+          <p
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+              marginBottom: "var(--space-standard)",
+            }}
+          >
+            Now
+          </p>
+          <p
+            style={{
+              fontSize: "var(--text-body)",
+              color: "var(--ink-primary)",
+              lineHeight: "var(--leading-body)",
+            }}
+          >
+            Currently finishing up Conductor — a design system built to scale
+            across surfaces — while exploring new directions in material
+            typography. Based in New York, available for select projects starting
+            mid-2026.
+          </p>
+        </section>
+
+        {/* ── Contact ── */}
+        <section
+          data-reveal
+          style={{
+            maxWidth: "var(--max-text)",
+            paddingBottom: "var(--space-breath)",
+            opacity: 0,
+          }}
+        >
+          <p
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+              marginBottom: "var(--space-standard)",
+            }}
+          >
+            Contact
+          </p>
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="font-display hover-step"
+            style={{
+              fontSize: "var(--text-title)",
+              lineHeight: "var(--leading-display)",
+              display: "block",
+              marginBottom: "var(--space-standard)",
+            }}
+          >
+            {CONTACT_EMAIL}
+          </a>
+          <div style={{ display: "flex", gap: "var(--space-comfortable)", flexWrap: "wrap" }}>
+            {SOCIALS.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono hover-step-muted"
+                style={{
+                  fontSize: "var(--text-meta)",
+                  letterSpacing: "var(--tracking-label)",
+                  textTransform: "uppercase",
+                }}
+              >
+                {social.label}
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
