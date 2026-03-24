@@ -49,7 +49,7 @@
 
   /* ── Layout ── */
   --max-text:   540px;
-  --max-cover:  640px;
+  --max-cover:  900px;
   --page-px:    24px;
 
   /* ── Motion ── */
@@ -239,14 +239,8 @@ body::-webkit-scrollbar {
 
 .cover-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-@media (max-width: 480px) {
-  .cover-grid {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: 1fr;
+  gap: var(--space-break);
 }
 
 /* ── Section Spacing ── */

@@ -8,6 +8,7 @@ export interface Project {
     description: string;
     year: string;
     sector: string;
+    coverImage?: string;
     cover: {
         bg: string;
         text: string;
@@ -25,6 +26,7 @@ export const PROJECTS: Project[] = [
         description: "A material typography system rooted in Korean craft traditions.",
         year: "2026",
         sector: "Material Science",
+        coverImage: "/images/gyeol-spring.png",
         cover: {
             bg: "#2a241c",
             text: "rgba(255, 252, 245, 0.85)",
@@ -40,6 +42,7 @@ export const PROJECTS: Project[] = [
         description: "An AI-powered tool for finding what matters in your camera roll.",
         year: "2025",
         sector: "Mobile / AI",
+        coverImage: "/images/sift-v2.jpg",
         cover: {
             bg: "#e8e2d8",
             text: "rgba(35, 32, 28, 0.82)",

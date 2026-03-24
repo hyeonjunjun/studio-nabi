@@ -103,7 +103,7 @@ export default function Home() {
         <h1
           className="font-display"
           style={{
-            fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
+            fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)",
             fontWeight: 400,
             fontStyle: "italic",
             color: "var(--ink-full)",
@@ -207,7 +207,7 @@ export default function Home() {
           Selected Work
         </p>
         <div ref={gridRef} className="cover-grid">
-          {PROJECTS.filter((p) => p.status === "shipped").map((project, i) => (
+          {PROJECTS.map((project, i) => (
             <div key={project.id} style={{ visibility: "hidden" }}>
               <Cover project={project} index={i} />
             </div>
@@ -222,7 +222,7 @@ export default function Home() {
         <section
           data-reveal
           style={{
-            maxWidth: "var(--max-text)",
+            maxWidth: "var(--max-cover)",
             paddingTop: "var(--space-breath)",
             paddingBottom: "var(--space-section)",
             borderTop: "1px solid rgba(var(--ink-rgb), 0.08)",
@@ -230,8 +230,17 @@ export default function Home() {
             opacity: 0,
           }}
         >
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-small)" }}>
-            <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "var(--space-break)",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Text + link */}
+            <div style={{ flex: "1 1 260px" }}>
               <h2
                 className="font-display"
                 style={{
@@ -249,23 +258,52 @@ export default function Home() {
                   color: "var(--ink-secondary)",
                   marginTop: "var(--space-small)",
                   maxWidth: "36ch",
+                  lineHeight: "var(--leading-body)",
                 }}
               >
                 Visual studies, material research, and things that caught the light.
               </p>
+              <Link
+                href="/exploration"
+                className="font-mono hover-step-muted"
+                style={{
+                  display: "inline-block",
+                  fontSize: "var(--text-meta)",
+                  letterSpacing: "var(--tracking-label)",
+                  textTransform: "uppercase",
+                  marginTop: "var(--space-standard)",
+                }}
+              >
+                View all &rarr;
+              </Link>
             </div>
-            <Link
-              href="/exploration"
-              className="font-mono hover-step-muted"
+
+            {/* Video preview */}
+            <div
               style={{
-                fontSize: "var(--text-meta)",
-                letterSpacing: "var(--tracking-label)",
-                textTransform: "uppercase",
-                flexShrink: 0,
+                flex: "0 0 auto",
+                width: "clamp(200px, 30%, 280px)",
+                borderRadius: "4px",
+                overflow: "hidden",
+                position: "relative",
               }}
             >
-              View all &rarr;
-            </Link>
+              <video
+                src="/assets/cloudsatsea.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  display: "block",
+                  width: "100%",
+                  aspectRatio: "16 / 9",
+                  objectFit: "cover",
+                  borderRadius: "4px",
+                  opacity: 0.85,
+                }}
+              />
+            </div>
           </div>
         </section>
 
