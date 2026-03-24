@@ -26,7 +26,7 @@ export const PROJECTS: Project[] = [
         description: "material typography system exploring Korean craft and texture.",
         year: "2026",
         sector: "Material Science",
-        coverImage: "/images/gyeol-spring.png",
+        coverImage: "/images/gyeol-spring.webp",
         cover: {
             bg: "#2a241c",
             text: "rgba(255, 252, 245, 0.85)",
@@ -42,7 +42,7 @@ export const PROJECTS: Project[] = [
         description: "camera roll search that surfaces the photos you actually want.",
         year: "2025",
         sector: "Mobile / AI",
-        coverImage: "/images/sift-v2.jpg",
+        coverImage: "/images/sift-v2.webp",
         cover: {
             bg: "#e8e2d8",
             text: "rgba(35, 32, 28, 0.82)",
