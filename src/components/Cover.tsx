@@ -79,7 +79,7 @@ export function Cover({ project, index }: { project: Project; index: number }) {
         <p
           className="font-display"
           style={{
-            fontSize: "var(--text-title)",
+            fontSize: "clamp(20px, 2.5vw, 26px)",
             lineHeight: "var(--leading-display)",
             color: "var(--ink-full)",
             marginBottom: "var(--space-small)",

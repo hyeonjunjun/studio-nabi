@@ -14,7 +14,6 @@ export default function Home() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    /* ── Hero: word-by-word stagger ── */
     if (heroRef.current) {
       const words = heroRef.current.querySelectorAll("[data-word]");
       gsap.fromTo(
@@ -45,7 +44,6 @@ export default function Home() {
       );
     }
 
-    /* ── Grid: stagger reveal ── */
     if (gridRef.current) {
       const cards = gridRef.current.querySelectorAll("[data-cover]");
       gsap.fromTo(
@@ -55,14 +53,13 @@ export default function Home() {
           autoAlpha: 1,
           y: 0,
           duration: 0.8,
-          stagger: 0.08,
+          stagger: 0.12,
           ease: "expo.out",
           delay: 0.6,
         }
       );
     }
 
-    /* ── Below-fold sections: scroll-triggered ── */
     if (sectionsRef.current) {
       const sections = sectionsRef.current.querySelectorAll("[data-reveal]");
       sections.forEach((section) => {
@@ -86,6 +83,8 @@ export default function Home() {
   }, []);
 
   const name = "Hyeon Jun";
+  const imageProjects = PROJECTS.filter((p) => p.coverImage);
+  const wipProjects = PROJECTS.filter((p) => !p.coverImage);
 
   return (
     <div className="page-container">
@@ -96,7 +95,7 @@ export default function Home() {
         style={{
           paddingTop: "var(--space-breath)",
           marginBottom: "clamp(3rem, 8vh, 5rem)",
-          maxWidth: "var(--max-text)",
+          maxWidth: "var(--max-cover)",
         }}
       >
         {/* Role label */}
@@ -119,12 +118,12 @@ export default function Home() {
         <h1
           className="font-display"
           style={{
-            fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)",
+            fontSize: "clamp(2.8rem, 5.5vw, 4.2rem)",
             fontWeight: 400,
             fontStyle: "italic",
             color: "var(--ink-full)",
-            lineHeight: 1.15,
-            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+            letterSpacing: "-0.025em",
           }}
         >
           {name.split(" ").map((word, i) => (
@@ -195,29 +194,75 @@ export default function Home() {
 
       {/* ── Work ── */}
       <section id="work" style={{ maxWidth: "var(--max-cover)" }}>
-        <p
-          className="font-mono"
-          style={{
-            fontSize: "var(--text-meta)",
-            letterSpacing: "var(--tracking-label)",
-            textTransform: "uppercase",
-            color: "var(--ink-muted)",
-            marginBottom: "var(--space-comfortable)",
-          }}
-        >
-          Work
-        </p>
         <div ref={gridRef} className="cover-grid">
-          {PROJECTS.map((project, i) => (
+          {imageProjects.map((project, i) => (
             <Cover key={project.id} project={project} index={i} />
           ))}
         </div>
+
+        {/* WIP projects — text-only below the image covers */}
+        {wipProjects.length > 0 && (
+          <div
+            style={{
+              marginTop: 80,
+              borderTop: "1px solid rgba(var(--ink-rgb), 0.08)",
+              paddingTop: "var(--space-comfortable)",
+            }}
+          >
+            {wipProjects.map((project) => (
+              <div
+                key={project.id}
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "var(--space-small)",
+                  paddingTop: "var(--space-compact)",
+                  paddingBottom: "var(--space-compact)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-standard)" }}>
+                  <span
+                    className="font-display"
+                    style={{
+                      fontSize: "var(--text-body)",
+                      color: "var(--ink-primary)",
+                    }}
+                  >
+                    {project.title}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "var(--text-body)",
+                      color: "var(--ink-secondary)",
+                    }}
+                  >
+                    {project.description}
+                  </span>
+                </div>
+                <span
+                  className="font-mono"
+                  style={{
+                    fontSize: "var(--text-meta)",
+                    letterSpacing: "var(--tracking-label)",
+                    textTransform: "uppercase",
+                    color: "var(--ink-muted)",
+                    flexShrink: 0,
+                  }}
+                >
+                  In progress
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ── Below-fold content ── */}
       <div ref={sectionsRef}>
 
-        {/* ── Exploration Teaser ── */}
+        {/* ── Exploration ── */}
         <section
           data-reveal
           style={{
@@ -232,77 +277,44 @@ export default function Home() {
           <div
             style={{
               display: "flex",
-              alignItems: "flex-start",
+              alignItems: "baseline",
               justifyContent: "space-between",
-              gap: "var(--space-break)",
               flexWrap: "wrap",
+              gap: "var(--space-small)",
             }}
           >
-            {/* Text + link */}
-            <div style={{ flex: "1 1 260px" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-standard)" }}>
               <h2
                 className="font-display"
                 style={{
-                  fontSize: "var(--text-title)",
+                  fontSize: "var(--text-body)",
                   fontStyle: "italic",
                   color: "var(--ink-full)",
-                  lineHeight: "var(--leading-display)",
                 }}
               >
                 Exploration
               </h2>
-              <p
+              <span
                 style={{
                   fontSize: "var(--text-body)",
                   color: "var(--ink-secondary)",
-                  marginTop: "var(--space-small)",
-                  maxWidth: "36ch",
-                  lineHeight: "var(--leading-body)",
                 }}
               >
                 texture studies, generative work, and other small things.
-              </p>
-              <Link
-                href="/exploration"
-                className="font-mono hover-step-muted"
-                style={{
-                  display: "inline-block",
-                  fontSize: "var(--text-meta)",
-                  letterSpacing: "var(--tracking-label)",
-                  textTransform: "uppercase",
-                  marginTop: "var(--space-standard)",
-                }}
-              >
-                View all &rarr;
-              </Link>
+              </span>
             </div>
-
-            {/* Video preview */}
-            <div
+            <Link
+              href="/exploration"
+              className="font-mono hover-step-muted"
               style={{
-                flex: "0 0 auto",
-                width: "clamp(200px, 30%, 280px)",
-                borderRadius: "4px",
-                overflow: "hidden",
-                position: "relative",
+                fontSize: "var(--text-meta)",
+                letterSpacing: "var(--tracking-label)",
+                textTransform: "uppercase",
+                flexShrink: 0,
               }}
             >
-              <video
-                src="/assets/cloudsatsea.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                style={{
-                  display: "block",
-                  width: "100%",
-                  aspectRatio: "16 / 9",
-                  objectFit: "cover",
-                  borderRadius: "4px",
-                  opacity: 0.85,
-                }}
-              />
-            </div>
+              View all &rarr;
+            </Link>
           </div>
         </section>
       </div>

@@ -244,7 +244,7 @@ body::-webkit-scrollbar {
 .cover-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-break);
+  gap: 80px;
 }
 
 /* ── Section Spacing ── */
