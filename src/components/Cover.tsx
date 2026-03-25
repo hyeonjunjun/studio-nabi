@@ -3,6 +3,7 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import DissolveImage from "@/components/DissolveImage";
 import type { Project } from "@/constants/projects";
 import { GrainTexture } from "@/components/GrainTexture";
 
@@ -105,7 +106,7 @@ export function Cover({ project, index, dimmed = false }: { project: Project; in
                 opacity: isHovered && videos.length > 0 ? 0 : 1,
               }}
             >
-              <Image
+              <DissolveImage
                 src={project.coverImage}
                 alt={project.title}
                 fill

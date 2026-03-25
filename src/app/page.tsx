@@ -11,6 +11,7 @@ import { useStudioStore } from "@/lib/store";
 import { NOW_TEXT } from "@/constants/now";
 
 const Vinyl = dynamic(() => import("@/components/Vinyl"), { ssr: false });
+const KineticText = dynamic(() => import("@/components/KineticText"), { ssr: false });
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -65,7 +66,8 @@ export default function Home() {
           <Vinyl />
         </div>
         <div data-hero-el style={{ textAlign: "center", opacity: 0 }}>
-          <p
+          <KineticText
+            text="the quiet details are the loudest ones."
             className="font-display"
             style={{
               fontStyle: "italic",
@@ -75,9 +77,7 @@ export default function Home() {
               maxWidth: "480px",
               margin: "0 auto",
             }}
-          >
-            the quiet details are the loudest ones.
-          </p>
+          />
           <div
             className="font-mono"
             style={{
