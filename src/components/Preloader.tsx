@@ -51,9 +51,9 @@ export default function Preloader() {
     // This reveals the WallLight shader underneath + page content
     tl.to(overlayRef.current, {
       opacity: 0,
-      duration: 2.0,
-      ease: "power2.inOut",
-      delay: 0.5,
+      duration: 2.5,
+      ease: "power3.out",
+      delay: 0.3,
     });
   }, [setLoaded]);
 

@@ -9,6 +9,7 @@ import WallLightWrapper from "@/components/WallLightWrapper";
 import TimeModeProvider from "@/components/TimeModeProvider";
 import PreloaderWrapper from "@/components/PreloaderWrapper";
 import TransitionManagerWrapper from "@/components/TransitionManagerWrapper";
+import CursorWrapper from "@/components/CursorWrapper";
 
 /* ── Fonts ── */
 
@@ -101,6 +102,7 @@ export default function RootLayout({
 
         <PreloaderWrapper />
         <TransitionManagerWrapper />
+        <CursorWrapper />
 
         {/* Time-aware ambient light */}
         <WallLightWrapper />
