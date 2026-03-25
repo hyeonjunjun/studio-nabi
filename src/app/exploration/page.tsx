@@ -25,7 +25,6 @@ export default function ExplorationPage() {
     <main
       style={{
         minHeight: "100vh",
-        backgroundColor: "var(--paper)",
         paddingTop: "var(--space-breath)",
         paddingBottom: "var(--space-breath)",
       }}
@@ -47,7 +46,7 @@ export default function ExplorationPage() {
             fontStyle: "italic",
           }}
         >
-          Coddiwompling
+          Exploration
         </h1>
         <p
           style={{
@@ -58,11 +57,7 @@ export default function ExplorationPage() {
             maxWidth: "40ch",
           }}
         >
-          — travelling purposefully toward an unknown destination.
-          <br></br>
-          <br></br>
-
-          a collection of creative explorations.
+          traveling purposefully toward an unknown destination. visual studies, material research, and things that caught the light.
         </p>
       </div>
 

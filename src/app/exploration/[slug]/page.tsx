@@ -49,7 +49,6 @@ export default function ExplorationPiecePage({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "var(--paper)",
         }}
       >
         <p style={{ color: "var(--ink-secondary)" }}>Piece not found.</p>
@@ -58,7 +57,7 @@ export default function ExplorationPiecePage({
   }
 
   return (
-    <main style={{ backgroundColor: "var(--paper)" }}>
+    <main>
       {/* Hero — full viewport */}
       <div
         ref={heroRef}
