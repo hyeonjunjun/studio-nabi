@@ -49,7 +49,7 @@ export default function GlobalNav() {
               textDecoration: "none",
             }}
           >
-            Ryan Jun
+            HKJ
           </TransitionLink>
           <span
             style={{
