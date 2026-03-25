@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/constants/navigation";
 import { useStudioStore } from "@/lib/store";
 import { MobileMenu } from "@/components/MobileMenu";
 import NYCClock from "@/components/NYCClock";
+import TransitionLink from "@/components/TransitionLink";
 
 export default function GlobalNav() {
   const pathname = usePathname();
@@ -38,8 +38,9 @@ export default function GlobalNav() {
       >
         {/* Studio mark */}
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-small)" }}>
-          <Link
+          <TransitionLink
             href="/"
+            data-link
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "var(--text-meta)",
@@ -50,7 +51,7 @@ export default function GlobalNav() {
             }}
           >
             Ryan Jun
-          </Link>
+          </TransitionLink>
           <span
             style={{
               fontFamily: "var(--font-mono)",
@@ -70,7 +71,7 @@ export default function GlobalNav() {
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href);
             return (
-              <Link
+              <TransitionLink
                 key={link.label}
                 href={link.href}
                 data-link
@@ -83,15 +84,15 @@ export default function GlobalNav() {
                   textDecoration: "none",
                   transition: "color var(--duration-hover) var(--ease-hover)",
                 }}
-                onMouseEnter={(e) => {
+                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
                   if (!active) e.currentTarget.style.color = "var(--ink-secondary)";
                 }}
-                onMouseLeave={(e) => {
+                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
                   if (!active) e.currentTarget.style.color = "var(--ink-muted)";
                 }}
               >
                 {link.label}
-              </Link>
+              </TransitionLink>
             );
           })}
         </nav>

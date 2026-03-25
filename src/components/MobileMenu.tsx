@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import TransitionLink from "@/components/TransitionLink";
 import { NAV_LINKS } from "@/constants/navigation";
 import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
 import { useStudioStore } from "@/lib/store";
@@ -148,9 +148,10 @@ export function MobileMenu() {
               ? pathname === "/"
               : pathname === link.href || pathname.startsWith(link.href + "/");
           return (
-            <Link
+            <TransitionLink
               key={link.label}
               href={link.href}
+              onClick={close}
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(22px, 5vw, 28px)",
@@ -160,7 +161,7 @@ export function MobileMenu() {
               }}
             >
               {link.label}
-            </Link>
+            </TransitionLink>
           );
         })}
       </nav>

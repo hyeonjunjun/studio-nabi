@@ -7,6 +7,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import WallLightWrapper from "@/components/WallLightWrapper";
 import TimeModeProvider from "@/components/TimeModeProvider";
+import PreloaderWrapper from "@/components/PreloaderWrapper";
+import TransitionManagerWrapper from "@/components/TransitionManagerWrapper";
 
 /* ── Fonts ── */
 
@@ -96,6 +98,9 @@ export default function RootLayout({
             </filter>
           </defs>
         </svg>
+
+        <PreloaderWrapper />
+        <TransitionManagerWrapper />
 
         {/* Time-aware ambient light */}
         <WallLightWrapper />

@@ -1,18 +1,21 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import Link from "next/link";
 import { gsap } from "@/lib/gsap";
 import { REVEAL_HERO, REVEAL_CARD, REVEAL_CONTENT } from "@/lib/animations";
 import { PROJECTS } from "@/constants/projects";
 import { Cover } from "@/components/Cover";
+import TransitionLink from "@/components/TransitionLink";
+import { useStudioStore } from "@/lib/store";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement>(null);
+  const loaded = useStudioStore((s) => s.loaded);
 
   useEffect(() => {
+    if (!loaded) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     if (heroRef.current) {
@@ -34,7 +37,7 @@ export default function Home() {
         });
       });
     }
-  }, []);
+  }, [loaded]);
 
   const allProjects = PROJECTS;
 
@@ -176,7 +179,7 @@ export default function Home() {
                 texture studies, generative work, and other small things.
               </span>
             </div>
-            <Link
+            <TransitionLink
               href="/exploration"
               className="font-mono hover-step-muted"
               style={{
@@ -187,7 +190,7 @@ export default function Home() {
               }}
             >
               View all &rarr;
-            </Link>
+            </TransitionLink>
           </div>
         </section>
       </div>
