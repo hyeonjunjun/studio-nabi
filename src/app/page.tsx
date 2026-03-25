@@ -7,9 +7,10 @@ import { gsap } from "@/lib/gsap";
 import { PROJECTS } from "@/constants/projects";
 import { Cover } from "@/components/Cover";
 
-const CloudCanvas = dynamic(() => import("@/components/CloudCanvas"), {
-  ssr: false,
-});
+const LivingInk = dynamic(
+  () => import("@/components/LivingInk"),
+  { ssr: false }
+);
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -103,86 +104,8 @@ export default function Home() {
           maxWidth: "var(--max-cover)",
         }}
       >
-        {/* Identity row */}
-        <div
-          data-hero-el
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "var(--space-small)",
-            marginBottom: "var(--space-comfortable)",
-            opacity: 0,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-standard)" }}>
-            <h1
-              className="font-display"
-              style={{
-                fontSize: "var(--text-title)",
-                fontWeight: 400,
-                fontStyle: "italic",
-                color: "var(--ink-full)",
-                lineHeight: "var(--leading-display)",
-              }}
-            >
-              Hyeon Jun
-            </h1>
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-meta)",
-                letterSpacing: "var(--tracking-label)",
-                textTransform: "uppercase",
-                color: "var(--ink-muted)",
-              }}
-            >
-              Design Engineer
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "var(--space-standard)",
-              alignItems: "center",
-            }}
-          >
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-meta)",
-                letterSpacing: "var(--tracking-label)",
-                textTransform: "uppercase",
-                color: "var(--ink-muted)",
-              }}
-            >
-              New York
-            </span>
-            <span
-              style={{
-                width: 3,
-                height: 3,
-                borderRadius: "50%",
-                backgroundColor: "var(--ink-muted)",
-                flexShrink: 0,
-              }}
-            />
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-meta)",
-                letterSpacing: "var(--tracking-label)",
-                textTransform: "uppercase",
-                color: "var(--ink-muted)",
-              }}
-            >
-              Open to work
-            </span>
-          </div>
-        </div>
 
-        {/* Interactive canvas — procedural clouds */}
+        {/* Interactive canvas — reactive meadow */}
         <div
           data-hero-canvas
           style={{
@@ -193,7 +116,7 @@ export default function Home() {
             opacity: 0,
           }}
         >
-          <CloudCanvas
+          <LivingInk
             style={{
               width: "100%",
               height: "100%",

@@ -36,19 +36,32 @@ export default function GlobalNav() {
         }}
       >
         {/* Studio mark */}
-        <Link
-          href="/"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "var(--text-meta)",
-            letterSpacing: "var(--tracking-label)",
-            textTransform: "uppercase",
-            color: "var(--ink-full)",
-            textDecoration: "none",
-          }}
-        >
-          hkj
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-small)" }}>
+          <Link
+            href="/"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-full)",
+              textDecoration: "none",
+            }}
+          >
+            Ryan Jun
+          </Link>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+            }}
+          >
+            Design Engineer
+          </span>
+        </div>
 
         {/* Desktop nav */}
         <nav data-desktop-nav style={{ display: "flex", alignItems: "center", gap: "var(--space-comfortable)" }}>

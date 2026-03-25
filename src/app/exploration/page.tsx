@@ -47,7 +47,7 @@ export default function ExplorationPage() {
             fontStyle: "italic",
           }}
         >
-          Exploration
+          Coddiwompling
         </h1>
         <p
           style={{
@@ -58,7 +58,7 @@ export default function ExplorationPage() {
             maxWidth: "40ch",
           }}
         >
-          coddiwompling — travelling purposefully toward an unknown destination.
+          — travelling purposefully toward an unknown destination.
           <br></br>
           <br></br>
 
