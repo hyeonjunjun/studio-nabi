@@ -34,7 +34,22 @@ export const REVEAL_META = {
   to: { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, ease: EASE_SWIFT, stagger: 0.04 },
 };
 
-/* Exit presets — asymmetric (exit travels further) */
+/* ── Mask reveals — text slides up from behind overflow:hidden parent ── */
+/* Used for headlines. Parent needs: overflow:hidden, display:block/inline-block */
+export const MASK_TEXT = {
+  from: { yPercent: 100, opacity: 0 },
+  to: { yPercent: 0, opacity: 1, duration: 0.75, ease: "expo.out", stagger: 0.075 },
+};
+
+export const MASK_TEXT_EXIT = {
+  yPercent: -100,
+  opacity: 0,
+  duration: 0.5,
+  ease: "power2.in",
+  stagger: 0.04,
+};
+
+/* Exit presets — asymmetric (exit travels further, 66% of entrance duration) */
 export const EXIT_CONTENT = {
   opacity: 0,
   y: -40,
@@ -42,3 +57,19 @@ export const EXIT_CONTENT = {
   duration: 0.4,
   ease: "power2.in",
 };
+
+/* ── Timing reference (from awwwards research) ── */
+export const TIMING = {
+  microInteraction: 0.15,  // 150ms — hovers, tooltips, buttons
+  transition: 0.3,          // 300ms — page transitions, dropdowns
+  reveal: 0.5,              // 500ms — scroll reveals, content entrance
+  heroReveal: 0.75,         // 750ms — headline mask reveals
+  dramatic: 1.0,            // 1000ms — hero text, FLIP transitions
+  stagger: {
+    characters: 0.015,      // 15ms per character
+    words: 0.05,            // 50ms per word
+    lines: 0.075,           // 75ms per line
+    items: 0.04,            // 40ms per list item
+    cards: 0.1,             // 100ms per card
+  },
+} as const;
