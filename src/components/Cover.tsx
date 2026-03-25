@@ -1,27 +1,30 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Project } from "@/constants/projects";
 import { GrainTexture } from "@/components/GrainTexture";
 
-export function Cover({ project, index }: { project: Project; index: number }) {
+export function Cover({ project, index, dimmed = false }: { project: Project; index: number; dimmed?: boolean }) {
   const isDark = isDarkColor(project.cover.bg);
   const number = String(index + 1).padStart(2, "0");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [isSelfHovered, setIsSelfHovered] = useState(false);
   const [videoIdx, setVideoIdx] = useState(0);
   const videos = project.coverVideos || [];
 
   const handleMouseEnter = useCallback(() => {
+    setIsSelfHovered(true);
     if (videos.length === 0) return;
     setIsHovered(true);
     setVideoIdx(0);
   }, [videos.length]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsSelfHovered(false);
     setIsHovered(false);
     setVideoIdx(0);
   }, []);
@@ -43,19 +46,38 @@ export function Cover({ project, index }: { project: Project; index: number }) {
     videoRef.current.play().catch(() => {});
   }, [isHovered, videoIdx]);
 
-  return (
-    <Link
-      href={`/work/${project.slug}`}
-      data-cover
-      aria-label={`View ${project.title} case study`}
-      style={{
+  const linkStyle: React.CSSProperties = dimmed
+    ? {
         display: "block",
         textDecoration: "none",
         borderRadius: "6px",
         overflow: "hidden",
         position: "relative",
         visibility: "hidden",
-      }}
+        opacity: 0.4,
+        filter: "blur(1px)",
+        transition: "opacity 0.4s ease-out, filter 0.4s ease-out, transform var(--duration-hover) var(--ease-out), box-shadow 0.3s ease-out",
+      }
+    : {
+        display: "block",
+        textDecoration: "none",
+        borderRadius: "6px",
+        overflow: "hidden",
+        position: "relative",
+        visibility: "hidden",
+        opacity: 1,
+        filter: "none",
+        transform: isSelfHovered ? "scale(1.005)" : "scale(1)",
+        boxShadow: isSelfHovered ? "0 12px 40px rgba(180, 140, 80, 0.08)" : "none",
+        transition: "opacity 0.3s ease-out, filter 0.3s ease-out, transform var(--duration-hover) var(--ease-out), box-shadow 0.3s ease-out",
+      };
+
+  return (
+    <Link
+      href={`/work/${project.slug}`}
+      data-cover
+      aria-label={`View ${project.title} case study`}
+      style={linkStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

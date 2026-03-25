@@ -6,6 +6,7 @@ import { useStudioStore } from "@/lib/store";
 import { MobileMenu } from "@/components/MobileMenu";
 import NYCClock from "@/components/NYCClock";
 import TransitionLink from "@/components/TransitionLink";
+import NowPlaying from "@/components/NowPlaying";
 
 export default function GlobalNav() {
   const pathname = usePathname();
@@ -68,6 +69,7 @@ export default function GlobalNav() {
 
         {/* Desktop nav */}
         <nav data-desktop-nav style={{ display: "flex", alignItems: "center", gap: "var(--space-comfortable)" }}>
+          <NowPlaying />
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href);
             return (

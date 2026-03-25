@@ -1,18 +1,23 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { gsap } from "@/lib/gsap";
 import { REVEAL_HERO, REVEAL_CARD, REVEAL_CONTENT } from "@/lib/animations";
 import { PROJECTS } from "@/constants/projects";
 import { Cover } from "@/components/Cover";
 import TransitionLink from "@/components/TransitionLink";
 import { useStudioStore } from "@/lib/store";
+import { NOW_TEXT } from "@/constants/now";
+
+const Vinyl = dynamic(() => import("@/components/Vinyl"), { ssr: false });
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<HTMLDivElement>(null);
   const loaded = useStudioStore((s) => s.loaded);
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loaded) return;
@@ -47,63 +52,81 @@ export default function Home() {
       <header
         ref={heroRef}
         style={{
-          paddingTop: "clamp(100px, 18vh, 180px)",
-          paddingBottom: "clamp(60px, 10vh, 120px)",
+          paddingTop: "clamp(120px, 22vh, 220px)",
+          paddingBottom: "clamp(60px, 12vh, 120px)",
           maxWidth: "var(--max-cover)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "var(--space-break)",
         }}
       >
-        <p
-          data-hero-el
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "clamp(18px, 2.2vw, 24px)",
-            lineHeight: 1.6,
-            color: "var(--ink-primary)",
-            maxWidth: "520px",
-            opacity: 0,
-          }}
-        >
-          design engineer building, conceptualizing, designing products and the stories behind them.
-        </p>
-        <div
-          data-hero-el
-          className="font-mono"
-          style={{
-            fontSize: "var(--text-meta)",
-            letterSpacing: "var(--tracking-label)",
-            textTransform: "uppercase",
-            color: "var(--ink-muted)",
-            marginTop: "var(--space-standard)",
-            display: "flex",
-            alignItems: "center",
-            gap: "var(--space-small)",
-            opacity: 0,
-          }}
-        >
-          <span>New York</span>
-          <span style={{ width: 3, height: 3, borderRadius: "50%", backgroundColor: "var(--ink-muted)", flexShrink: 0 }} />
-          <span>Open to work</span>
+        <div data-hero-el style={{ opacity: 0 }}>
+          <Vinyl />
+        </div>
+        <div data-hero-el style={{ textAlign: "center", opacity: 0 }}>
+          <p
+            className="font-display"
+            style={{
+              fontStyle: "italic",
+              fontSize: "clamp(22px, 3vw, 32px)",
+              lineHeight: 1.4,
+              color: "var(--ink-primary)",
+              maxWidth: "480px",
+              margin: "0 auto",
+            }}
+          >
+            the quiet details are the loudest ones.
+          </p>
+          <div
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+              marginTop: "var(--space-standard)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "var(--space-small)",
+            }}
+          >
+            <span>New York</span>
+            <span
+              style={{
+                width: 3,
+                height: 3,
+                borderRadius: "50%",
+                backgroundColor: "var(--ink-muted)",
+              }}
+            />
+            <span>Open to work</span>
+          </div>
         </div>
       </header>
 
       {/* ── Work ── */}
-      <section id="work" style={{ maxWidth: "var(--max-cover)" }}>
-        <span
-          className="font-mono"
-          style={{
-            fontSize: "var(--text-meta)",
-            letterSpacing: "var(--tracking-label)",
-            textTransform: "uppercase",
-            color: "var(--ink-muted)",
-            display: "block",
-            marginBottom: "var(--space-comfortable)",
-          }}
+      <section
+        id="work"
+        style={{ maxWidth: "var(--max-cover)" }}
+        onMouseLeave={() => setHoveredProjectId(null)}
+      >
+        <div
+          ref={gridRef}
+          style={{ display: "flex", flexDirection: "column", gap: "var(--space-section)" }}
         >
-          Selected work
-        </span>
-        <div ref={gridRef} style={{ display: "flex", flexDirection: "column", gap: "var(--space-section)" }}>
           {allProjects.map((project, i) => (
-            <Cover key={project.id} project={project} index={i} />
+            <div
+              key={project.id}
+              onMouseEnter={() => setHoveredProjectId(project.id)}
+            >
+              <Cover
+                project={project}
+                index={i}
+                dimmed={hoveredProjectId !== null && hoveredProjectId !== project.id}
+              />
+            </div>
           ))}
 
           {/* Empty window slots for future projects */}
@@ -139,6 +162,7 @@ export default function Home() {
 
       {/* ── Below-fold content ── */}
       <div ref={sectionsRef}>
+        {/* Exploration teaser */}
         <section
           data-reveal
           style={{
@@ -192,6 +216,40 @@ export default function Home() {
               View all &rarr;
             </TransitionLink>
           </div>
+        </section>
+
+        {/* Now section */}
+        <section
+          data-reveal
+          style={{
+            maxWidth: "var(--max-cover)",
+            paddingTop: "var(--space-breath)",
+            opacity: 0,
+          }}
+        >
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: "var(--ink-muted)",
+              display: "block",
+              marginBottom: "var(--space-standard)",
+            }}
+          >
+            Now
+          </span>
+          <p
+            style={{
+              fontSize: "var(--text-body)",
+              color: "var(--ink-secondary)",
+              lineHeight: 1.7,
+              maxWidth: "54ch",
+            }}
+          >
+            {NOW_TEXT}
+          </p>
         </section>
       </div>
     </div>
