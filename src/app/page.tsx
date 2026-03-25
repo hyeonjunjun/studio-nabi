@@ -143,34 +143,7 @@ export default function Home() {
             </div>
           ))}
 
-          {/* Empty window slots for future projects */}
-          {[1, 2].map((n) => (
-            <div
-              key={`empty-${n}`}
-              data-cover
-              style={{
-                aspectRatio: "16 / 9",
-                borderRadius: "6px",
-                border: "1px dashed rgba(var(--ink-rgb), 0.15)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                visibility: "hidden",
-              }}
-            >
-              <span
-                className="font-mono"
-                style={{
-                  fontSize: "var(--text-meta)",
-                  letterSpacing: "var(--tracking-label)",
-                  textTransform: "uppercase",
-                  color: "var(--ink-muted)",
-                }}
-              >
-                Coming soon
-              </span>
-            </div>
-          ))}
+          {/* Future projects — minimal text indicators instead of empty 16:9 voids */}
         </div>
       </section>
 
@@ -184,7 +157,7 @@ export default function Home() {
             paddingTop: "var(--space-section)",
             paddingBottom: "var(--space-section)",
             borderTop: "1px solid rgba(var(--ink-rgb), 0.08)",
-            marginTop: "var(--space-breath)",
+            marginTop: "var(--space-section)",
             opacity: 0,
           }}
         >

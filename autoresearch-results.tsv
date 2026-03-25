@@ -5,3 +5,5 @@ iteration	commit	metric	delta	guard	status	description
 2	79d26be	1	0.0	-	keep	flatten exploration gallery — delete detail routes, items non-clickable
 3	2eadfea	1	0.0	-	keep	remove dead components — CloudCanvas, gacha, audio (1798 lines)
 4	e2dd48a	1	0.0	-	keep	unify all pages to blur-reveal presets (exploration, writing, about)
+6	e612458	1	0.0	-	keep	add MASK_TEXT reveals + TIMING reference + mask-line CSS + eq-bar keyframes
+7	10acb47	1	0.0	-	keep	add blur placeholders to project covers
