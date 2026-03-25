@@ -9,6 +9,8 @@
 :root {
   /* ── Ground & Ink ── */
   --paper: #f7f6f3;
+  --bg: #f7f6f3;
+  --bg-rgb: 247, 246, 243;
   --ink-full:      rgba(35, 32, 28, 1.00);
   --ink-primary:   rgba(35, 32, 28, 0.82);
   --ink-secondary: rgba(35, 32, 28, 0.52);
@@ -60,6 +62,40 @@
   --ease-hover: ease-out;
 }
 
+/* ── Time Mode: Day (default) ── */
+:root, :root[data-timemode="day"] {
+  --bg: #f7f6f3;
+  --bg-rgb: 247, 246, 243;
+}
+
+/* ── Time Mode: Dusk ── */
+:root[data-timemode="dusk"] {
+  --bg: #2e2a25;
+  --bg-rgb: 46, 42, 37;
+  --ink-full: rgba(240, 235, 227, 1);
+  --ink-primary: rgba(240, 235, 227, 0.85);
+  --ink-secondary: rgba(240, 235, 227, 0.55);
+  --ink-muted: rgba(240, 235, 227, 0.38);
+  --ink-faint: rgba(240, 235, 227, 0.22);
+  --ink-ghost: rgba(240, 235, 227, 0.12);
+  --ink-whisper: rgba(240, 235, 227, 0.06);
+  --ink-rgb: 240, 235, 227;
+}
+
+/* ── Time Mode: Night ── */
+:root[data-timemode="night"] {
+  --bg: #1a1815;
+  --bg-rgb: 26, 24, 21;
+  --ink-full: rgba(240, 235, 227, 1);
+  --ink-primary: rgba(240, 235, 227, 0.85);
+  --ink-secondary: rgba(240, 235, 227, 0.55);
+  --ink-muted: rgba(240, 235, 227, 0.38);
+  --ink-faint: rgba(240, 235, 227, 0.22);
+  --ink-ghost: rgba(240, 235, 227, 0.12);
+  --ink-whisper: rgba(240, 235, 227, 0.06);
+  --ink-rgb: 240, 235, 227;
+}
+
 /* ── Base ── */
 
 *,
@@ -72,11 +108,10 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  background-color: var(--paper);
 }
 
 body {
-  background-color: transparent;
+  background-color: var(--bg);
   color: var(--ink-primary);
   font-family: var(--font-body);
   font-size: var(--text-body);
@@ -87,6 +122,7 @@ body {
   padding-top: 48px; /* fixed nav offset */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  transition: background-color 2s ease, color 2s ease;
 }
 
 body::-webkit-scrollbar {
@@ -227,6 +263,8 @@ body::-webkit-scrollbar {
 /* ── Layout Utilities ── */
 
 .page-container {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 1200px;
   margin-left: auto;
@@ -290,4 +328,68 @@ body::-webkit-scrollbar {
   [data-cover]:hover img {
     transform: none;
   }
+}
+
+/* ── Link hover — warmth approaching ── */
+[data-link] {
+  position: relative;
+  text-decoration: none;
+  transition: color var(--duration-hover) var(--ease-hover);
+}
+
+[data-link]::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--ink-muted);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-link]:hover::after {
+  transform: scaleX(1);
+}
+
+/* ── Card hover glow ── */
+[data-cover]:hover {
+  box-shadow: 0 8px 32px rgba(180, 140, 80, 0.06);
+}
+
+:root[data-timemode="night"] [data-cover]:hover,
+:root[data-timemode="dusk"] [data-cover]:hover {
+  box-shadow: 0 8px 32px rgba(200, 160, 80, 0.10);
+}
+
+/* ── Press state ── */
+[data-link]:active,
+[data-cover]:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-out;
+}
+
+/* ── NYC Clock night glow ── */
+:root[data-timemode="night"] .nyc-clock {
+  text-shadow: 0 0 12px rgba(200, 160, 80, 0.15);
+}
+
+/* ── Time mode slow transitions (only on structural elements) ── */
+body,
+.page-container,
+[data-cover],
+.font-mono,
+.font-display {
+  transition: color 2s ease, background-color 2s ease;
+}
+
+/* Re-apply specific fast transitions for interactive elements */
+[data-link] {
+  transition: color var(--duration-hover) var(--ease-hover);
+}
+
+[data-cover] {
+  transition: transform var(--duration-hover) var(--ease-out), color 2s ease, background-color 2s ease;
 }
