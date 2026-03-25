@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import { gsap } from "@/lib/gsap";
+import TransitionLink from "@/components/TransitionLink";
 import { REVEAL_CONTENT } from "@/lib/animations";
 import { JOURNAL_ENTRIES, type JournalTag } from "@/constants/journal";
 
@@ -33,7 +33,7 @@ export default function WritingPage() {
     <main
       style={{
         minHeight: "100vh",
-        paddingTop: "var(--space-breath)",
+        paddingTop: "clamp(80px, 12vh, 140px)",
         paddingBottom: "var(--space-breath)",
       }}
     >
@@ -48,7 +48,7 @@ export default function WritingPage() {
         <h1
           className="font-display"
           style={{
-            fontSize: "clamp(2.2rem, 4.5vw, 3.2rem)",
+            fontSize: "clamp(22px, 3vw, 32px)",
             color: "var(--ink-full)",
             lineHeight: 1.1,
             fontStyle: "italic",
@@ -159,7 +159,7 @@ export default function WritingPage() {
 
               {/* Title */}
               {isLong ? (
-                <Link
+                <TransitionLink
                   href={`/writing/${entry.id}`}
                   className="font-display"
                   style={{
@@ -173,7 +173,7 @@ export default function WritingPage() {
                   }}
                 >
                   {entry.title}
-                </Link>
+                </TransitionLink>
               ) : (
                 <span
                   className="font-display"
@@ -203,7 +203,7 @@ export default function WritingPage() {
 
               {/* Read link for long entries */}
               {isLong && (
-                <Link
+                <TransitionLink
                   href={`/writing/${entry.id}`}
                   className="font-mono hover-step-muted"
                   style={{
@@ -215,7 +215,7 @@ export default function WritingPage() {
                   }}
                 >
                   Read
-                </Link>
+                </TransitionLink>
               )}
             </div>
           );

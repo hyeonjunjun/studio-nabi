@@ -21,7 +21,7 @@ export default function ExplorationPage() {
     <main
       style={{
         minHeight: "100vh",
-        paddingTop: "var(--space-breath)",
+        paddingTop: "clamp(80px, 12vh, 140px)",
         paddingBottom: "var(--space-breath)",
       }}
     >
@@ -36,7 +36,7 @@ export default function ExplorationPage() {
         <h1
           className="font-display"
           style={{
-            fontSize: "clamp(2.2rem, 4.5vw, 3.2rem)",
+            fontSize: "clamp(22px, 3vw, 32px)",
             color: "var(--ink-full)",
             lineHeight: 1.1,
             fontStyle: "italic",

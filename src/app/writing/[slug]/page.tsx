@@ -1,8 +1,8 @@
 "use client";
 
 import { use, useRef, useEffect } from "react";
-import Link from "next/link";
 import { gsap } from "@/lib/gsap";
+import TransitionLink from "@/components/TransitionLink";
 import { REVEAL_CONTENT } from "@/lib/animations";
 import { JOURNAL_ENTRIES } from "@/constants/journal";
 
@@ -57,7 +57,7 @@ export default function WritingEntryPage({
     <main
       style={{
         minHeight: "100vh",
-        paddingTop: "var(--space-breath)",
+        paddingTop: "clamp(80px, 12vh, 140px)",
         paddingBottom: "var(--space-breath)",
       }}
     >
@@ -70,7 +70,7 @@ export default function WritingEntryPage({
         }}
       >
         {/* Back link */}
-        <Link
+        <TransitionLink
           href="/writing"
           data-reveal
           className="font-mono"
@@ -85,14 +85,14 @@ export default function WritingEntryPage({
           }}
         >
           Writing
-        </Link>
+        </TransitionLink>
 
         {/* Title */}
         <h1
           data-reveal
           className="font-display"
           style={{
-            fontSize: "clamp(2.2rem, 4.5vw, 3.2rem)",
+            fontSize: "clamp(22px, 3vw, 32px)",
             color: "var(--ink-full)",
             lineHeight: 1.1,
             fontStyle: "italic",
@@ -155,7 +155,7 @@ export default function WritingEntryPage({
 
         {/* Next entry */}
         {nextEntry && nextEntry.id !== entry.id && (
-          <Link
+          <TransitionLink
             href={`/writing/${nextEntry.id}`}
             data-reveal
             style={{
@@ -199,7 +199,7 @@ export default function WritingEntryPage({
             >
               {nextEntry.date}
             </span>
-          </Link>
+          </TransitionLink>
         )}
       </div>
     </main>
