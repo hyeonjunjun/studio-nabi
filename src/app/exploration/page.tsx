@@ -46,7 +46,7 @@ export default function ExplorationPage() {
             fontStyle: "italic",
           }}
         >
-          Exploration
+          Coddiwompling
         </h1>
         <p
           style={{

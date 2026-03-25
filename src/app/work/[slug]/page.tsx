@@ -156,7 +156,7 @@ export default function CaseStudy() {
         style={{
           fontSize: 10,
           letterSpacing: "0.1em",
-          color: "var(--color-text-dim)",
+          color: "var(--ink-secondary)",
         }}
       >
         project not found
@@ -171,10 +171,10 @@ export default function CaseStudy() {
     <div
       ref={containerRef}
       className="min-h-screen"
-      style={{ backgroundColor: "var(--color-bg)" }}
+      style={{ backgroundColor: "transparent" }}
     >
       {/* ── Content column ── */}
-      <div className="span-w-7 span-ml-2 py-[10vh]">
+      <div style={{ maxWidth: "var(--max-cover)", margin: "0 auto", padding: "10vh var(--page-px)" }}>
         {/* ── Project Metadata ── */}
         <div className="mb-16">
           <h1
@@ -182,7 +182,7 @@ export default function CaseStudy() {
             style={{
               fontSize: 10,
               letterSpacing: "0.1em",
-              color: "var(--color-text)",
+              color: "var(--ink-primary)",
             }}
             data-text-reveal
           >
@@ -194,7 +194,7 @@ export default function CaseStudy() {
             style={{
               fontSize: 10,
               lineHeight: "110%",
-              color: "var(--color-text-dim)",
+              color: "var(--ink-secondary)",
             }}
             data-text-reveal
           >
@@ -208,7 +208,7 @@ export default function CaseStudy() {
                   className="font-mono uppercase block"
                   style={{
                     fontSize: 10,
-                    color: "var(--color-text-ghost)",
+                    color: "var(--ink-muted)",
                     marginBottom: "4px",
                   }}
                 >
@@ -218,7 +218,7 @@ export default function CaseStudy() {
                   className="font-mono uppercase"
                   style={{
                     fontSize: 10,
-                    color: "var(--color-text-dim)",
+                    color: "var(--ink-secondary)",
                   }}
                 >
                   {caseStudy.role}
@@ -231,7 +231,7 @@ export default function CaseStudy() {
                 className="font-mono uppercase block"
                 style={{
                   fontSize: 10,
-                  color: "var(--color-text-ghost)",
+                  color: "var(--ink-muted)",
                   marginBottom: "4px",
                 }}
               >
@@ -241,7 +241,7 @@ export default function CaseStudy() {
                 className="font-mono uppercase"
                 style={{
                   fontSize: 10,
-                  color: "var(--color-text-dim)",
+                  color: "var(--ink-secondary)",
                 }}
               >
                 {project.year}
@@ -253,7 +253,7 @@ export default function CaseStudy() {
                 className="font-mono uppercase block"
                 style={{
                   fontSize: 10,
-                  color: "var(--color-text-ghost)",
+                  color: "var(--ink-muted)",
                   marginBottom: "4px",
                 }}
               >
@@ -263,7 +263,7 @@ export default function CaseStudy() {
                 className="font-mono uppercase"
                 style={{
                   fontSize: 10,
-                  color: "var(--color-text-dim)",
+                  color: "var(--ink-secondary)",
                 }}
               >
                 {project.sector}
@@ -279,9 +279,9 @@ export default function CaseStudy() {
               <p
                 className="font-display italic"
                 style={{
-                  fontSize: "var(--text-h2)",
+                  fontSize: "var(--text-title)",
                   lineHeight: 1.4,
-                  color: "var(--color-text)",
+                  color: "var(--ink-primary)",
                   maxWidth: "58ch",
                   marginBottom: has(caseStudy.stakes) ? "1.5rem" : 0,
                 }}
@@ -291,11 +291,11 @@ export default function CaseStudy() {
             )}
             {has(caseStudy.stakes) && (
               <p
-                className="font-sans"
+                className=""
                 style={{
                   fontSize: "var(--text-body)",
                   lineHeight: 1.7,
-                  color: "var(--color-text-secondary)",
+                  color: "var(--ink-secondary)",
                   maxWidth: "58ch",
                 }}
               >
@@ -312,9 +312,9 @@ export default function CaseStudy() {
               <h2
                 className="font-display"
                 style={{
-                  fontSize: "var(--text-h2)",
+                  fontSize: "var(--text-title)",
                   fontWeight: 400,
-                  color: "var(--color-text)",
+                  color: "var(--ink-primary)",
                   marginBottom: "1rem",
                 }}
               >
@@ -325,9 +325,9 @@ export default function CaseStudy() {
               <p
                 className="font-mono uppercase"
                 style={{
-                  fontSize: "var(--text-micro)",
+                  fontSize: "var(--text-meta)",
                   letterSpacing: "0.1em",
-                  color: "var(--color-text-ghost)",
+                  color: "var(--ink-muted)",
                   marginBottom: "1rem",
                 }}
               >
@@ -335,11 +335,11 @@ export default function CaseStudy() {
               </p>
             )}
             <p
-              className="font-sans"
+              className=""
               style={{
                 fontSize: "var(--text-body)",
                 lineHeight: 1.7,
-                color: "var(--color-text-secondary)",
+                color: "var(--ink-secondary)",
                 maxWidth: "58ch",
               }}
             >
@@ -377,9 +377,9 @@ export default function CaseStudy() {
             <h2
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
+                fontSize: "var(--text-meta)",
                 letterSpacing: "0.1em",
-                color: "var(--color-text-ghost)",
+                color: "var(--ink-muted)",
                 marginBottom: "2rem",
               }}
             >
@@ -393,18 +393,18 @@ export default function CaseStudy() {
                       className="font-mono"
                       style={{
                         fontSize: 10,
-                        color: "var(--color-text-ghost)",
+                        color: "var(--ink-muted)",
                         marginRight: "0.75rem",
                       }}
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className="font-sans"
+                      className=""
                       style={{
                         fontSize: "var(--text-body)",
                         fontWeight: 500,
-                        color: "var(--color-text)",
+                        color: "var(--ink-primary)",
                       }}
                     >
                       {step.title}
@@ -412,11 +412,11 @@ export default function CaseStudy() {
                   </div>
                   {has(step.copy) && (
                     <p
-                      className="font-sans"
+                      className=""
                       style={{
-                        fontSize: "var(--text-small)",
+                        fontSize: "14px",
                         lineHeight: 1.7,
-                        color: "var(--color-text-secondary)",
+                        color: "var(--ink-secondary)",
                         maxWidth: "58ch",
                         paddingLeft: "2.5rem",
                       }}
@@ -452,9 +452,9 @@ export default function CaseStudy() {
             <h2
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
+                fontSize: "var(--text-meta)",
                 letterSpacing: "0.1em",
-                color: "var(--color-text-ghost)",
+                color: "var(--ink-muted)",
                 marginBottom: "2rem",
               }}
             >
@@ -464,22 +464,22 @@ export default function CaseStudy() {
               {caseStudy.highlights.map((hl) => (
                 <div key={hl.id}>
                   <h3
-                    className="font-sans"
+                    className=""
                     style={{
                       fontSize: "var(--text-body)",
                       fontWeight: 500,
-                      color: "var(--color-text)",
+                      color: "var(--ink-primary)",
                       marginBottom: "0.5rem",
                     }}
                   >
                     {hl.title}
                   </h3>
                   <p
-                    className="font-sans"
+                    className=""
                     style={{
-                      fontSize: "var(--text-small)",
+                      fontSize: "14px",
                       lineHeight: 1.7,
-                      color: "var(--color-text-secondary)",
+                      color: "var(--ink-secondary)",
                       maxWidth: "58ch",
                     }}
                   >
@@ -489,12 +489,12 @@ export default function CaseStudy() {
                     <p
                       className="font-display italic mt-4"
                       style={{
-                        fontSize: "var(--text-small)",
+                        fontSize: "14px",
                         lineHeight: 1.5,
-                        color: "var(--color-text-dim)",
+                        color: "var(--ink-secondary)",
                         maxWidth: "58ch",
                         paddingLeft: "1rem",
-                        borderLeft: "1px solid rgba(var(--color-text-rgb), 0.06)",
+                        borderLeft: "1px solid rgba(var(--ink-rgb), 0.06)",
                       }}
                     >
                       {hl.challenge}
@@ -506,7 +506,7 @@ export default function CaseStudy() {
                       style={{
                         fontSize: "10px",
                         letterSpacing: "0.05em",
-                        color: "var(--color-text-ghost)",
+                        color: "var(--ink-muted)",
                       }}
                     >
                       {hl.recipe}
@@ -524,20 +524,20 @@ export default function CaseStudy() {
             <h2
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
+                fontSize: "var(--text-meta)",
                 letterSpacing: "0.1em",
-                color: "var(--color-text-ghost)",
+                color: "var(--ink-muted)",
                 marginBottom: "1rem",
               }}
             >
               Engineering
             </h2>
             <p
-              className="font-sans"
+              className=""
               style={{
-                fontSize: "var(--text-small)",
+                fontSize: "14px",
                 lineHeight: 1.7,
-                color: "var(--color-text-secondary)",
+                color: "var(--ink-secondary)",
                 maxWidth: "58ch",
               }}
             >
@@ -552,9 +552,9 @@ export default function CaseStudy() {
                     style={{
                       fontSize: 10,
                       letterSpacing: "0.1em",
-                      color: "var(--color-text-dim)",
+                      color: "var(--ink-secondary)",
                       padding: "3px 8px",
-                      border: "1px solid rgba(var(--color-text-rgb), 0.06)",
+                      border: "1px solid rgba(var(--ink-rgb), 0.06)",
                     }}
                   >
                     {signal}
@@ -590,7 +590,7 @@ export default function CaseStudy() {
                     style={{
                       fontSize: 10,
                       letterSpacing: "0.05em",
-                      color: "var(--color-text-ghost)",
+                      color: "var(--ink-muted)",
                     }}
                   >
                     {video.caption}
@@ -612,7 +612,7 @@ export default function CaseStudy() {
                     style={{
                       fontSize: 10,
                       letterSpacing: "0.1em",
-                      color: "var(--color-text-ghost)",
+                      color: "var(--ink-muted)",
                       marginBottom: "4px",
                     }}
                   >
@@ -622,7 +622,7 @@ export default function CaseStudy() {
                     className="font-mono"
                     style={{
                       fontSize: "var(--text-body)",
-                      color: "var(--color-text)",
+                      color: "var(--ink-primary)",
                     }}
                   >
                     {stat.value}
@@ -639,9 +639,9 @@ export default function CaseStudy() {
             <p
               className="font-display italic"
               style={{
-                fontSize: "var(--text-h2)",
+                fontSize: "var(--text-title)",
                 lineHeight: 1.4,
-                color: "var(--color-text)",
+                color: "var(--ink-primary)",
                 maxWidth: "48ch",
               }}
             >
@@ -656,9 +656,9 @@ export default function CaseStudy() {
             <h2
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
+                fontSize: "var(--text-meta)",
                 letterSpacing: "0.1em",
-                color: "var(--color-text-ghost)",
+                color: "var(--ink-muted)",
                 marginBottom: "1rem",
               }}
             >
@@ -671,7 +671,7 @@ export default function CaseStudy() {
                   className="font-mono"
                   style={{
                     fontSize: "10px",
-                    color: "var(--color-text-dim)",
+                    color: "var(--ink-secondary)",
                   }}
                 >
                   {item}
@@ -683,7 +683,7 @@ export default function CaseStudy() {
                 className="font-mono mt-3"
                 style={{
                   fontSize: "10px",
-                  color: "var(--color-text-ghost)",
+                  color: "var(--ink-muted)",
                 }}
               >
                 Type: {caseStudy.schematic.typography}
@@ -698,9 +698,9 @@ export default function CaseStudy() {
             <h2
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
+                fontSize: "var(--text-meta)",
                 letterSpacing: "0.1em",
-                color: "var(--color-text-ghost)",
+                color: "var(--ink-muted)",
                 marginBottom: "0.75rem",
               }}
             >
@@ -712,7 +712,7 @@ export default function CaseStudy() {
                 className="font-mono"
                 style={{
                   fontSize: "10px",
-                  color: "var(--color-text-dim)",
+                  color: "var(--ink-secondary)",
                 }}
               >
                 {c.name} — {c.role}
@@ -734,7 +734,7 @@ export default function CaseStudy() {
           style={{
             fontSize: 10,
             letterSpacing: "0.1em",
-            color: "var(--color-text-ghost)",
+            color: "var(--ink-muted)",
           }}
         >
           {scrollPercent} %
@@ -751,7 +751,7 @@ export default function CaseStudy() {
             className="font-mono uppercase"
             style={{
               fontSize: 10,
-              color: "var(--color-text-dim)",
+              color: "var(--ink-secondary)",
               letterSpacing: "0.1em",
               textDecoration: "none",
             }}
@@ -765,7 +765,7 @@ export default function CaseStudy() {
             className="font-mono uppercase ml-auto"
             style={{
               fontSize: 10,
-              color: "var(--color-text-dim)",
+              color: "var(--ink-secondary)",
               letterSpacing: "0.1em",
               textDecoration: "none",
             }}

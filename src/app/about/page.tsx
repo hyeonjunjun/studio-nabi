@@ -23,19 +23,18 @@ export default function AboutPage() {
     <div
       ref={containerRef}
       className="min-h-screen"
-      style={{ backgroundColor: "var(--color-bg)" }}
+      style={{ backgroundColor: "transparent" }}
     >
       <section
-        className="section-padding"
-        style={{ paddingTop: "var(--page-pt)" }}
+        style={{ paddingLeft: "var(--page-px)", paddingRight: "var(--page-px)", paddingTop: "var(--space-breath)" }}
       >
         <div style={{ maxWidth: 560 }}>
           <span
             className="font-mono uppercase"
             style={{
-              fontSize: "var(--text-micro)",
-              letterSpacing: "var(--tracking-wider)",
-              color: "var(--color-text-ghost)",
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              color: "var(--ink-muted)",
               display: "block",
               marginBottom: 32,
             }}
@@ -45,14 +44,14 @@ export default function AboutPage() {
           </span>
 
           <p
-            className="font-sans"
+            className=""
             style={{
               fontSize: "var(--text-body)",
-              lineHeight: "var(--leading-relaxed)",
-              color: "var(--color-text)",
+              lineHeight: "var(--leading-body)",
+              color: "var(--ink-primary)",
               marginBottom: 20,
               maxWidth: "58ch",
-              letterSpacing: "var(--tracking-snug)",
+              letterSpacing: "-0.01em",
             }}
             data-reveal
           >
@@ -62,13 +61,13 @@ export default function AboutPage() {
           </p>
 
           <p
-            className="font-sans"
+            className=""
             style={{
               fontSize: "var(--text-body)",
-              lineHeight: "var(--leading-relaxed)",
-              color: "var(--color-text-secondary)",
+              lineHeight: "var(--leading-body)",
+              color: "var(--ink-secondary)",
               maxWidth: "58ch",
-              letterSpacing: "var(--tracking-snug)",
+              letterSpacing: "-0.01em",
             }}
             data-reveal
           >
@@ -80,10 +79,10 @@ export default function AboutPage() {
           <p
             className="font-mono"
             style={{
-              fontSize: "var(--text-micro)",
-              lineHeight: "var(--leading-relaxed)",
-              color: "var(--color-text-ghost)",
-              letterSpacing: "var(--tracking-wide)",
+              fontSize: "var(--text-meta)",
+              lineHeight: "var(--leading-body)",
+              color: "var(--ink-muted)",
+              letterSpacing: "var(--tracking-label)",
               maxWidth: "48ch",
               marginTop: 32,
             }}
@@ -98,7 +97,7 @@ export default function AboutPage() {
             data-reveal
             style={{
               height: 1,
-              backgroundColor: "var(--color-border)",
+              backgroundColor: "rgba(var(--ink-rgb), 0.08)",
               marginTop: 40,
               marginBottom: 32,
             }}
@@ -108,9 +107,9 @@ export default function AboutPage() {
             <span
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "var(--tracking-wider)",
-                color: "var(--color-text-ghost)",
+                fontSize: "var(--text-meta)",
+                letterSpacing: "var(--tracking-label)",
+                color: "var(--ink-muted)",
                 display: "block",
                 marginBottom: 16,
               }}
@@ -127,22 +126,22 @@ export default function AboutPage() {
                   <span
                     className="font-mono"
                     style={{
-                      fontSize: "var(--text-micro)",
-                      color: "var(--color-text-ghost)",
+                      fontSize: "var(--text-meta)",
+                      color: "var(--ink-muted)",
                     }}
                   >
                     {exp.period}
                   </span>
                   <span
-                    className="font-sans"
+                    className=""
                     style={{
                       fontSize: "var(--text-body)",
-                      color: "var(--color-text-secondary)",
-                      lineHeight: "var(--leading-normal)",
-                      letterSpacing: "var(--tracking-snug)",
+                      color: "var(--ink-secondary)",
+                      lineHeight: "1.5",
+                      letterSpacing: "-0.01em",
                     }}
                   >
-                    <span style={{ color: "var(--color-text-dim)" }}>{exp.role}</span> &mdash; {exp.desc}
+                    <span style={{ color: "var(--ink-secondary)" }}>{exp.role}</span> &mdash; {exp.desc}
                   </span>
                 </div>
               ))}
@@ -153,7 +152,7 @@ export default function AboutPage() {
             data-reveal
             style={{
               height: 1,
-              backgroundColor: "var(--color-border)",
+              backgroundColor: "rgba(var(--ink-rgb), 0.08)",
               marginTop: 40,
               marginBottom: 32,
             }}
@@ -163,9 +162,9 @@ export default function AboutPage() {
             <span
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "var(--tracking-wider)",
-                color: "var(--color-text-ghost)",
+                fontSize: "var(--text-meta)",
+                letterSpacing: "var(--tracking-label)",
+                color: "var(--ink-muted)",
                 display: "block",
                 marginBottom: 16,
               }}
@@ -174,10 +173,10 @@ export default function AboutPage() {
             </span>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="font-sans link-dim"
+              className=" hover-step-muted"
               style={{
                 fontSize: "var(--text-body)",
-                letterSpacing: "var(--tracking-snug)",
+                letterSpacing: "-0.01em",
               }}
             >
               {CONTACT_EMAIL}
@@ -185,9 +184,9 @@ export default function AboutPage() {
             <p
               className="font-mono"
               style={{
-                fontSize: "var(--text-micro)",
-                color: "var(--color-text-ghost)",
-                letterSpacing: "var(--tracking-wide)",
+                fontSize: "var(--text-meta)",
+                color: "var(--ink-muted)",
+                letterSpacing: "var(--tracking-label)",
                 marginTop: 8,
               }}
             >
@@ -199,9 +198,9 @@ export default function AboutPage() {
             <span
               className="font-mono uppercase"
               style={{
-                fontSize: "var(--text-micro)",
-                letterSpacing: "var(--tracking-wider)",
-                color: "var(--color-text-ghost)",
+                fontSize: "var(--text-meta)",
+                letterSpacing: "var(--tracking-label)",
+                color: "var(--ink-muted)",
                 marginRight: 16,
               }}
             >
@@ -213,10 +212,10 @@ export default function AboutPage() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono uppercase link-dim"
+                  className="font-mono uppercase hover-step-muted"
                   style={{
-                    fontSize: "var(--text-micro)",
-                    letterSpacing: "var(--tracking-wider)",
+                    fontSize: "var(--text-meta)",
+                    letterSpacing: "var(--tracking-label)",
                   }}
                 >
                   {link.label}
@@ -225,8 +224,8 @@ export default function AboutPage() {
                   <span
                     className="font-mono"
                     style={{
-                      fontSize: "var(--text-micro)",
-                      color: "var(--color-text-ghost)",
+                      fontSize: "var(--text-meta)",
+                      color: "var(--ink-muted)",
                       margin: "0 8px",
                     }}
                   >

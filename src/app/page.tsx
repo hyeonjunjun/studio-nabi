@@ -79,12 +79,43 @@ export default function Home() {
       <header
         ref={heroRef}
         style={{
-          paddingTop: "var(--space-break)",
-          marginBottom: "clamp(3rem, 8vh, 5rem)",
+          paddingTop: "var(--space-breath)",
+          paddingBottom: "var(--space-section)",
           maxWidth: "var(--max-cover)",
         }}
       >
-
+        <p
+          data-hero-el
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "clamp(18px, 2.2vw, 24px)",
+            lineHeight: 1.6,
+            color: "var(--ink-primary)",
+            maxWidth: "520px",
+            opacity: 0,
+          }}
+        >
+          design engineer building interfaces, systems, and the quiet details between them.
+        </p>
+        <div
+          data-hero-el
+          className="font-mono"
+          style={{
+            fontSize: "var(--text-meta)",
+            letterSpacing: "var(--tracking-label)",
+            textTransform: "uppercase",
+            color: "var(--ink-muted)",
+            marginTop: "var(--space-standard)",
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--space-small)",
+            opacity: 0,
+          }}
+        >
+          <span>New York</span>
+          <span style={{ width: 3, height: 3, borderRadius: "50%", backgroundColor: "var(--ink-muted)", flexShrink: 0 }} />
+          <span>Open to work</span>
+        </div>
       </header>
 
       {/* ── Work ── */}
