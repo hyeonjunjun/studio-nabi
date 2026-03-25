@@ -4,14 +4,10 @@ export interface Exploration {
   medium: string;
   date: string;
   description: string;
-  /** Hero media — image or video */
   hero: string;
   heroType: "image" | "video";
-  /** Optional thumbnail override for gallery (defaults to hero) */
   thumbnail?: string;
-  /** Dominant palette color for mood background */
   mood: string;
-  /** Optional longer process note */
   process?: string;
 }
 
@@ -32,7 +28,7 @@ export const EXPLORATIONS: Exploration[] = [
     medium: "texture study",
     date: "2026-02",
     description: "Cherry blossom season captured in surface tension.",
-    hero: "/images/gyeol-spring.png",
+    hero: "/images/gyeol-spring.webp",
     heroType: "image",
     mood: "#C4B5A0",
   },
@@ -42,7 +38,7 @@ export const EXPLORATIONS: Exploration[] = [
     medium: "texture study",
     date: "2026-02",
     description: "Wet granite. The way water reveals what was always there.",
-    hero: "/images/gyeol-rain.png",
+    hero: "/images/gyeol-rain.webp",
     heroType: "image",
     mood: "#7A8B8C",
   },
@@ -52,7 +48,7 @@ export const EXPLORATIONS: Exploration[] = [
     medium: "material study",
     date: "2026-01",
     description: "Korean mulberry paper — light passes through, never pierces.",
-    hero: "/images/gyeol display hanji.png",
+    hero: "/images/gyeol-display-hanji.webp",
     heroType: "image",
     mood: "#D4C8B8",
   },
@@ -62,7 +58,7 @@ export const EXPLORATIONS: Exploration[] = [
     medium: "color study",
     date: "2026-01",
     description: "Matcha as material. The green that calms before you taste it.",
-    hero: "/images/gyeol-green tea.png",
+    hero: "/images/gyeol-green-tea.webp",
     heroType: "image",
     mood: "#8B9E6B",
   },
@@ -72,7 +68,7 @@ export const EXPLORATIONS: Exploration[] = [
     medium: "form study",
     date: "2025-12",
     description: "Softness rendered. Where does the surface end and the light begin?",
-    hero: "/images/cushion gyeol.png",
+    hero: "/images/cushion-gyeol.webp",
     heroType: "image",
     mood: "#B8A89C",
   },
