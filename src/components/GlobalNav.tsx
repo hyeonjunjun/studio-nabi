@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { NAV_LINKS } from "@/constants/navigation";
 import { useStudioStore } from "@/lib/store";
 import { MobileMenu } from "@/components/MobileMenu";
 import NYCClock from "@/components/NYCClock";
@@ -9,14 +8,6 @@ import TransitionLink from "@/components/TransitionLink";
 export default function GlobalNav() {
   const pathname = usePathname();
   const setMobileMenuOpen = useStudioStore((s) => s.setMobileMenuOpen);
-
-  // Active detection: exact match, starts-with path, or homepage anchor
-  function isActive(href: string): boolean {
-    if (href === "/#work") {
-      return pathname === "/";
-    }
-    return pathname === href || pathname.startsWith(href + "/");
-  }
 
   return (
     <>
@@ -67,33 +58,21 @@ export default function GlobalNav() {
 
         {/* Desktop nav */}
         <nav data-desktop-nav style={{ display: "flex", alignItems: "center", gap: "var(--space-comfortable)" }}>
-          {NAV_LINKS.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <TransitionLink
-                key={link.label}
-                href={link.href}
-                data-link
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "var(--text-meta)",
-                  letterSpacing: "var(--tracking-label)",
-                  textTransform: "uppercase",
-                  color: active ? "var(--ink-full)" : "var(--ink-muted)",
-                  textDecoration: "none",
-                  transition: "color var(--duration-hover) var(--ease-hover)",
-                }}
-                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                  if (!active) e.currentTarget.style.color = "var(--ink-secondary)";
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                  if (!active) e.currentTarget.style.color = "var(--ink-muted)";
-                }}
-              >
-                {link.label}
-              </TransitionLink>
-            );
-          })}
+          <TransitionLink
+            href="/about"
+            data-link
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-meta)",
+              letterSpacing: "var(--tracking-label)",
+              textTransform: "uppercase",
+              color: pathname === "/about" ? "var(--ink-full)" : "var(--ink-muted)",
+              textDecoration: "none",
+              transition: "color var(--duration-hover) var(--ease-hover)",
+            }}
+          >
+            About
+          </TransitionLink>
         </nav>
 
         {/* Mobile menu trigger — hidden above 768px via CSS */}

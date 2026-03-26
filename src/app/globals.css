@@ -264,6 +264,34 @@ body::-webkit-scrollbar {
   padding-bottom: var(--space-section);
 }
 
+/* ── Masonry Grid ── */
+
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.masonry-item[data-size="large"] {
+  grid-column: span 2;
+}
+
+.masonry-item[data-size="tall"] {
+  grid-row: span 2;
+}
+
+@media (max-width: 768px) {
+  .masonry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .masonry-item[data-size="large"],
+  .masonry-item[data-size="tall"] {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
 /* ── Mobile Menu Trigger Visibility ── */
 
 .mobile-menu-trigger {
