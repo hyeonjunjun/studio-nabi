@@ -70,7 +70,7 @@ export default function TransitionManager() {
       position: fixed;
       inset: 0;
       z-index: 8900;
-      background: var(--bg);
+      background: var(--paper);
       opacity: 0;
       pointer-events: none;
     `;

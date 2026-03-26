@@ -55,7 +55,7 @@ export function TransitionOverlay({ overlayRef }: { overlayRef: React.RefObject<
         position: "fixed",
         inset: 0,
         zIndex: 9000,
-        backgroundColor: "var(--bg)",
+        backgroundColor: "var(--paper)",
         opacity: 0,
         pointerEvents: "none",
       }}

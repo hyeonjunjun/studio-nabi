@@ -204,7 +204,7 @@ export default function DissolveImage({ revealDuration = 1.2, style, ...imagePro
             height: "100%",
             pointerEvents: "none",
             zIndex: 2,
-            background: "var(--bg)",
+            background: "var(--paper)",
           }}
         />
       )}

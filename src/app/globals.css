@@ -269,7 +269,7 @@ body::-webkit-scrollbar {
 .masonry-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 20px;
 }
 
 .masonry-item[data-size="large"] {
