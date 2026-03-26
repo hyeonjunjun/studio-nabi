@@ -44,10 +44,14 @@ export default function Preloader() {
       ref={overlayRef}
       style={{
         position: "fixed",
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100vw",
+        height: "100vh",
         zIndex: 9999,
-        backgroundColor: "#f7f6f3", /* --paper */
-        opacity: 1,
+        backgroundColor: "#f7f6f3",
         pointerEvents: "none",
       }}
       aria-hidden="true"
