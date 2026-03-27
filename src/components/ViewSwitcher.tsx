@@ -41,7 +41,6 @@ export function ViewSwitcher({ containerRef }: ViewSwitcherProps) {
               textTransform: "uppercase",
               letterSpacing: "0.06em",
               color: isActive ? "var(--ink-full)" : "var(--ink-muted)",
-              borderBottom: isActive ? "1px solid var(--ink-full)" : "1px solid transparent",
               background: "none",
               border: "none",
               borderBottom: isActive ? "1px solid var(--ink-full)" : "1px solid transparent",
