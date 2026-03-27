@@ -23,16 +23,19 @@ export function CoverGrid({ pieces }: CoverGridProps) {
     <div
       style={{
         height: "calc(100vh - 56px)",
+        marginTop: 56,
         display: "grid",
         alignContent: "center",
         padding: "16px 24px",
+        maxWidth: 1400,
+        margin: "56px auto 0",
       }}
     >
       <div
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gap: 10,
+          gap: 12,
         }}
       >
         {pieces.map((piece, i) => (

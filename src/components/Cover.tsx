@@ -83,10 +83,10 @@ export function Cover({ piece, index, onHover, isHovered, isDimmed }: CoverProps
             position: "absolute",
             top: 0,
             left: 0,
-            padding: 12,
+            padding: 16,
             fontFamily: "var(--font-mono)",
-            fontSize: "clamp(10px, 1.2vw, 14px)",
-            opacity: 0.3,
+            fontSize: "clamp(10px, 1.2vw, 13px)",
+            opacity: 0.4,
             zIndex: 2,
             lineHeight: 1,
           }}
@@ -100,13 +100,13 @@ export function Cover({ piece, index, onHover, isHovered, isDimmed }: CoverProps
             position: "absolute",
             bottom: 0,
             left: 0,
-            padding: 12,
+            padding: 16,
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(12px, 1.5vw, 18px)",
-            fontWeight: 400,
+            fontSize: "clamp(13px, 1.5vw, 18px)",
+            fontWeight: 500,
             lineHeight: 1.2,
             zIndex: 2,
-            letterSpacing: "0.01em",
+            letterSpacing: "0.02em",
           }}
         >
           {piece.title}
