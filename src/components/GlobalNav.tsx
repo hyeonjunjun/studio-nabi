@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useStudioStore } from "@/lib/store";
-import { ViewSwitcher } from "@/components/ViewSwitcher";
-import { NYCClock } from "@/components/NYCClock";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { MobileMenu } from "@/components/MobileMenu";
+
+const NAV_LINKS = [
+  { label: "Work", href: "/work" },
+  { label: "Lab", href: "/lab" },
+  { label: "About", href: "/about" },
+];
 
 export function GlobalNav() {
   const setMobileMenuOpen = useStudioStore((s) => s.setMobileMenuOpen);
@@ -27,94 +30,87 @@ export function GlobalNav() {
           background: "transparent",
         }}
       >
-        {/* Left: ViewSwitcher (desktop) / Hamburger (mobile) */}
-        <div>
-          <div className="desktop-switcher">
-            <ViewSwitcher />
-          </div>
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="Open menu"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              color: "var(--ink-secondary)",
-            }}
-          >
-            Menu
-          </button>
-        </div>
-
-        {/* Center: Brand mark */}
+        {/* Left: HKJ wordmark */}
         <Link
           href="/"
-          className="brand-mark"
           style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
-            fontSize: "var(--text-brand)",
-            lineHeight: "var(--leading-tight)",
+            fontFamily: "var(--font-mono)",
+            fontSize: 13,
             textTransform: "uppercase",
-            letterSpacing: "-0.02em",
-            color: "var(--ink-full)",
+            letterSpacing: "0.06em",
+            color: "var(--ink-muted)",
             textDecoration: "none",
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
           }}
         >
-          HKJ/2026
+          HKJ
         </Link>
 
-        {/* Right: Clock + Theme + About */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <NYCClock />
-          <ThemeToggle />
-          <Link
-            href="/about"
-            className="desktop-about"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              color: "var(--ink-secondary)",
-              textDecoration: "none",
-              transition: "color 150ms ease",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "var(--ink-full)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = "var(--ink-secondary)";
-            }}
-          >
-            ABOUT
-          </Link>
-        </div>
+        {/* Right: nav links (desktop) / hamburger (mobile) */}
+        <nav className="desktop-nav" aria-label="Main navigation">
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            {NAV_LINKS.map(({ label, href }) => (
+              <NavLink key={href} href={href} label={label} />
+            ))}
+          </div>
+        </nav>
+
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open menu"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            fontFamily: "var(--font-mono)",
+            fontSize: 13,
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            color: "var(--ink-ghost)",
+          }}
+        >
+          Menu
+        </button>
       </header>
 
       <style>{`
-        .desktop-switcher { display: none; }
+        .desktop-nav { display: none; }
         .mobile-menu-btn { display: block; }
-        .desktop-about { display: none; }
 
         @media (min-width: 768px) {
-          .desktop-switcher { display: flex; }
+          .desktop-nav { display: block; }
           .mobile-menu-btn { display: none !important; }
-          .desktop-about { display: block !important; }
         }
       `}</style>
 
       <MobileMenu />
     </>
+  );
+}
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: 13,
+        textTransform: "uppercase",
+        letterSpacing: "0.06em",
+        color: "var(--ink-ghost)",
+        textDecoration: "none",
+        transition: "color 250ms ease",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLAnchorElement).style.color = "var(--ink-muted)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLAnchorElement).style.color = "var(--ink-ghost)";
+      }}
+    >
+      {label}
+    </Link>
   );
 }
 
