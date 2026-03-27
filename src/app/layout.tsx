@@ -6,18 +6,10 @@ import RouteAnnouncer from "@/components/RouteAnnouncer";
 
 /* ── Fonts ── */
 
-const newsreader = localFont({
-  src: "../fonts/newsreader/Newsreader-Variable.woff2",
-  variable: "--font-display",
-  weight: "300 800",
-  display: "swap",
-  preload: true,
-});
-
-const satoshi = localFont({
-  src: "../fonts/satoshi/Satoshi-Variable.woff2",
-  variable: "--font-body",
-  weight: "300 700",
+const generalSans = localFont({
+  src: "../fonts/general-sans/GeneralSans-Variable.woff2",
+  variable: "--font-sans",
+  weight: "200 700",
   display: "swap",
   preload: true,
 });
@@ -84,7 +76,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${newsreader.variable} ${satoshi.variable} ${fragmentMono.variable}`}
+        className={`${generalSans.variable} ${fragmentMono.variable}`}
         suppressHydrationWarning
       >
         <a href="#main" className="skip-to-content">

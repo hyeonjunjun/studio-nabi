@@ -12,8 +12,8 @@
   --ink-rgb: 35, 32, 28;
   --accent-blue: #4A90D9;
 
-  --font-display: "Newsreader", Georgia, serif;
-  --font-body: "Satoshi", -apple-system, sans-serif;
+  --font-display: "General Sans", -apple-system, sans-serif;
+  --font-body: "General Sans", -apple-system, sans-serif;
   --font-mono: "Fragment Mono", "SF Mono", monospace;
 
   --text-name: 14px;
@@ -23,9 +23,11 @@
   --text-label: 11px;
   --text-meta: 10px;
   --text-caption: 13px;
+  --text-brand: clamp(36px, 6vw, 72px);
   --tracking-label: 0.06em;
   --leading-display: 1.2;
   --leading-body: 1.7;
+  --leading-tight: 0.9;
 
   --space-micro: 4px;
   --space-small: 8px;
@@ -101,7 +103,7 @@ body {
   outline-offset: 2px;
 }
 
-.font-display { font-family: var(--font-display); }
+.font-display { font-family: var(--font-display); font-weight: 700; }
 .font-body { font-family: var(--font-body); }
 .font-mono { font-family: var(--font-mono); }
 
