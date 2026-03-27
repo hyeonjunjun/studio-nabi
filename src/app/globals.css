@@ -10,7 +10,6 @@
   --ink-ghost: rgba(35, 32, 28, 0.10);
   --ink-whisper: rgba(35, 32, 28, 0.05);
   --ink-rgb: 35, 32, 28;
-  --accent-blue: #4A90D9;
 
   --font-display: "General Sans", -apple-system, sans-serif;
   --font-body: "General Sans", -apple-system, sans-serif;
@@ -23,11 +22,9 @@
   --text-label: 11px;
   --text-meta: 10px;
   --text-caption: 13px;
-  --text-brand: clamp(36px, 6vw, 72px);
   --tracking-label: 0.06em;
   --leading-display: 1.2;
   --leading-body: 1.7;
-  --leading-tight: 0.9;
 
   --space-micro: 4px;
   --space-small: 8px;
@@ -43,19 +40,6 @@
   --ease-expo: cubic-bezier(.19, 1, .22, 1);
 }
 
-/* Dark mode */
-[data-theme="dark"] {
-  --paper: #0a0908;
-  --ink-full: rgba(240, 235, 227, 1.00);
-  --ink-primary: rgba(240, 235, 227, 0.85);
-  --ink-secondary: rgba(240, 235, 227, 0.55);
-  --ink-muted: rgba(240, 235, 227, 0.38);
-  --ink-faint: rgba(240, 235, 227, 0.20);
-  --ink-ghost: rgba(240, 235, 227, 0.10);
-  --ink-whisper: rgba(240, 235, 227, 0.05);
-  --ink-rgb: 240, 235, 227;
-}
-
 html, body {
   height: 100%;
   margin: 0;
@@ -68,12 +52,14 @@ body {
   font-size: var(--text-body);
   line-height: var(--leading-body);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
-/* View-specific overflow control */
-[data-view="index"] { overflow: hidden; height: 100vh; }
-[data-view="drift"] { overflow-x: hidden; }
-[data-view="archive"] { overflow-x: hidden; }
+/* Detail and about pages need scroll */
+[data-page-scrollable] {
+  overflow-y: auto;
+  height: 100vh;
+}
 
 ::selection {
   background-color: rgba(var(--ink-rgb), 0.12);
@@ -107,16 +93,18 @@ body {
 .font-body { font-family: var(--font-body); }
 .font-mono { font-family: var(--font-mono); }
 
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: url(#grain);
+  opacity: 0.25;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Inner pages need scroll */
-[data-page-scrollable] {
-  overflow-y: auto;
-  height: 100vh;
 }
