@@ -31,11 +31,12 @@ export function DriftView() {
       >
         {SHEET_ITEMS.map((item, index) => {
           const angle = ((index - (count - 1) / 2) / count) * 30;
+          const waveY = Math.sin(index * 0.8) * 30;
           const isHovered = hoveredIndex === index;
 
           const transform = isHovered
-            ? `rotateY(0deg) translateZ(40px)`
-            : `rotateY(${angle}deg) translateZ(${Math.abs(angle) * -2}px)`;
+            ? `rotateY(0deg) translateZ(50px) translateY(${waveY}px) scale(1.05)`
+            : `rotateY(${angle}deg) translateZ(${Math.abs(angle) * -2}px) translateY(${waveY}px)`;
 
           return (
             <div
@@ -44,13 +45,15 @@ export function DriftView() {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               style={{
-                width: "clamp(150px, 18vw, 220px)",
+                width: "clamp(180px, 22vw, 280px)",
                 flexShrink: 0,
-                margin: "0 -20px",
+                margin: "0 -24px",
                 transform,
                 transformOrigin: "center center",
                 transition: "transform 0.5s cubic-bezier(.19, 1, .22, 1)",
-                zIndex: isHovered ? 10 : count - Math.abs(index - Math.round((count - 1) / 2)),
+                zIndex: isHovered
+                  ? 10
+                  : count - Math.abs(index - Math.round((count - 1) / 2)),
               }}
             >
               <GridItem item={item} />
