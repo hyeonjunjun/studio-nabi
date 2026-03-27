@@ -1,13 +1,19 @@
+"use client";
+
 export function BottomBar() {
   return (
     <footer
       style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
         height: 32,
+        zIndex: 100,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 24px",
-        flexShrink: 0,
       }}
     >
       <span
