@@ -4,19 +4,18 @@ import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useStudioStore, type ViewMode } from "@/lib/store";
+import { useStudioStore } from "@/lib/store";
 import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
 
-const VIEW_LINKS: { label: string; value: ViewMode }[] = [
-  { label: "Index", value: "index" },
-  { label: "Drift", value: "drift" },
-  { label: "Archive", value: "archive" },
+const NAV_LINKS = [
+  { label: "Work", href: "/work" },
+  { label: "Lab", href: "/lab" },
+  { label: "About", href: "/about" },
 ];
 
 export function MobileMenu() {
   const isOpen = useStudioStore((s) => s.mobileMenuOpen);
   const setMobileMenuOpen = useStudioStore((s) => s.setMobileMenuOpen);
-  const setActiveView = useStudioStore((s) => s.setActiveView);
   const pathname = usePathname();
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -111,19 +110,30 @@ export function MobileMenu() {
               height: 56,
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               padding: "0 24px",
             }}
           >
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 13,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                color: "var(--ink-muted)",
+              }}
+            >
+              HKJ
+            </span>
             <button
               onClick={close}
               aria-label="Close menu"
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: 11,
+                fontSize: 13,
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
-                color: "var(--ink-secondary)",
+                color: "var(--ink-ghost)",
                 background: "none",
                 border: "none",
                 cursor: "pointer",
@@ -134,7 +144,7 @@ export function MobileMenu() {
             </button>
           </div>
 
-          {/* View links */}
+          {/* Nav links */}
           <nav
             style={{
               flex: 1,
@@ -142,47 +152,26 @@ export function MobileMenu() {
               flexDirection: "column",
               justifyContent: "center",
               padding: "0 24px",
-              gap: 24,
+              gap: 16,
             }}
           >
-            {VIEW_LINKS.map(({ label, value }) => (
-              <button
-                key={value}
-                onClick={() => {
-                  setActiveView(value);
-                  close();
-                }}
+            {NAV_LINKS.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={close}
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontStyle: "italic",
                   fontSize: "clamp(22px, 5vw, 28px)",
                   color: "var(--ink-primary)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                  textAlign: "left",
+                  textDecoration: "none",
                   lineHeight: 1.2,
+                  fontWeight: 400,
                 }}
               >
                 {label}
-              </button>
+              </Link>
             ))}
-
-            <Link
-              href="/about"
-              onClick={close}
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontSize: "clamp(22px, 5vw, 28px)",
-                color: "var(--ink-primary)",
-                textDecoration: "none",
-                lineHeight: 1.2,
-              }}
-            >
-              About
-            </Link>
           </nav>
 
           {/* Bottom contact */}
