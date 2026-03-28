@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import GlobalNav from "@/components/GlobalNav";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
+import { TransitionProvider } from "@/lib/transition-context";
 
 /* ── Fonts ── */
 
@@ -85,8 +86,12 @@ export default function RootLayout({
           Skip to content
         </a>
         <RouteAnnouncer />
-        <GlobalNav />
-        <main id="main">{children}</main>
+
+        {/* Transition system — provides context + progress bar */}
+        <TransitionProvider>
+          <GlobalNav />
+          <main id="main">{children}</main>
+        </TransitionProvider>
       </body>
     </html>
   );
