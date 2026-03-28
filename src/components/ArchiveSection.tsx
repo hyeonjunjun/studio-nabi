@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
-import { Piece } from "@/constants/pieces";
-
-interface CoverGridProps {
-  pieces: Piece[];
-}
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { PIECES } from "@/constants/pieces";
 
 function isDarkColor(hex: string): boolean {
   const clean = hex.replace("#", "");
@@ -17,32 +14,118 @@ function isDarkColor(hex: string): boolean {
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
 }
 
-function getColCount(count: number): number {
-  if (count <= 4) return 2;
-  if (count <= 6) return 3;
-  if (count <= 12) return 4;
-  return 5;
-}
+export default function ArchiveSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-export function CoverGrid({ pieces }: CoverGridProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const cols = getColCount(pieces.length);
+  const pieces = [...PIECES].sort((a, b) => a.order - b.order);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (headerRef.current) headerRef.current.style.opacity = "1";
+      if (gridRef.current) {
+        gsap.set(gridRef.current.children, { autoAlpha: 1, y: 0 });
+      }
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      // Header
+      ScrollTrigger.create({
+        trigger: headerRef.current,
+        start: "top 90%",
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(
+            headerRef.current,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }
+          );
+        },
+      });
+
+      // Grid cards stagger
+      ScrollTrigger.create({
+        trigger: gridRef.current,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(
+            gridRef.current!.children,
+            { autoAlpha: 0, y: 30 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              stagger: 0.06,
+              ease: "expo.out",
+            }
+          );
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Adaptive columns: 3 cols for 6 items, works on desktop
+  const colCount = pieces.length <= 4 ? 2 : pieces.length <= 6 ? 3 : 4;
 
   return (
-    <div
-      style={{
-        minHeight: "calc(100vh - 56px)",
-        marginTop: 56,
-        display: "grid",
-        alignContent: "center",
-        padding: "16px var(--grid-margin)",
-        maxWidth: "var(--grid-max)",
-        margin: "56px auto 0",
-      }}
+    <section
+      ref={sectionRef}
+      id="work"
+      style={{ padding: "0 var(--grid-margin) var(--space-3xl)" }}
     >
+      {/* Section header */}
       <div
+        ref={headerRef}
+        style={{
+          maxWidth: "var(--grid-max)",
+          marginInline: "auto",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          paddingBottom: "var(--space-lg)",
+          borderBottom: "1px solid rgba(var(--ink-rgb), 0.08)",
+          marginBottom: "var(--space-lg)",
+          opacity: 0,
+        }}
+      >
+        <span
+          className="font-mono"
+          style={{
+            fontSize: "var(--text-label)",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--ink-secondary)",
+          }}
+        >
+          Selected Work
+        </span>
+        <span
+          className="font-mono"
+          style={{
+            fontSize: "var(--text-label)",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--ink-secondary)",
+          }}
+        >
+          {pieces.length} Pieces
+        </span>
+      </div>
+
+      {/* Archive grid */}
+      <div
+        ref={gridRef}
         className="archive-grid"
-        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+        style={{
+          maxWidth: "var(--grid-max)",
+          marginInline: "auto",
+          gridTemplateColumns: `repeat(${colCount}, 1fr)`,
+        }}
       >
         {pieces.map((piece, i) => {
           const dark = isDarkColor(piece.cover.bg);
@@ -53,10 +136,7 @@ export function CoverGrid({ pieces }: CoverGridProps) {
             ? "rgba(255,252,245,0.45)"
             : "rgba(28,26,23,0.35)";
           const num = String(i + 1).padStart(2, "0");
-          const href =
-            piece.type === "project"
-              ? `/work/${piece.slug}`
-              : `/lab/${piece.slug}`;
+          const href = piece.type === "project" ? `/work/${piece.slug}` : `/lab/${piece.slug}`;
 
           return (
             <Link
@@ -70,11 +150,13 @@ export function CoverGrid({ pieces }: CoverGridProps) {
                 textDecoration: "none",
                 overflow: "hidden",
                 transition: "transform var(--dur-hover) var(--ease-out)",
-                transform:
-                  hoveredIndex === i ? "translateY(-2px)" : "translateY(0)",
               }}
-              onMouseEnter={() => setHoveredIndex(i)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
               aria-label={`View ${piece.title}`}
             >
               {/* Grain */}
@@ -104,10 +186,12 @@ export function CoverGrid({ pieces }: CoverGridProps) {
                   zIndex: 2,
                 }}
               >
+                {/* Top: number + year */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
+                    alignItems: "flex-start",
                   }}
                 >
                   <span
@@ -131,6 +215,8 @@ export function CoverGrid({ pieces }: CoverGridProps) {
                     {piece.year}
                   </span>
                 </div>
+
+                {/* Bottom: title + tags */}
                 <div>
                   <p
                     className="font-display"
@@ -161,8 +247,6 @@ export function CoverGrid({ pieces }: CoverGridProps) {
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
-
-export default CoverGrid;

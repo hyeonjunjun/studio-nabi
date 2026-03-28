@@ -1,102 +1,65 @@
 @import "tailwindcss";
 
 /* ────────────────────────────────────────────────────────────
-   HKJ — Neo-Brutalism + Ink on Paper
-   Type: Newsreader (display) + Satoshi (body) + Fragment Mono (meta)
-   Palette: Warm paper ground · Electric blue accent · Raw ink
+   HKJ — Editorial Archive
+   Type: General Sans (display/body) + Fragment Mono (meta)
+   Palette: Warm paper · Ink opacity hierarchy · No accent
    ──────────────────────────────────────────────────────────── */
 
 :root {
   /* ── Ground & Ink ── */
-  --paper: #f7f6f3;
-  --ink-full:      rgba(35, 32, 28, 1.00);
-  --ink-primary:   rgba(35, 32, 28, 0.82);
-  --ink-secondary: rgba(35, 32, 28, 0.52);
-  --ink-muted:     rgba(35, 32, 28, 0.35);
-  --ink-faint:     rgba(35, 32, 28, 0.20);
-  --ink-ghost:     rgba(35, 32, 28, 0.10);
-  --ink-whisper:   rgba(35, 32, 28, 0.05);
-  --ink-rgb: 35, 32, 28;
+  --paper: #f5f4f0;
+  --ink-full:      rgba(28, 26, 23, 1.00);
+  --ink-primary:   rgba(28, 26, 23, 0.72);
+  --ink-secondary: rgba(28, 26, 23, 0.38);
+  --ink-ghost:     rgba(28, 26, 23, 0.10);
+  --ink-rgb: 28, 26, 23;
 
-  /* ── Accent — Electric Blue ── */
-  --accent:       #0047FF;
-  --accent-dark:  #0035CC;
-  --accent-light: #4F7DFF;
-  --accent-rgb:   0, 71, 255;
-
-  /* ── Raw black for borders/outlines ── */
-  --raw: #0D0D0D;
+  /* ── Accent — reserved for focus outlines only ── */
+  --accent: rgba(28, 26, 23, 0.72);
+  --accent-rgb: 28, 26, 23;
 
   /* ── Typography ── */
-  --font-display: var(--font-sans), Georgia, "Times New Roman", serif;
-  --font-body:    var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body:    var(--font-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono:    var(--font-fragment), "SF Mono", "Fira Code", monospace;
 
-  /* ── Display Type Scale (neo-brutalism) ── */
-  --text-display-xl: clamp(64px, 14vw, 160px);
-  --text-display-lg: clamp(40px, 7vw, 96px);
-  --text-display-md: clamp(28px, 4vw, 48px);
-  --text-display-sm: clamp(20px, 2.5vw, 28px);
-  --text-body-lg: 17px;
-  --text-body:    15px;
-  --text-meta:    11px;
-  --text-label:   10px;
+  /* ── Type Scale — editorial restraint ── */
+  --text-display:  clamp(42px, 8vw, 120px);
+  --text-heading:  clamp(18px, 2.5vw, 28px);
+  --text-body-lg:  16px;
+  --text-body:     14px;
+  --text-label:    10px;
+  --text-meta:     10px;
 
-  /* ── Legacy scale aliases (other pages) ── */
-  --text-name:  clamp(28px, 4vw, 36px);
-  --text-title: clamp(18px, 2.5vw, 22px);
-  --text-nav:   13px;
+  /* ── Leading ── */
+  --leading-display: 0.92;
+  --leading-heading: 1.2;
+  --leading-body:    1.65;
 
-  /* ── Tracking & Leading ── */
-  --tracking-label:        0.04em;
-  --leading-display-xl:    0.92;
-  --leading-display-lg:    0.95;
-  --leading-display-md:    1.05;
-  --leading-display:       1.2;
-  --leading-body:          1.72;
+  /* ── Spacing ── */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   16px;
+  --space-lg:   24px;
+  --space-xl:   48px;
+  --space-2xl:  80px;
+  --space-3xl:  120px;
 
-  /* ── Spacing Scale ── */
-  --space-micro:       4px;
-  --space-small:       8px;
-  --space-compact:    12px;
-  --space-standard:   16px;
-  --space-comfortable: 24px;
-  --space-room:       32px;
-  --space-break:      48px;
-  --space-section:    56px;
-  --space-breath:     72px;
-
-  /* ── Grid System ── */
+  /* ── Grid ── */
   --grid-cols:   12;
-  --grid-gutter: clamp(12px, 2vw, 24px);
-  --grid-margin: clamp(20px, 5vw, 80px);
-  --grid-max:    1440px;
-
-  /* ── Legacy Layout ── */
-  --max-text:   540px;
-  --max-cover:  900px;
-  --page-px:    24px;
-
-  /* ── Border / Brutalism ── */
-  --border-heavy:  2px solid var(--raw);
-  --border-medium: 1.5px solid rgba(var(--ink-rgb), 0.15);
-  --border-light:  1px solid rgba(var(--ink-rgb), 0.08);
-  --radius-none: 0px;
-  --radius-sm:   4px;
-  --radius-md:   8px;
+  --grid-gutter: clamp(8px, 1.5vw, 16px);
+  --grid-margin: clamp(16px, 4vw, 64px);
+  --grid-max:    1400px;
 
   /* ── Motion ── */
-  --duration-hover:      320ms;
-  --duration-press:      100ms;
-  --duration-transition: 600ms;
-  --duration-page:       800ms;
-  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-hover:    ease-out;
-  --ease-brutalist: cubic-bezier(0.76, 0, 0.24, 1);
-  --ease-snap:     cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hover:  300ms;
+  --dur-reveal: 600ms;
 }
 
-/* ── Base ── */
+/* ── Reset ── */
 
 *,
 *::before,
@@ -108,6 +71,7 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -119,7 +83,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  padding-top: 40px; /* fixed nav offset */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -131,15 +94,14 @@ body::-webkit-scrollbar {
 /* ── Focus ── */
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1.5px solid var(--ink-full);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 /* ── Selection ── */
 
 ::selection {
-  background-color: rgba(var(--accent-rgb), 0.18);
+  background-color: rgba(var(--ink-rgb), 0.12);
   color: var(--ink-full);
 }
 
@@ -148,17 +110,16 @@ body::-webkit-scrollbar {
 .skip-to-content {
   position: absolute;
   top: -999px;
-  left: var(--page-px);
+  left: var(--grid-margin);
   z-index: 99999;
   padding: 8px 16px;
   background: var(--ink-full);
   color: var(--paper);
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: var(--text-label);
-  letter-spacing: var(--tracking-label);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   text-decoration: none;
-  border-radius: 0 0 4px 4px;
   transition: top 200ms var(--ease-out);
 }
 
@@ -172,152 +133,6 @@ body::-webkit-scrollbar {
 .font-body    { font-family: var(--font-body); }
 .font-mono    { font-family: var(--font-mono); }
 
-/* Display scale */
-.text-display-xl { font-size: var(--text-display-xl); line-height: var(--leading-display-xl); }
-.text-display-lg { font-size: var(--text-display-lg); line-height: var(--leading-display-lg); }
-.text-display-md { font-size: var(--text-display-md); line-height: var(--leading-display-md); }
-.text-display-sm { font-size: var(--text-display-sm); }
-
-/* Legacy scale */
-.text-name  { font-size: var(--text-name); }
-.text-title { font-size: var(--text-title); }
-.text-body  { font-size: var(--text-body); }
-.text-nav   { font-size: var(--text-nav); }
-.text-label { font-size: var(--text-label); letter-spacing: var(--tracking-label); text-transform: uppercase; }
-.text-meta  { font-size: var(--text-meta); letter-spacing: var(--tracking-label); text-transform: uppercase; }
-
-/* ── Ink Utilities ── */
-
-.ink-full      { color: var(--ink-full); }
-.ink-primary   { color: var(--ink-primary); }
-.ink-secondary { color: var(--ink-secondary); }
-.ink-muted     { color: var(--ink-muted); }
-.ink-faint     { color: var(--ink-faint); }
-.ink-ghost     { color: var(--ink-ghost); }
-
-/* ── Hover-step Utilities ── */
-/* Interaction pattern: rest at ink-secondary, hover to ink-primary */
-
-.hover-step {
-  color: var(--ink-secondary);
-  text-decoration: none;
-  transition: color var(--duration-hover) var(--ease-hover);
-}
-
-.hover-step:hover {
-  color: var(--ink-primary);
-}
-
-.hover-step-muted {
-  color: var(--ink-muted);
-  text-decoration: none;
-  transition: color var(--duration-hover) var(--ease-hover);
-}
-
-.hover-step-muted:hover {
-  color: var(--ink-secondary);
-}
-
-/* ── Cover Card [data-cover] ── */
-
-[data-cover] {
-  display: block;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform var(--duration-hover) var(--ease-out);
-}
-
-[data-cover]:hover {
-  transform: translateY(-3px);
-}
-
-[data-cover]:hover .cover-image {
-  transform: scale(1.03);
-}
-
-[data-cover]:active {
-  transform: scale(0.98);
-  transition-duration: var(--duration-press);
-}
-
-/* ── Grain Overlay ── */
-
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  opacity: 0.035;
-  filter: url(#grain);
-  background: var(--paper);
-  mix-blend-mode: multiply;
-}
-
-.grain-overlay--dark {
-  background: #fff;
-  mix-blend-mode: screen;
-  opacity: 0.06;
-}
-
-/* ── Cover card grain overlay (positioned inside cover) ── */
-
-[data-cover] .grain-overlay {
-  position: absolute;
-  z-index: 2;
-}
-
-/* ── Layout Utilities ── */
-
-.page-container {
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--page-px);
-  padding-right: var(--page-px);
-}
-
-.text-column {
-  width: 100%;
-  max-width: var(--max-text);
-}
-
-/* ── Cover Grid ── */
-
-.cover-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 80px;
-}
-
-/* ── Section Spacing ── */
-
-.section {
-  padding-top: var(--space-breath);
-  padding-bottom: var(--space-breath);
-}
-
-.section-compact {
-  padding-top: var(--space-section);
-  padding-bottom: var(--space-section);
-}
-
-/* ── Mobile Menu Trigger Visibility ── */
-
-.mobile-menu-trigger {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .mobile-menu-trigger {
-    display: block !important;
-  }
-
-  [data-desktop-nav] {
-    display: none !important;
-  }
-}
-
 /* ── Site Grid ── */
 
 .site-grid {
@@ -329,7 +144,7 @@ body::-webkit-scrollbar {
   padding-inline: var(--grid-margin);
 }
 
-/* Column span helpers */
+/* Column spans */
 .col-span-2  { grid-column: span 2; }
 .col-span-3  { grid-column: span 3; }
 .col-span-4  { grid-column: span 4; }
@@ -341,47 +156,58 @@ body::-webkit-scrollbar {
 .col-span-10 { grid-column: span 10; }
 .col-span-12 { grid-column: span 12; }
 
-/* Named areas for homepage layout */
-.grid-home {
+/* ── Archive Grid — dim siblings on hover ── */
+
+.archive-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-areas:
-    "hero hero hero hero hero hero hero hero hero hero hero hero"
-    "work work work work work work work work work work work work"
-    ". about about about about about about . . . . ."
-    "contact contact contact contact contact contact contact contact contact contact contact contact";
-  gap: var(--grid-gutter);
-  padding-inline: var(--grid-margin);
+  gap: 6px;
 }
 
-/* ── Accent Utilities ── */
-
-.accent        { color: var(--accent); }
-.bg-accent     { background-color: var(--accent); }
-.border-heavy  { border: var(--border-heavy); }
-.border-medium { border: var(--border-medium); }
-.border-light  { border: var(--border-light); }
-
-/* ── Scroll Section ── */
-
-.scroll-section {
-  position: relative;
-  height: 100svh;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.archive-grid > a {
+  transition: opacity var(--dur-hover) var(--ease-out);
 }
 
-/* ── Hero mobile — hide rotated section marker ── */
+.archive-grid:hover > a {
+  opacity: 0.35;
+}
+
+.archive-grid:hover > a:hover {
+  opacity: 1;
+}
+
+/* ── Section Spacing ── */
+
+.editorial-section {
+  padding-top: var(--space-2xl);
+  padding-bottom: var(--space-2xl);
+}
+
+/* ── Grain Overlay ── */
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.03;
+  filter: url(#grain);
+  background: var(--paper);
+  mix-blend-mode: multiply;
+}
+
+/* ── Divider ── */
+
+.editorial-divider {
+  height: 1px;
+  background: rgba(var(--ink-rgb), 0.08);
+  border: none;
+}
+
+/* ── Hero marker — hide on mobile ── */
 
 @media (max-width: 768px) {
   .hero-marker {
     display: none !important;
-  }
-
-  .hero-headline-col {
-    grid-column: span 12 !important;
   }
 }
 
@@ -394,9 +220,5 @@ body::-webkit-scrollbar {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  [data-cover]:hover img {
-    transform: none;
   }
 }

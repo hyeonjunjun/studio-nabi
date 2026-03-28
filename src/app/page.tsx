@@ -1,10 +1,8 @@
 "use client";
 
-import ScrollSections from "@/components/ScrollSections";
-import ScrollNav from "@/components/ScrollNav";
+import GlobalNav from "@/components/GlobalNav";
 import HeroSection from "@/components/HeroSection";
-import WorkSection from "@/components/WorkSection";
-import ApproachSection from "@/components/ApproachSection";
+import ArchiveSection from "@/components/ArchiveSection";
 import AboutSection from "@/components/AboutSection";
 import ContactSection from "@/components/ContactSection";
 import PageTransition from "@/components/PageTransition";
@@ -12,14 +10,13 @@ import PageTransition from "@/components/PageTransition";
 export default function Home() {
   return (
     <PageTransition>
-      <ScrollNav />
-      <ScrollSections>
+      <GlobalNav />
+      <main id="main">
         <HeroSection />
-        <WorkSection />
-        <ApproachSection />
+        <ArchiveSection />
         <AboutSection />
         <ContactSection />
-      </ScrollSections>
+      </main>
     </PageTransition>
   );
 }

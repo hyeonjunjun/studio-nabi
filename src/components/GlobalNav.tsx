@@ -1,14 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useStudioStore } from "@/lib/store";
+import { useEffect, useRef, useState } from "react";
 
 export default function GlobalNav() {
-  const pathname = usePathname();
-  const currentSection = useStudioStore((s) => s.currentSection);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
 
-  const isHome = pathname === "/";
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      setHidden(y > 80 && y > lastY.current);
+      lastY.current = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header
@@ -18,23 +25,22 @@ export default function GlobalNav() {
         left: 0,
         right: 0,
         zIndex: 500,
-        height: 40,
+        height: 48,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 var(--grid-margin)",
-        backgroundColor: "transparent",
-        mixBlendMode: "multiply",
+        transform: hidden ? "translateY(-100%)" : "translateY(0)",
+        transition: "transform 400ms var(--ease-out)",
       }}
     >
-      {/* Identity mark */}
       <Link
         href="/"
         style={{
           fontFamily: "var(--font-mono)",
           fontSize: "var(--text-label)",
           letterSpacing: "0.08em",
-          textTransform: "uppercase",
+          textTransform: "uppercase" as const,
           color: "var(--ink-full)",
           textDecoration: "none",
         }}
@@ -42,18 +48,27 @@ export default function GlobalNav() {
         HKJ
       </Link>
 
-      {/* Section label — shows current scroll section on home, page name elsewhere */}
-      <span
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: "var(--text-label)",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--ink-muted)",
-        }}
-      >
-        {isHome ? currentSection : pathname.replace("/", "").toUpperCase() || "HOME"}
-      </span>
+      <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
+        {["Work", "About", "Contact"].map((item) => (
+          <a
+            key={item}
+            href={`#${item.toLowerCase()}`}
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "var(--text-label)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase" as const,
+              color: "var(--ink-secondary)",
+              textDecoration: "none",
+              transition: "color var(--dur-hover) var(--ease-out)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ink-full)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ink-secondary)"; }}
+          >
+            {item}
+          </a>
+        ))}
+      </nav>
     </header>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import GlobalNav from "@/components/GlobalNav";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import { TransitionProvider } from "@/lib/transition-context";
 
@@ -89,8 +88,7 @@ export default function RootLayout({
 
         {/* Transition system — provides context + progress bar */}
         <TransitionProvider>
-          <GlobalNav />
-          <main id="main">{children}</main>
+          {children}
         </TransitionProvider>
       </body>
     </html>
