@@ -7,27 +7,28 @@ import { gsap } from "@/lib/gsap";
 import { PIECES, type Piece } from "@/constants/pieces";
 import PageTransition from "@/components/PageTransition";
 
-const VerticalSlider = dynamic(() => import("@/components/VerticalSlider"), {
-  ssr: false,
-});
+const HorizontalGrid = dynamic(
+  () => import("@/components/HorizontalGrid"),
+  { ssr: false, loading: () => null }
+);
 
 const pieces = [...PIECES].sort((a, b) => a.order - b.order);
 
-type ViewMode = "list" | "slider";
+type ViewMode = "list" | "grid";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
+  const lockupRef = useRef<HTMLDivElement>(null);
   const rowsRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [view, setView] = useState<ViewMode>("list");
-  const [sliderBg, setSliderBg] = useState<string | null>(null);
-
   // Entrance animation for list view
   useEffect(() => {
     if (view !== "list") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       if (navRef.current) navRef.current.style.opacity = "1";
+      if (lockupRef.current) lockupRef.current.style.opacity = "1";
       rowsRef.current.forEach((r) => {
         if (r) {
           r.style.opacity = "1";
@@ -39,16 +40,22 @@ export default function Home() {
 
     const tl = gsap.timeline({ defaults: { ease: "expo.out" }, delay: 0.2 });
     tl.fromTo(navRef.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0);
+    if (lockupRef.current) {
+      tl.fromTo(
+        lockupRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8 },
+        0.1
+      );
+    }
     const validRows = rowsRef.current.filter(Boolean);
     tl.fromTo(
       validRows,
       { clipPath: "inset(100% 0% 0% 0%)", opacity: 0 },
       { clipPath: "inset(0% 0% 0% 0%)", opacity: 1, duration: 0.8, stagger: 0.06 },
-      0.15
+      0.3
     );
   }, [view]);
-
-  const handleMouseMove = useCallback(() => {}, []);
 
   const handleRowEnter = useCallback((piece: Piece, index: number) => {
     setActiveIndex(index);
@@ -72,18 +79,12 @@ export default function Home() {
     }
   }, []);
 
-  // When slider changes active slide, update bg
-  const handleSliderChange = useCallback((index: number) => {
-    setSliderBg(pieces[index].cover.bg);
-  }, []);
 
-  // Determine dynamic text colors
+  // Dynamic text colors
   const activeBg =
-    view === "slider" && sliderBg
-      ? sliderBg
-      : activeIndex !== null
-        ? pieces[activeIndex].cover.bg
-        : null;
+    activeIndex !== null
+      ? pieces[activeIndex].cover.bg
+      : null;
 
   const navTextColor = activeBg
     ? getDynamicTextColor(activeBg)
@@ -96,89 +97,82 @@ export default function Home() {
     <PageTransition>
       <div
         ref={containerRef}
-        onMouseMove={handleMouseMove}
         style={{
           height: "100dvh",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          backgroundColor:
-            view === "slider" && sliderBg ? sliderBg : "var(--paper)",
+          backgroundColor: "var(--paper)",
           position: "relative",
-          transition:
-            view === "slider" ? "background-color 0.8s ease" : undefined,
         }}
       >
         {/* ── Nav ── */}
         <header
           ref={navRef}
           style={{
-            height: 48,
+            height: 40,
             flexShrink: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             padding: "0 var(--grid-margin)",
-            opacity: view === "slider" ? 1 : 0,
+            opacity: view === "grid" ? 1 : 0,
             position: "relative",
             zIndex: 20,
           }}
         >
-          <span
-            className="font-mono"
-            style={{
-              fontSize: 10,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: navTextColor,
-              transition: "color 0.4s ease",
-            }}
-          >
-            HKJ
-          </span>
-
-          <nav style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            {/* View toggle */}
+          <nav style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            {/* View toggles */}
             <button
-              onClick={() => setView(view === "list" ? "slider" : "list")}
+              onClick={() => setView("list")}
               className="font-mono"
               style={{
                 fontSize: 10,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
-                color: navMutedColor,
+                color: view === "list" ? navTextColor : navMutedColor,
+                fontWeight: view === "list" ? 600 : 400,
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                transition: "color 0.3s ease",
                 padding: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = navTextColor;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = navMutedColor;
+                transition: "color 0.3s ease",
               }}
             >
-              {view === "list" ? "Slider" : "List"}
+              List
             </button>
-
             <span
               style={{
-                width: 1,
-                height: 12,
-                backgroundColor: activeBg
-                  ? isDarkColor(activeBg)
-                    ? "rgba(255,252,245,0.12)"
-                    : "rgba(28,26,23,0.10)"
-                  : "rgba(var(--ink-rgb), 0.10)",
-                transition: "background-color 0.4s ease",
+                fontSize: 10,
+                color: navMutedColor,
+                transition: "color 0.4s ease",
               }}
-            />
+            >
+              ,
+            </span>
+            <button
+              onClick={() => setView("grid")}
+              className="font-mono"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: view === "grid" ? navTextColor : navMutedColor,
+                fontWeight: view === "grid" ? 600 : 400,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                transition: "color 0.3s ease",
+              }}
+            >
+              Grid
+            </button>
+          </nav>
 
+          {/* Right nav links */}
+          <nav style={{ display: "flex", gap: 20, alignItems: "center" }}>
             {[
-              { label: "Work", href: "/work" },
-              { label: "Lab", href: "/lab" },
               { label: "About", href: "/about" },
             ].map((item) => (
               <Link
@@ -206,7 +200,56 @@ export default function Home() {
           </nav>
         </header>
 
-        {/* ── List View ── */}
+        {/* ── Brand Lockup (TLB-style, centered) ── */}
+        {view === "list" && (
+          <div
+            ref={lockupRef}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 5,
+              textAlign: "center",
+              pointerEvents: "none",
+              opacity: 0,
+              mixBlendMode: "multiply",
+            }}
+          >
+            <h1
+              className="font-display"
+              style={{
+                fontSize: "clamp(48px, 12vw, 160px)",
+                fontWeight: 700,
+                lineHeight: 0.9,
+                color: activeIndex !== null
+                  ? getDynamicTextColor(pieces[activeIndex].cover.bg)
+                  : "var(--ink-full)",
+                transition: "color 0.4s ease",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              HKJ
+            </h1>
+            <p
+              className="font-mono"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: activeIndex !== null
+                  ? getDynamicMutedColor(pieces[activeIndex].cover.bg)
+                  : "var(--ink-secondary)",
+                transition: "color 0.4s ease",
+                marginTop: 8,
+              }}
+            >
+              Studio / 2026
+            </p>
+          </div>
+        )}
+
+        {/* ── List View (vertical carousel — current slider) ── */}
         {view === "list" && (
           <main
             id="main"
@@ -359,20 +402,17 @@ export default function Home() {
           </main>
         )}
 
-        {/* ── Slider View ── */}
-        {view === "slider" && (
+        {/* ── Grid View (TLB-style horizontal scroll) ── */}
+        {view === "grid" && (
           <div style={{ flex: 1, minHeight: 0 }}>
-            <VerticalSlider
-              pieces={pieces}
-              onActiveChange={handleSliderChange}
-            />
+            <HorizontalGrid pieces={pieces} />
           </div>
         )}
 
         {/* ── Footer ── */}
         <footer
           style={{
-            height: 36,
+            height: 32,
             flexShrink: 0,
             display: "flex",
             alignItems: "center",
