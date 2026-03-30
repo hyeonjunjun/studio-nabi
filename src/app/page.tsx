@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { gsap, Observer } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { PIECES } from "@/constants/pieces";
 import PageTransition from "@/components/PageTransition";
 
@@ -14,6 +14,26 @@ const CustomCursor = dynamic(() => import("@/components/CustomCursor"), {
 });
 
 const pieces = [...PIECES].sort((a, b) => a.order - b.order);
+const ITEM_COUNT = pieces.length;
+
+// ── Carousel constants ──
+const ITEM_WIDTH = 320;  // base width in px (will be responsive via clamp)
+const ITEM_GAP = 40;
+const TRACK = ITEM_COUNT * (ITEM_WIDTH + ITEM_GAP);
+const FRICTION = 0.92;
+const WHEEL_SENS = 0.8;
+const DRAG_SENS = 1.2;
+const MAX_ROTATION = 35;  // degrees
+const MAX_DEPTH = 160;    // translateZ px
+const MIN_SCALE = 0.65;
+const SCALE_RANGE = 0.35; // 0.65 + 0.35 = 1.0 at center
+const MIN_OPACITY = 0.3;
+const OPACITY_RANGE = 0.7;
+
+// Modulo that handles negatives
+function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
+}
 
 function isDark(hex: string): boolean {
   const c = hex.replace("#", "");
@@ -25,200 +45,215 @@ function isDark(hex: string): boolean {
 }
 
 export default function Home() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navRef = useRef<HTMLElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
-  const metaRef = useRef<HTMLDivElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
 
-  const [current, setCurrent] = useState(0);
-  const animating = useRef(false);
+  const scrollXRef = useRef(0);
+  const velocityRef = useRef(0);
+  const centerIdxRef = useRef(0);
+  const dragging = useRef(false);
+  const dragStartX = useRef(0);
+  const lastTime = useRef(0);
 
-  const piece = pieces[current];
+  const [centerIdx, setCenterIdx] = useState(0);
+
+  const piece = pieces[centerIdx];
   const dark = isDark(piece.cover.bg);
   const textColor = dark ? "rgba(255,252,245,0.92)" : "var(--fg)";
   const mutedColor = dark ? "rgba(255,252,245,0.45)" : "var(--fg-3)";
-  const bgColor = piece.cover.bg;
 
-  // Navigate to next/prev project
-  const goTo = useCallback((direction: 1 | -1) => {
-    if (animating.current) return;
-    const next = ((current + direction) % pieces.length + pieces.length) % pieces.length;
-    animating.current = true;
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setCurrent(next);
-        animating.current = false;
-      },
-    });
-
-    // Fade out current info
-    tl.to([titleRef.current, metaRef.current], {
-      opacity: 0,
-      y: -12 * direction,
-      duration: 0.3,
-      ease: "power2.in",
-    }, 0);
-
-    // Crossfade image via clip-path
-    tl.to(imageContainerRef.current, {
-      opacity: 0.6,
-      scale: 0.98,
-      duration: 0.25,
-      ease: "power2.in",
-    }, 0);
-
-    tl.set(imageContainerRef.current, {}, "+=0.05");
-
-    // Reveal new state
-    tl.to(imageContainerRef.current, {
-      opacity: 1,
-      scale: 1,
-      duration: 0.5,
-      ease: "power2.out",
-    });
-
-    tl.fromTo([titleRef.current, metaRef.current],
-      { opacity: 0, y: 12 * direction },
-      { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 },
-      "-=0.35"
-    );
-
-    // Progress bar
-    const nextProgress = ((next + 1) / pieces.length) * 100;
-    tl.to(progressRef.current, {
-      width: `${nextProgress}%`,
-      duration: 0.4,
-      ease: "power2.out",
-    }, 0.1);
-  }, [current]);
-
-  // GSAP Observer — wheel + touch + keyboard
+  // ── Main animation loop ──
   useEffect(() => {
-    const obs = Observer.create({
-      target: containerRef.current!,
-      type: "wheel,touch,pointer",
-      tolerance: 80,
-      onDown: () => goTo(1),
-      onUp: () => goTo(-1),
-      wheelSpeed: -1,
-      preventDefault: true,
-    });
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    let vw = window.innerWidth;
+    let vwHalf = vw / 2;
+    let raf: number;
+
+    const onResize = () => { vw = window.innerWidth; vwHalf = vw / 2; };
+    window.addEventListener("resize", onResize);
+
+    const loop = () => {
+      const now = performance.now();
+      const dt = Math.min((now - lastTime.current) / 1000, 0.1) || 0.016;
+      lastTime.current = now;
+
+      // Apply friction
+      velocityRef.current *= Math.pow(FRICTION, dt * 60);
+      if (Math.abs(velocityRef.current) < 0.1) velocityRef.current = 0;
+
+      // Advance scroll position
+      scrollXRef.current = mod(scrollXRef.current + velocityRef.current * dt * 60, TRACK);
+
+      // Update each item's transform
+      let closestDist = Infinity;
+      let closestIdx = 0;
+
+      for (let i = 0; i < ITEM_COUNT; i++) {
+        const el = itemRefs.current[i];
+        if (!el) continue;
+
+        // Base position of this item in the track
+        const baseX = i * (ITEM_WIDTH + ITEM_GAP);
+
+        // Screen-space X (with wrapping)
+        let screenX = baseX - scrollXRef.current;
+        // Wrap to keep items centered
+        if (screenX > TRACK / 2) screenX -= TRACK;
+        if (screenX < -TRACK / 2) screenX += TRACK;
+
+        // Normalize to -1...1 based on viewport
+        const norm = Math.max(-1, Math.min(1, screenX / (vwHalf * 1.2)));
+        const absNorm = Math.abs(norm);
+        const invNorm = 1 - absNorm;
+
+        // Calculate transforms
+        const z = invNorm * MAX_DEPTH;
+        const rotY = -norm * MAX_ROTATION;
+        const scale = MIN_SCALE + invNorm * SCALE_RANGE;
+        const opacity = MIN_OPACITY + invNorm * OPACITY_RANGE;
+
+        el.style.transform = `translate(-50%, -50%) translateX(${screenX}px) translateZ(${z}px) rotateY(${rotY}deg) scale(${scale})`;
+        el.style.opacity = String(opacity);
+        el.style.zIndex = String(Math.round(invNorm * 100));
+
+        // Track center item
+        const dist = Math.abs(screenX);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestIdx = i;
+        }
+      }
+
+      // Update center index
+      if (closestIdx !== centerIdxRef.current) {
+        centerIdxRef.current = closestIdx;
+        setCenterIdx(closestIdx);
+
+        // Animate progress bar
+        if (progressRef.current) {
+          const pct = ((closestIdx + 1) / ITEM_COUNT) * 100;
+          gsap.to(progressRef.current, { width: `${pct}%`, duration: 0.3, ease: "power2.out" });
+        }
+      }
+
+      raf = requestAnimationFrame(loop);
+    };
+
+    lastTime.current = performance.now();
+    raf = requestAnimationFrame(loop);
+
+    // ── Input handlers ──
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      velocityRef.current += (e.deltaY || e.deltaX) * WHEEL_SENS;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      dragging.current = true;
+      dragStartX.current = e.clientX;
+      stage.setPointerCapture(e.pointerId);
+      stage.style.cursor = "grabbing";
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging.current) return;
+      const dx = dragStartX.current - e.clientX;
+      dragStartX.current = e.clientX;
+      velocityRef.current += dx * DRAG_SENS;
+    };
+    const onPointerUp = (e: PointerEvent) => {
+      dragging.current = false;
+      stage.releasePointerCapture(e.pointerId);
+      stage.style.cursor = "grab";
+    };
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); goTo(1); }
-      if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); goTo(-1); }
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        velocityRef.current += 300;
+      }
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        velocityRef.current -= 300;
+      }
     };
+
+    stage.addEventListener("wheel", onWheel, { passive: false });
+    stage.addEventListener("pointerdown", onPointerDown);
+    stage.addEventListener("pointermove", onPointerMove);
+    stage.addEventListener("pointerup", onPointerUp);
     window.addEventListener("keydown", onKey);
 
-    return () => { obs.kill(); window.removeEventListener("keydown", onKey); };
-  }, [goTo]);
-
-  // Mouse parallax on image
-  useEffect(() => {
-    const container = containerRef.current;
-    const img = imageContainerRef.current;
-    if (!container || !img) return;
-
-    const onMove = (e: MouseEvent) => {
-      const cx = (e.clientX / window.innerWidth - 0.5) * 2;
-      const cy = (e.clientY / window.innerHeight - 0.5) * 2;
-      gsap.to(img, {
-        x: cx * 12,
-        y: cy * 8,
-        duration: 0.8,
-        ease: "power2.out",
-      });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+      stage.removeEventListener("wheel", onWheel);
+      stage.removeEventListener("pointerdown", onPointerDown);
+      stage.removeEventListener("pointermove", onPointerMove);
+      stage.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("keydown", onKey);
     };
-
-    container.addEventListener("mousemove", onMove);
-    return () => container.removeEventListener("mousemove", onMove);
   }, []);
 
-  // Entrance
+  // ── Info crossfade on center change ──
+  useEffect(() => {
+    if (!infoRef.current) return;
+    const tl = gsap.timeline();
+    tl.to(infoRef.current, { opacity: 0, y: 6, duration: 0.15, ease: "power2.in" });
+    tl.to(infoRef.current, { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" });
+  }, [centerIdx]);
+
+  // ── Entrance ──
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       [navRef, footerRef].forEach(r => { if (r.current) r.current.style.opacity = "1"; });
-      if (imageContainerRef.current) imageContainerRef.current.style.clipPath = "none";
-      if (titleRef.current) titleRef.current.style.opacity = "1";
-      if (metaRef.current) metaRef.current.style.opacity = "1";
+      if (infoRef.current) infoRef.current.style.opacity = "1";
       return;
     }
 
     const tl = gsap.timeline();
-
-    // Nav + footer
     tl.fromTo([navRef.current, footerRef.current],
-      { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.1);
-
-    // Image clip-path reveal
-    tl.fromTo(imageContainerRef.current,
-      { clipPath: "inset(100% 0 0 0)" },
-      { clipPath: "inset(0% 0 0 0)", duration: 1, ease: "circ.inOut" }, 0.2);
-
-    // Title + meta
-    tl.fromTo([titleRef.current, metaRef.current],
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: "power2.out" }, 0.7);
-
-    // Counter
-    tl.fromTo(counterRef.current,
-      { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.9);
-
-    // Progress bar
-    tl.fromTo(progressRef.current,
-      { width: "0%" },
-      { width: `${(1 / pieces.length) * 100}%`, duration: 0.6, ease: "power2.out" }, 0.8);
+      { opacity: 0 }, { opacity: 1, duration: 0.5, stagger: 0.1 }, 0.1);
+    tl.fromTo(infoRef.current,
+      { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
   }, []);
 
   const href = piece.type === "project" ? `/work/${piece.slug}` : `/lab/${piece.slug}`;
 
   return (
     <PageTransition>
-      <div
-        ref={containerRef}
-        style={{
-          height: "100dvh",
-          overflow: "hidden",
-          display: "grid",
-          gridTemplateRows: "48px 1fr auto",
-          backgroundColor: bgColor,
-          transition: "background-color 600ms cubic-bezier(0.22, 1, 0.36, 1)",
-          position: "relative",
-        }}
-      >
+      <div style={{
+        height: "100dvh",
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateRows: "48px 1fr auto auto",
+        backgroundColor: piece.cover.bg,
+        transition: "background-color 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+        position: "relative",
+      }}>
+
         {/* ═══ NAV ═══ */}
-        <header
-          ref={navRef}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 var(--margin)",
-            opacity: 0,
-            position: "relative",
-            zIndex: 20,
-          }}
-        >
+        <header ref={navRef} style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 var(--margin)", opacity: 0, position: "relative", zIndex: 20,
+        }}>
           <span style={{
             fontFamily: "var(--font-mono)", fontSize: 11,
             letterSpacing: "0.1em", textTransform: "uppercase",
             color: textColor, transition: "color 500ms ease",
-          }}>
-            HKJ
-          </span>
+          }}>HKJ</span>
           <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: 11,
               letterSpacing: "0.1em", textTransform: "uppercase",
               color: mutedColor, transition: "color 500ms ease",
-            }}>
-              Brand & Product Studio
-            </span>
+            }}>Brand & Product Studio</span>
             <Link href="/about" style={{
               fontFamily: "var(--font-mono)", fontSize: 11,
               letterSpacing: "0.1em", textTransform: "uppercase",
@@ -227,178 +262,127 @@ export default function Home() {
             }}
             onMouseEnter={e => { e.currentTarget.style.color = textColor; }}
             onMouseLeave={e => { e.currentTarget.style.color = mutedColor; }}
-            >
-              About
-            </Link>
+            >About</Link>
           </div>
         </header>
 
-        {/* ═══ MAIN ═══ */}
-        <main
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr clamp(200px, 28vw, 400px)",
-            gap: "var(--margin)",
-            padding: "0 var(--margin)",
-            alignItems: "center",
-            minHeight: 0,
-            position: "relative",
-            zIndex: 10,
-          }}
-        >
-          {/* Left: Featured image */}
-          <Link href={href} style={{ display: "block", textDecoration: "none" }}>
-            <div
-              ref={imageContainerRef}
-              style={{
-                position: "relative",
-                width: "100%",
-                aspectRatio: "4/3",
-                maxHeight: "70vh",
-                overflow: "hidden",
-                clipPath: "inset(100% 0 0 0)",
-                backgroundColor: bgColor,
-              }}
-            >
-              {/* All images stacked */}
-              {pieces.map((p, i) => (
-                p.image ? (
-                  <Image
-                    key={p.slug}
-                    src={p.image}
-                    alt={p.title}
-                    fill
-                    sizes="(max-width: 768px) 90vw, 65vw"
-                    style={{
-                      objectFit: "cover",
-                      opacity: current === i ? 1 : 0,
-                      transition: "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)",
-                      zIndex: current === i ? 2 : 1,
-                    }}
-                    priority={i === 0}
-                  />
-                ) : null
-              ))}
-              {/* Grain */}
-              <div aria-hidden="true" style={{
-                position: "absolute", inset: 0, opacity: 0.04,
-                filter: "url(#grain)", background: "var(--bg)",
-                mixBlendMode: "multiply", pointerEvents: "none", zIndex: 3,
-              }} />
-            </div>
-          </Link>
+        {/* ═══ 3D CAROUSEL ═══ */}
+        <div ref={stageRef} className="carousel-stage" style={{ cursor: "grab" }}>
+          {pieces.map((p, i) => {
+            const hasDarkBg = isDark(p.cover.bg);
+            const coverMuted = hasDarkBg ? "rgba(255,252,245,0.30)" : "rgba(26,25,23,0.20)";
 
-          {/* Right: Project info */}
-          <div style={{
-            display: "flex", flexDirection: "column",
-            justifyContent: "center", gap: 24,
-            height: "100%",
-          }}>
-            {/* Title block */}
-            <div ref={titleRef} style={{ opacity: 0 }}>
-              <span style={{
-                fontFamily: "var(--font-mono)", fontSize: 10,
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                color: mutedColor, display: "block", marginBottom: 12,
-                transition: "color 500ms ease",
-              }}>
-                {piece.type === "project" ? "Project" : "Experiment"}
-              </span>
-              <h2 style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(28px, 3.5vw, 52px)",
-                fontWeight: 400,
-                lineHeight: 1.05,
-                letterSpacing: "-0.02em",
-                color: textColor,
-                marginBottom: 12,
-                transition: "color 500ms ease",
-              }}>
-                {piece.title}
-              </h2>
-              <p style={{
-                fontSize: 14, lineHeight: 1.55,
-                color: mutedColor, maxWidth: 340,
-                transition: "color 500ms ease",
-              }}>
-                {piece.description}
-              </p>
-            </div>
-
-            {/* Meta */}
-            <div ref={metaRef} style={{
-              display: "flex", flexDirection: "column", gap: 8, opacity: 0,
-            }}>
-              <div style={{
-                display: "flex", gap: 16, alignItems: "baseline",
-              }}>
-                <span style={{
-                  fontFamily: "var(--font-mono)", fontSize: 10,
-                  letterSpacing: "0.08em", textTransform: "uppercase",
-                  color: mutedColor, transition: "color 500ms ease",
-                }}>
-                  {piece.tags.slice(0, 2).join(" / ")}
-                </span>
-                <span style={{
-                  fontFamily: "var(--font-mono)", fontSize: 10,
-                  letterSpacing: "0.08em",
-                  color: mutedColor, transition: "color 500ms ease",
-                }}>
-                  {piece.year}
-                </span>
-              </div>
-
-              {/* View link */}
-              <Link href={href} style={{
-                fontFamily: "var(--font-mono)", fontSize: 11,
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                color: textColor, textDecoration: "none",
-                display: "inline-flex", alignItems: "center", gap: 6,
-                marginTop: 8, transition: "color 500ms ease, gap 200ms ease",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.gap = "10px"; }}
-              onMouseLeave={e => { e.currentTarget.style.gap = "6px"; }}
+            return (
+              <div
+                key={p.slug}
+                ref={el => { itemRefs.current[i] = el; }}
+                className="carousel-item"
+                style={{
+                  width: "clamp(220px, 28vw, 420px)",
+                  aspectRatio: "3/4",
+                  opacity: 0,
+                }}
               >
-                View Project <span style={{ fontSize: 14 }}>→</span>
-              </Link>
-            </div>
-          </div>
-        </main>
+                <Link
+                  href={p.type === "project" ? `/work/${p.slug}` : `/lab/${p.slug}`}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                    backgroundColor: p.cover.bg,
+                    overflow: "hidden",
+                    textDecoration: "none",
+                  }}
+                >
+                  {p.image && (
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      sizes="(max-width: 768px) 70vw, 28vw"
+                      style={{ objectFit: "cover" }}
+                      priority={i < 3}
+                    />
+                  )}
+                  {/* Grain */}
+                  <div aria-hidden="true" style={{
+                    position: "absolute", inset: 0, opacity: 0.04,
+                    filter: "url(#grain)", background: "var(--bg)",
+                    mixBlendMode: "multiply", pointerEvents: "none", zIndex: 1,
+                  }} />
+                  {/* Number */}
+                  <span style={{
+                    position: "absolute", top: 10, left: 12, zIndex: 2,
+                    fontFamily: "var(--font-mono)", fontSize: 10,
+                    letterSpacing: "0.08em", color: coverMuted,
+                  }}>{String(i + 1).padStart(2, "0")}</span>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ═══ PROJECT INFO ═══ */}
+        <div ref={infoRef} style={{
+          padding: "0 var(--margin)",
+          paddingTop: 12,
+          paddingBottom: 8,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 24,
+          opacity: 0,
+          position: "relative",
+          zIndex: 20,
+        }}>
+          <Link href={href} style={{
+            display: "flex", alignItems: "baseline", gap: 16,
+            textDecoration: "none",
+          }}>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(20px, 2.5vw, 36px)",
+              fontWeight: 400, letterSpacing: "-0.02em",
+              color: textColor, transition: "color 500ms ease",
+            }}>{piece.title}</span>
+            <span style={{
+              fontFamily: "var(--font-mono)", fontSize: 10,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              color: mutedColor, transition: "color 500ms ease",
+            }}>{piece.tags[0]}</span>
+            <span style={{
+              fontFamily: "var(--font-mono)", fontSize: 10,
+              letterSpacing: "0.08em",
+              color: mutedColor, transition: "color 500ms ease",
+            }}>{piece.year}</span>
+            <span style={{
+              fontFamily: "var(--font-mono)", fontSize: 11,
+              letterSpacing: "0.1em", textTransform: "uppercase",
+              color: textColor, transition: "color 500ms ease",
+              marginLeft: 8,
+            }}>→</span>
+          </Link>
+        </div>
 
         {/* ═══ FOOTER + PROGRESS ═══ */}
-        <footer
-          ref={footerRef}
-          style={{
-            padding: "0 var(--margin)",
-            paddingBottom: 16,
-            opacity: 0,
-            position: "relative",
-            zIndex: 20,
-          }}
-        >
+        <footer ref={footerRef} style={{
+          padding: "0 var(--margin)", paddingBottom: 14,
+          opacity: 0, position: "relative", zIndex: 20,
+        }}>
           {/* Progress bar */}
           <div style={{
-            height: 1,
-            backgroundColor: dark ? "rgba(255,252,245,0.12)" : "rgba(26,25,23,0.08)",
-            marginBottom: 12,
-            position: "relative",
-            transition: "background-color 500ms ease",
+            height: 1, marginBottom: 10,
+            backgroundColor: dark ? "rgba(255,252,245,0.10)" : "rgba(26,25,23,0.06)",
+            position: "relative", transition: "background-color 500ms ease",
           }}>
-            <div
-              ref={progressRef}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                height: "100%",
-                width: `${((current + 1) / pieces.length) * 100}%`,
-                backgroundColor: textColor,
-                transition: "background-color 500ms ease",
-              }}
-            />
+            <div ref={progressRef} style={{
+              position: "absolute", top: 0, left: 0, height: "100%",
+              width: `${((centerIdx + 1) / ITEM_COUNT) * 100}%`,
+              backgroundColor: textColor,
+              transition: "background-color 500ms ease",
+            }} />
           </div>
-
-          {/* Footer row */}
           <div style={{
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
@@ -406,37 +390,24 @@ export default function Home() {
               fontFamily: "var(--font-mono)", fontSize: 10,
               letterSpacing: "0.1em", textTransform: "uppercase",
               color: mutedColor, transition: "color 500ms ease",
+            }}>Brand & Product Design</span>
+            <span ref={counterRef} style={{
+              fontFamily: "var(--font-mono)", fontSize: 11,
+              letterSpacing: "0.08em", fontVariantNumeric: "tabular-nums",
+              color: textColor, transition: "color 500ms ease",
             }}>
-              Brand & Product Design Studio — Seoul
+              {String(centerIdx + 1).padStart(2, "0")}/{String(ITEM_COUNT).padStart(2, "0")}
             </span>
-
-            <span
-              ref={counterRef}
-              style={{
-                fontFamily: "var(--font-mono)", fontSize: 11,
-                letterSpacing: "0.08em",
-                fontVariantNumeric: "tabular-nums",
-                color: textColor, transition: "color 500ms ease",
-                opacity: 0,
-              }}
-            >
-              {String(current + 1).padStart(2, "0")} / {String(pieces.length).padStart(2, "0")}
-            </span>
-
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: 10,
               letterSpacing: "0.1em", textTransform: "uppercase",
               color: mutedColor, transition: "color 500ms ease",
-            }}>
-              © 2026 HKJ
-            </span>
+            }}>© 2026 HKJ</span>
           </div>
         </footer>
 
-        {/* Grain */}
+        {/* Grain + Cursor */}
         <div className="grain" />
-
-        {/* Cursor */}
         <CustomCursor />
       </div>
     </PageTransition>
