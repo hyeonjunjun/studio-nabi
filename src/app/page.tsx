@@ -4,7 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { gsap } from "@/lib/gsap";
+import Lenis from "lenis";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { PIECES } from "@/constants/pieces";
 import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
 import PageTransition from "@/components/PageTransition";
@@ -44,6 +45,32 @@ export default function Home() {
   const [gridHovered, setGridHovered] = useState<number | null>(null);
 
   const featured = pieces[featuredIdx];
+
+  /* ── Lenis smooth scroll + ScrollTrigger sync ── */
+  useEffect(() => {
+    const lenis = new Lenis({
+      lerp: 0.08,
+      smoothWheel: true,
+      wheelMultiplier: 1,
+    });
+
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // Refresh ScrollTrigger after Lenis settles
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(lenis.raf);
+    };
+  }, []);
   const featuredImage = featured?.image || piecesWithImages[0]?.image;
   const featuredBg = featured?.cover.bg || "#2a241c";
 
