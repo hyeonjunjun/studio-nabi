@@ -14,23 +14,18 @@ const CustomCursor = dynamic(() => import("@/components/CustomCursor"), {
 });
 
 const pieces = [...PIECES].sort((a, b) => a.order - b.order);
-const ITEM_COUNT = pieces.length;
+const N = pieces.length;
 
-// ── Carousel constants ──
-const ITEM_WIDTH = 320;  // base width in px (will be responsive via clamp)
-const ITEM_GAP = 40;
-const TRACK = ITEM_COUNT * (ITEM_WIDTH + ITEM_GAP);
-const FRICTION = 0.92;
-const WHEEL_SENS = 0.8;
-const DRAG_SENS = 1.2;
-const MAX_ROTATION = 35;  // degrees
-const MAX_DEPTH = 160;    // translateZ px
-const MIN_SCALE = 0.65;
-const SCALE_RANGE = 0.35; // 0.65 + 0.35 = 1.0 at center
-const MIN_OPACITY = 0.3;
-const OPACITY_RANGE = 0.7;
+// ── Carousel geometry ──
+const ITEM_SPACING = 300; // px between item centers
+const TRACK = N * ITEM_SPACING;
+const MAX_ROTATION = 40;
+const MAX_DEPTH = 180;
+const MIN_SCALE = 0.55;
+const SCALE_RANGE = 0.45;
+const MIN_OPACITY = 0.25;
+const OPACITY_RANGE = 0.75;
 
-// Modulo that handles negatives
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m;
 }
@@ -49,71 +44,79 @@ export default function Home() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
 
-  const scrollXRef = useRef(0);
-  const velocityRef = useRef(0);
-  const centerIdxRef = useRef(0);
-  const dragging = useRef(false);
-  const dragStartX = useRef(0);
-  const lastTime = useRef(0);
+  // Scroll position is animated via GSAP tween for smooth snapping
+  const scrollObj = useRef({ x: 0 });
+  const targetIdx = useRef(0);
+  const animating = useRef(false);
+  const rafRef = useRef(0);
 
   const [centerIdx, setCenterIdx] = useState(0);
 
   const piece = pieces[centerIdx];
   const dark = isDark(piece.cover.bg);
   const textColor = dark ? "rgba(255,252,245,0.92)" : "var(--fg)";
-  const mutedColor = dark ? "rgba(255,252,245,0.45)" : "var(--fg-3)";
+  const mutedColor = dark ? "rgba(255,252,245,0.40)" : "var(--fg-3)";
+  const faintColor = dark ? "rgba(255,252,245,0.18)" : "var(--fg-4)";
 
-  // ── Main animation loop ──
+  // ── Navigate to a specific item index ──
+  const goTo = (idx: number) => {
+    if (animating.current) return;
+    animating.current = true;
+
+    const wrapped = ((idx % N) + N) % N;
+    targetIdx.current = wrapped;
+
+    const targetScroll = wrapped * ITEM_SPACING;
+
+    // Find shortest path (handle wrapping)
+    let diff = targetScroll - scrollObj.current.x;
+    if (diff > TRACK / 2) diff -= TRACK;
+    if (diff < -TRACK / 2) diff += TRACK;
+
+    gsap.to(scrollObj.current, {
+      x: scrollObj.current.x + diff,
+      duration: 0.7,
+      ease: "power3.out",
+      onUpdate: () => {
+        scrollObj.current.x = mod(scrollObj.current.x, TRACK);
+      },
+      onComplete: () => {
+        scrollObj.current.x = mod(targetScroll, TRACK);
+        animating.current = false;
+      },
+    });
+  };
+
+  // ── Render loop — updates transforms every frame ──
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
     let vw = window.innerWidth;
     let vwHalf = vw / 2;
-    let raf: number;
 
     const onResize = () => { vw = window.innerWidth; vwHalf = vw / 2; };
     window.addEventListener("resize", onResize);
 
     const loop = () => {
-      const now = performance.now();
-      const dt = Math.min((now - lastTime.current) / 1000, 0.1) || 0.016;
-      lastTime.current = now;
+      const sx = scrollObj.current.x;
 
-      // Apply friction
-      velocityRef.current *= Math.pow(FRICTION, dt * 60);
-      if (Math.abs(velocityRef.current) < 0.1) velocityRef.current = 0;
-
-      // Advance scroll position
-      scrollXRef.current = mod(scrollXRef.current + velocityRef.current * dt * 60, TRACK);
-
-      // Update each item's transform
       let closestDist = Infinity;
       let closestIdx = 0;
 
-      for (let i = 0; i < ITEM_COUNT; i++) {
+      for (let i = 0; i < N; i++) {
         const el = itemRefs.current[i];
         if (!el) continue;
 
-        // Base position of this item in the track
-        const baseX = i * (ITEM_WIDTH + ITEM_GAP);
-
-        // Screen-space X (with wrapping)
-        let screenX = baseX - scrollXRef.current;
-        // Wrap to keep items centered
+        const baseX = i * ITEM_SPACING;
+        let screenX = baseX - sx;
         if (screenX > TRACK / 2) screenX -= TRACK;
         if (screenX < -TRACK / 2) screenX += TRACK;
 
-        // Normalize to -1...1 based on viewport
-        const norm = Math.max(-1, Math.min(1, screenX / (vwHalf * 1.2)));
+        const norm = Math.max(-1, Math.min(1, screenX / (vwHalf * 1.0)));
         const absNorm = Math.abs(norm);
         const invNorm = 1 - absNorm;
 
-        // Calculate transforms
         const z = invNorm * MAX_DEPTH;
         const rotY = -norm * MAX_ROTATION;
         const scale = MIN_SCALE + invNorm * SCALE_RANGE;
@@ -123,90 +126,95 @@ export default function Home() {
         el.style.opacity = String(opacity);
         el.style.zIndex = String(Math.round(invNorm * 100));
 
-        // Track center item
         const dist = Math.abs(screenX);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closestIdx = i;
-        }
+        if (dist < closestDist) { closestDist = dist; closestIdx = i; }
       }
 
-      // Update center index
-      if (closestIdx !== centerIdxRef.current) {
-        centerIdxRef.current = closestIdx;
-        setCenterIdx(closestIdx);
-
-        // Animate progress bar
-        if (progressRef.current) {
-          const pct = ((closestIdx + 1) / ITEM_COUNT) * 100;
-          gsap.to(progressRef.current, { width: `${pct}%`, duration: 0.3, ease: "power2.out" });
-        }
+      if (closestIdx !== targetIdx.current && !animating.current) {
+        // Only update during free state
       }
+      setCenterIdx(closestIdx);
 
-      raf = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(loop);
     };
 
-    lastTime.current = performance.now();
-    raf = requestAnimationFrame(loop);
+    rafRef.current = requestAnimationFrame(loop);
 
-    // ── Input handlers ──
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  // ── Input: wheel snaps one item at a time ──
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    let wheelAccum = 0;
+    const WHEEL_THRESHOLD = 50;
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      velocityRef.current += (e.deltaY || e.deltaX) * WHEEL_SENS;
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      dragging.current = true;
-      dragStartX.current = e.clientX;
-      stage.setPointerCapture(e.pointerId);
-      stage.style.cursor = "grabbing";
-    };
-    const onPointerMove = (e: PointerEvent) => {
-      if (!dragging.current) return;
-      const dx = dragStartX.current - e.clientX;
-      dragStartX.current = e.clientX;
-      velocityRef.current += dx * DRAG_SENS;
-    };
-    const onPointerUp = (e: PointerEvent) => {
-      dragging.current = false;
-      stage.releasePointerCapture(e.pointerId);
-      stage.style.cursor = "grab";
+      wheelAccum += e.deltaY;
+      if (Math.abs(wheelAccum) > WHEEL_THRESHOLD) {
+        const dir = wheelAccum > 0 ? 1 : -1;
+        wheelAccum = 0;
+        goTo(targetIdx.current + dir);
+      }
     };
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
         e.preventDefault();
-        velocityRef.current += 300;
+        goTo(targetIdx.current + 1);
       }
       if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         e.preventDefault();
-        velocityRef.current -= 300;
+        goTo(targetIdx.current - 1);
+      }
+    };
+
+    // Touch/drag: snap on release
+    let touchStartX = 0;
+    const onTouchStart = (e: TouchEvent) => { touchStartX = e.touches[0].clientX; };
+    const onTouchEnd = (e: TouchEvent) => {
+      const dx = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 40) {
+        goTo(targetIdx.current + (dx > 0 ? 1 : -1));
       }
     };
 
     stage.addEventListener("wheel", onWheel, { passive: false });
-    stage.addEventListener("pointerdown", onPointerDown);
-    stage.addEventListener("pointermove", onPointerMove);
-    stage.addEventListener("pointerup", onPointerUp);
+    stage.addEventListener("touchstart", onTouchStart, { passive: true });
+    stage.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("keydown", onKey);
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
       stage.removeEventListener("wheel", onWheel);
-      stage.removeEventListener("pointerdown", onPointerDown);
-      stage.removeEventListener("pointermove", onPointerMove);
-      stage.removeEventListener("pointerup", onPointerUp);
+      stage.removeEventListener("touchstart", onTouchStart);
+      stage.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKey);
     };
   }, []);
 
-  // ── Info crossfade on center change ──
+  // ── Progress bar update ──
+  useEffect(() => {
+    if (progressRef.current) {
+      gsap.to(progressRef.current, {
+        width: `${((centerIdx + 1) / N) * 100}%`,
+        duration: 0.4,
+        ease: "power2.out",
+      });
+    }
+  }, [centerIdx]);
+
+  // ── Info crossfade ──
   useEffect(() => {
     if (!infoRef.current) return;
     const tl = gsap.timeline();
-    tl.to(infoRef.current, { opacity: 0, y: 6, duration: 0.15, ease: "power2.in" });
-    tl.to(infoRef.current, { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" });
+    tl.to(infoRef.current, { opacity: 0, y: 4, duration: 0.12, ease: "power2.in" });
+    tl.to(infoRef.current, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" });
   }, [centerIdx]);
 
   // ── Entrance ──
@@ -216,12 +224,11 @@ export default function Home() {
       if (infoRef.current) infoRef.current.style.opacity = "1";
       return;
     }
-
     const tl = gsap.timeline();
     tl.fromTo([navRef.current, footerRef.current],
       { opacity: 0 }, { opacity: 1, duration: 0.5, stagger: 0.1 }, 0.1);
     tl.fromTo(infoRef.current,
-      { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+      { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.5);
   }, []);
 
   const href = piece.type === "project" ? `/work/${piece.slug}` : `/lab/${piece.slug}`;
@@ -266,11 +273,11 @@ export default function Home() {
           </div>
         </header>
 
-        {/* ═══ 3D CAROUSEL ═══ */}
+        {/* ═══ 3D CAROUSEL — smaller items, more whitespace ═══ */}
         <div ref={stageRef} className="carousel-stage" style={{ cursor: "grab" }}>
           {pieces.map((p, i) => {
             const hasDarkBg = isDark(p.cover.bg);
-            const coverMuted = hasDarkBg ? "rgba(255,252,245,0.30)" : "rgba(26,25,23,0.20)";
+            const coverMuted = hasDarkBg ? "rgba(255,252,245,0.25)" : "rgba(26,25,23,0.18)";
 
             return (
               <div
@@ -278,7 +285,7 @@ export default function Home() {
                 ref={el => { itemRefs.current[i] = el; }}
                 className="carousel-item"
                 style={{
-                  width: "clamp(220px, 28vw, 420px)",
+                  width: "clamp(140px, 16vw, 240px)",
                   aspectRatio: "3/4",
                   opacity: 0,
                 }}
@@ -286,36 +293,27 @@ export default function Home() {
                 <Link
                   href={p.type === "project" ? `/work/${p.slug}` : `/lab/${p.slug}`}
                   style={{
-                    display: "block",
-                    width: "100%",
-                    height: "100%",
-                    position: "relative",
-                    backgroundColor: p.cover.bg,
-                    overflow: "hidden",
-                    textDecoration: "none",
+                    display: "block", width: "100%", height: "100%",
+                    position: "relative", backgroundColor: p.cover.bg,
+                    overflow: "hidden", textDecoration: "none",
                   }}
                 >
                   {p.image && (
-                    <Image
-                      src={p.image}
-                      alt={p.title}
-                      fill
-                      sizes="(max-width: 768px) 70vw, 28vw"
+                    <Image src={p.image} alt={p.title} fill
+                      sizes="(max-width: 768px) 50vw, 16vw"
                       style={{ objectFit: "cover" }}
                       priority={i < 3}
                     />
                   )}
-                  {/* Grain */}
                   <div aria-hidden="true" style={{
                     position: "absolute", inset: 0, opacity: 0.04,
                     filter: "url(#grain)", background: "var(--bg)",
                     mixBlendMode: "multiply", pointerEvents: "none", zIndex: 1,
                   }} />
-                  {/* Number */}
                   <span style={{
-                    position: "absolute", top: 10, left: 12, zIndex: 2,
-                    fontFamily: "var(--font-mono)", fontSize: 10,
-                    letterSpacing: "0.08em", color: coverMuted,
+                    position: "absolute", top: 8, left: 10, zIndex: 2,
+                    fontFamily: "var(--font-mono)", fontSize: 9,
+                    letterSpacing: "0.06em", color: coverMuted,
                   }}>{String(i + 1).padStart(2, "0")}</span>
                 </Link>
               </div>
@@ -323,45 +321,81 @@ export default function Home() {
           })}
         </div>
 
-        {/* ═══ PROJECT INFO ═══ */}
+        {/* ═══ DECORATED PROJECT INFO ═══ */}
         <div ref={infoRef} style={{
           padding: "0 var(--margin)",
-          paddingTop: 12,
-          paddingBottom: 8,
+          paddingTop: 16,
+          paddingBottom: 12,
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
-          gap: 24,
+          gap: 8,
           opacity: 0,
           position: "relative",
           zIndex: 20,
         }}>
+          {/* Title — large display serif */}
           <Link href={href} style={{
-            display: "flex", alignItems: "baseline", gap: 16,
             textDecoration: "none",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
           }}>
-            <span style={{
+            <h2 style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(20px, 2.5vw, 36px)",
-              fontWeight: 400, letterSpacing: "-0.02em",
-              color: textColor, transition: "color 500ms ease",
-            }}>{piece.title}</span>
-            <span style={{
-              fontFamily: "var(--font-mono)", fontSize: 10,
-              letterSpacing: "0.08em", textTransform: "uppercase",
-              color: mutedColor, transition: "color 500ms ease",
-            }}>{piece.tags[0]}</span>
-            <span style={{
-              fontFamily: "var(--font-mono)", fontSize: 10,
-              letterSpacing: "0.08em",
-              color: mutedColor, transition: "color 500ms ease",
-            }}>{piece.year}</span>
-            <span style={{
-              fontFamily: "var(--font-mono)", fontSize: 11,
-              letterSpacing: "0.1em", textTransform: "uppercase",
-              color: textColor, transition: "color 500ms ease",
-              marginLeft: 8,
-            }}>→</span>
+              fontSize: "clamp(28px, 4vw, 56px)",
+              fontWeight: 400,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.0,
+              color: textColor,
+              transition: "color 500ms ease",
+              textAlign: "center",
+            }}>
+              {piece.title}
+            </h2>
+
+            {/* Description — body text */}
+            <p style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: 13,
+              lineHeight: 1.5,
+              color: mutedColor,
+              transition: "color 500ms ease",
+              textAlign: "center",
+              maxWidth: 400,
+            }}>
+              {piece.description}
+            </p>
+
+            {/* Meta row */}
+            <div style={{
+              display: "flex", gap: 16, alignItems: "center",
+              marginTop: 4,
+            }}>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: 10,
+                letterSpacing: "0.08em", textTransform: "uppercase",
+                color: faintColor, transition: "color 500ms ease",
+              }}>{piece.tags.slice(0, 2).join(" · ")}</span>
+              <span style={{
+                width: 3, height: 3, borderRadius: "50%",
+                backgroundColor: faintColor,
+                transition: "background-color 500ms ease",
+              }} />
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: 10,
+                letterSpacing: "0.08em",
+                color: faintColor, transition: "color 500ms ease",
+              }}>{piece.year}</span>
+              <span style={{
+                width: 3, height: 3, borderRadius: "50%",
+                backgroundColor: faintColor,
+                transition: "background-color 500ms ease",
+              }} />
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: 10,
+                letterSpacing: "0.08em", textTransform: "uppercase",
+                color: textColor, transition: "color 500ms ease",
+              }}>View →</span>
+            </div>
           </Link>
         </div>
 
@@ -370,15 +404,14 @@ export default function Home() {
           padding: "0 var(--margin)", paddingBottom: 14,
           opacity: 0, position: "relative", zIndex: 20,
         }}>
-          {/* Progress bar */}
           <div style={{
             height: 1, marginBottom: 10,
-            backgroundColor: dark ? "rgba(255,252,245,0.10)" : "rgba(26,25,23,0.06)",
+            backgroundColor: dark ? "rgba(255,252,245,0.08)" : "rgba(26,25,23,0.05)",
             position: "relative", transition: "background-color 500ms ease",
           }}>
             <div ref={progressRef} style={{
               position: "absolute", top: 0, left: 0, height: "100%",
-              width: `${((centerIdx + 1) / ITEM_COUNT) * 100}%`,
+              width: `${((centerIdx + 1) / N) * 100}%`,
               backgroundColor: textColor,
               transition: "background-color 500ms ease",
             }} />
@@ -391,12 +424,12 @@ export default function Home() {
               letterSpacing: "0.1em", textTransform: "uppercase",
               color: mutedColor, transition: "color 500ms ease",
             }}>Brand & Product Design</span>
-            <span ref={counterRef} style={{
+            <span style={{
               fontFamily: "var(--font-mono)", fontSize: 11,
               letterSpacing: "0.08em", fontVariantNumeric: "tabular-nums",
               color: textColor, transition: "color 500ms ease",
             }}>
-              {String(centerIdx + 1).padStart(2, "0")}/{String(ITEM_COUNT).padStart(2, "0")}
+              {String(centerIdx + 1).padStart(2, "0")}/{String(N).padStart(2, "0")}
             </span>
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: 10,
@@ -406,7 +439,6 @@ export default function Home() {
           </div>
         </footer>
 
-        {/* Grain + Cursor */}
         <div className="grain" />
         <CustomCursor />
       </div>
