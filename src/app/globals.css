@@ -1,165 +1,69 @@
 @import "tailwindcss";
 
 /* ────────────────────────────────────────────────────────────
-   HKJ — Brand Lookbook
-   The site IS the brand identity system.
-   Type: DM Serif Display (logotype) + General Sans (body) + Fragment Mono (system)
-   Palette: Single ink on warm paper · 8 opacity levels
+   HKJ — Brand Website
+   Not a portfolio. The brand experiencing itself.
    ──────────────────────────────────────────────────────────── */
 
 :root {
-  /* ── Ground & Ink ── */
-  --paper: #f5f1ec;
-  --ink-rgb: 42, 37, 32;
-  --ink-full:      rgba(42, 37, 32, 1.00);
-  --ink-90:        rgba(42, 37, 32, 0.90);
-  --ink-primary:   rgba(42, 37, 32, 0.70);
-  --ink-secondary: rgba(42, 37, 32, 0.55);
-  --ink-muted:     rgba(42, 37, 32, 0.40);
-  --ink-faint:     rgba(42, 37, 32, 0.20);
-  --ink-ghost:     rgba(42, 37, 32, 0.08);
+  --bg: #faf9f6;
+  --fg: #1a1917;
+  --fg-rgb: 26, 25, 23;
+  --fg-2: rgba(26, 25, 23, 0.60);
+  --fg-3: rgba(26, 25, 23, 0.35);
+  --fg-4: rgba(26, 25, 23, 0.15);
+  --fg-5: rgba(26, 25, 23, 0.06);
 
-  /* ── Typography ── */
-  --font-display: var(--font-serif), Georgia, "Times New Roman", serif;
-  --font-body:    var(--font-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono:    var(--font-fragment), "SF Mono", "Fira Code", monospace;
+  --font-display: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-mono: var(--font-fragment), monospace;
 
-  /* ── Type Scale ── */
-  --text-logotype: clamp(72px, 18vw, 280px);
-  --text-display:  clamp(48px, 10vw, 140px);
-  --text-heading:  clamp(18px, 2.5vw, 28px);
-  --text-body:     14px;
-  --text-label:    11px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-reveal: cubic-bezier(0.76, 0, 0.24, 1);
 
-  /* ── Leading ── */
-  --leading-logotype: 0.82;
-  --leading-display: 0.90;
-  --leading-heading: 1.15;
-  --leading-body:    1.55;
-
-  /* ── Tracking ── */
-  --tracking-logotype: -0.04em;
-  --tracking-label: 0.1em;
-  --tracking-body: 0.005em;
-
-  /* ── Spacing ── */
-  --space-xs:   4px;
-  --space-sm:   8px;
-  --space-md:   16px;
-  --space-lg:   24px;
-  --space-xl:   48px;
-  --space-2xl:  80px;
-
-  /* ── Grid ── */
-  --grid-margin: 40px;
-
-  /* ── Motion ── */
-  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-snap:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-reveal:  cubic-bezier(0.76, 0, 0.24, 1);
-  --dur-hover:    200ms;
-  --dur-reveal:   700ms;
+  --margin: clamp(20px, 5vw, 56px);
 }
 
-/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
+html { -webkit-text-size-adjust: 100%; }
 
 body {
-  background-color: var(--paper);
-  color: var(--ink-primary);
-  font-family: var(--font-body);
-  font-size: var(--text-body);
-  line-height: var(--leading-body);
-  letter-spacing: var(--tracking-body);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   height: 100dvh;
 }
 
-/* ── Focus ── */
+::selection { background: rgba(var(--fg-rgb), 0.12); }
 
-:focus-visible {
-  outline: 1.5px solid var(--ink-full);
-  outline-offset: 3px;
-}
-
-/* ── Selection ── */
-
-::selection {
-  background-color: rgba(var(--ink-rgb), 0.14);
-  color: var(--ink-full);
-}
-
-/* ── Skip-to-content ── */
+:focus-visible { outline: 1.5px solid var(--fg); outline-offset: 3px; }
 
 .skip-to-content {
-  position: absolute;
-  top: -999px;
-  left: var(--grid-margin);
-  z-index: 99999;
-  padding: 8px 16px;
-  background: var(--ink-full);
-  color: var(--paper);
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: top 200ms var(--ease-out);
+  position: absolute; top: -999px; left: var(--margin);
+  z-index: 99999; padding: 8px 16px;
+  background: var(--fg); color: var(--bg);
+  font: 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none; transition: top 200ms var(--ease);
 }
+.skip-to-content:focus { top: 0; }
 
-.skip-to-content:focus {
-  top: 0;
-}
-
-/* ── Font Utilities ── */
-
-.font-display { font-family: var(--font-display); }
-.font-body    { font-family: var(--font-body); }
-.font-mono    { font-family: var(--font-mono); }
-
-/* ── Grain Overlay ── */
-
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.04;
-  filter: url(#grain);
-  background: var(--paper);
+/* Grain */
+.grain {
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none; opacity: 0.035;
+  filter: url(#grain); background: var(--bg);
   mix-blend-mode: multiply;
 }
 
-/* ── Reduced Motion ── */
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* ── Mobile ── */
-
-@media (max-width: 768px) {
-  :root {
-    --grid-margin: 20px;
-    --text-logotype: clamp(48px, 14vw, 100px);
   }
 }
