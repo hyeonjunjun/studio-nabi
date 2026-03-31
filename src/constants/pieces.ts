@@ -42,8 +42,8 @@ export const PIECES: Piece[] = [
     image: "/images/sift-v2.webp",
   },
   {
-    slug: "conductor",
-    title: "CONDUCTOR",
+    slug: "promptineer",
+    title: "PROMPTINEER",
     type: "project",
     order: 3,
     description: "A design system that orchestrates consistency across product surfaces.",
