@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { gsap } from "@/lib/gsap";
+import { useRouter } from "next/navigation";
 import { PIECES } from "@/constants/pieces";
-import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
+import { CONTACT_EMAIL } from "@/constants/contact";
 
 const projects = PIECES.filter((p) => p.type === "project").sort(
   (a, b) => a.order - b.order
@@ -13,7 +13,9 @@ const projects = PIECES.filter((p) => p.type === "project").sort(
 
 export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
+  const router = useRouter();
 
+  // Live clock
   const [time, setTime] = useState("");
   useEffect(() => {
     const fmt = () =>
@@ -29,49 +31,47 @@ export default function Home() {
     return () => clearInterval(i);
   }, []);
 
-  useEffect(() => {
-    if (!mainRef.current) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      mainRef.current.querySelectorAll(".fade-in").forEach((el) => {
-        (el as HTMLElement).style.opacity = "1";
-      });
-      return;
-    }
-    gsap.set(".project", { y: 12 });
-    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-    tl.to(".nav", { opacity: 1, duration: 0.4 }, 0);
-    tl.to(".headline", { opacity: 1, duration: 0.5 }, 0.15);
-    tl.to(".project", { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 }, 0.3);
-    tl.to(".foot", { opacity: 1, duration: 0.4 }, 0.55);
-  }, []);
+  // Page transition: fade out before navigation
+  const navigateTo = useCallback(
+    (href: string) => (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (!mainRef.current) {
+        router.push(href);
+        return;
+      }
+      mainRef.current.classList.add("page-exit");
+      setTimeout(() => router.push(href), 300);
+    },
+    [router]
+  );
 
   return (
-    <main className="home" id="main" ref={mainRef}>
+    <main className="home border-reveal" id="main" ref={mainRef}>
       {/* Nav */}
-      <header className="nav fade-in">
-        <Link href="/" className="nav-mark">HKJ Studio</Link>
+      <header className="nav">
+        <Link href="/" className="nav-mark">HKJ</Link>
         <div className="nav-links">
-          <Link href="/about">About</Link>
+          <a href="/about" onClick={navigateTo("/about")}>About</a>
           <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
         </div>
       </header>
 
       {/* Center */}
       <div className="center">
-        <div className="headline fade-in">
-          <h1>
-            Brands, products, and ideas
-            <br />
-            built with craft and intention.
-          </h1>
-          <p className="headline-sub">Selected work</p>
+        <div className="headline">
+          <h1>Design, engineered.</h1>
         </div>
 
         <section className="projects">
           {projects.map((piece) => {
             const href = `/work/${piece.slug}`;
             return (
-              <Link key={piece.slug} href={href} className="project fade-in">
+              <a
+                key={piece.slug}
+                href={href}
+                onClick={navigateTo(href)}
+                className="project"
+              >
                 <div className="project-img">
                   {piece.image ? (
                     <Image
@@ -90,25 +90,17 @@ export default function Home() {
                   )}
                 </div>
                 <span className="project-name">{piece.title}</span>
-                <span className="project-detail">
-                  {piece.tags[0]} · {piece.year}
-                </span>
-              </Link>
+                <span className="project-detail">{piece.tags[0]} · {piece.year}</span>
+              </a>
             );
           })}
         </section>
       </div>
 
       {/* Footer */}
-      <footer className="foot fade-in">
-        <span>New York{time ? ` · ${time}` : ""}</span>
-        <div className="foot-right">
-          {SOCIALS.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer">
-              {s.label}
-            </a>
-          ))}
-        </div>
+      <footer className="foot">
+        <span>{time ? `New York · ${time}` : "\u00A0"}</span>
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
       </footer>
     </main>
   );
