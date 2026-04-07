@@ -17,15 +17,15 @@ interface CDCaseProps {
   dragRef: React.MutableRefObject<DragState>;
 }
 
-const MAX_TILT = 0.14;
-const LERP_FACTOR = 0.05;
-const IDLE_SPEED = 0.1;
+const MAX_TILT = 0.1;
+const LERP_FACTOR = 0.04;
+const IDLE_SPEED = 0.08;
 
 function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { pointer } = useThree();
   const [hovered, setHovered] = useState(false);
-  const targetScale = hovered ? 1.05 : 1;
+  const targetScale = hovered ? 1.03 : 1;
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
@@ -53,8 +53,8 @@ function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
       );
 
       // Decay drag velocity
-      dragRef.current.velocityX *= 0.95;
-      dragRef.current.velocityY *= 0.95;
+      dragRef.current.velocityX *= 0.93;
+      dragRef.current.velocityY *= 0.93;
     }
 
     // Smooth hover scale
@@ -99,7 +99,7 @@ function CDCaseWithTexture({
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <boxGeometry args={[2, 2, 0.15]} />
+      <boxGeometry args={[2, 2, 0.12]} />
     </mesh>
   );
 }
@@ -134,7 +134,7 @@ function CDCaseWithColor({
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <boxGeometry args={[2, 2, 0.15]} />
+      <boxGeometry args={[2, 2, 0.12]} />
     </mesh>
   );
 }
