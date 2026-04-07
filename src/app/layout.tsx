@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
-import PageShell from "@/components/PageShell";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const generalSans = localFont({
   src: "../fonts/general-sans/GeneralSans-Variable.woff2",
@@ -66,32 +66,13 @@ export default function RootLayout({
       <body
         className={`${generalSans.variable} ${fragmentMono.variable} ${dmSerif.variable}`}
       >
-        <svg
-          aria-hidden="true"
-          style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
-        >
-          <defs>
-            <filter id="grain" x="0%" y="0%" width="100%" height="100%">
-              <feTurbulence
-                type="fractalNoise"
-                baseFrequency={0.65}
-                numOctaves={4}
-                stitchTiles="stitch"
-                result="noise"
-              />
-              <feColorMatrix type="saturate" values="0" in="noise" result="gn" />
-              <feBlend in="SourceGraphic" in2="gn" mode="multiply" />
-            </filter>
-          </defs>
-        </svg>
-
         <RouteAnnouncer />
-        <PageShell>
+        <SmoothScroll>
           <a href="#main" className="skip-to-content">
             Skip to content
           </a>
           {children}
-        </PageShell>
+        </SmoothScroll>
       </body>
     </html>
   );
