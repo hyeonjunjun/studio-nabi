@@ -56,10 +56,10 @@ export default function Cursor() {
 
   if (isTouch) return null;
 
-  // Dot scales with velocity: 6px base, up to ~10px
-  const dotSize = Math.min(10, 6 + velocity * 0.04);
-  const dotOpacity = isIdle ? 0.15 : 0.5;
-  const textOpacity = isIdle ? 0.08 : 0.2;
+  // Dot scales with velocity: 5px base, up to ~8px
+  const dotSize = Math.min(8, 5 + velocity * 0.04);
+  const dotOpacity = isIdle ? 0.1 : 0.4;
+  const textOpacity = isIdle ? 0.05 : 0.15;
   const displayText = label ?? `${hzRef.current} Hz`;
 
   return (

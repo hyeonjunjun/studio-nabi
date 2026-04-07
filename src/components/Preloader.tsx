@@ -139,7 +139,7 @@ export default function Preloader() {
           {/* Progress line */}
           <div
             style={{
-              width: 80,
+              width: 64,
               height: 1,
               background: "var(--fg-4)",
               position: "relative",
