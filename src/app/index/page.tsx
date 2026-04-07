@@ -2,293 +2,213 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import Footer from "@/components/Footer";
-import GeometricFrame from "@/components/GeometricFrame";
-import { PIECES, type Piece } from "@/constants/pieces";
+import GameLink from "@/components/GameLink";
+import { PIECES } from "@/constants/pieces";
 
 const projects = PIECES.filter((p) => p.type === "project").sort(
   (a, b) => a.order - b.order
 );
 
 export default function IndexPage() {
-  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
-
-  const hovered = projects.find((p) => p.slug === hoveredSlug) ?? null;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = projects[activeIndex];
 
   return (
-    <main id="main" className="min-h-screen">
-      <div
-        style={{
-          paddingTop: 64,
-          paddingLeft: "var(--pad)",
-          paddingRight: "var(--pad)",
-          paddingBottom: 48,
-        }}
-      >
-        {/* Label */}
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--fg-3)",
-            display: "block",
-            marginBottom: 32,
-          }}
-        >
-          Index
-        </motion.span>
-
-        {/* Two-panel layout */}
-        <div
-          style={{
-            display: "flex",
-            gap: 48,
-          }}
-          className="flex-col md:flex-row"
-        >
-          {/* Left panel: project list */}
-          <div style={{ flex: "0 0 65%" }} className="w-full md:w-auto">
-            {projects.map((project, i) => (
-              <motion.div
-                key={project.slug}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * i, duration: 0.4 }}
-              >
-                <Link
-                  href={`/index/${project.slug}`}
-                  data-cursor="link"
-                  onMouseEnter={() => setHoveredSlug(project.slug)}
-                  onMouseLeave={() => setHoveredSlug(null)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 16,
-                    paddingTop: 16,
-                    paddingBottom: 16,
-                    borderBottom: "1px solid var(--fg-4)",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "opacity 0.2s",
-                  }}
-                >
-                  {/* Thumbnail */}
-                  <GeometricFrame variant="thumbnail" className="shrink-0">
-                    <div
-                      style={{
-                        width: 120,
-                        height: 90,
-                        overflow: "hidden",
-                        position: "relative",
-                        backgroundColor: project.cover.bg,
-                      }}
-                    >
-                      {project.image && (
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          sizes="120px"
-                          style={{ objectFit: "cover" }}
-                        />
-                      )}
-                    </div>
-                  </GeometricFrame>
-
-                  {/* Info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: 15,
-                        color: "var(--fg)",
-                        display: "block",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {project.title}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        color: "var(--fg-2)",
-                        display: "block",
-                        marginTop: 4,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {project.description}
-                    </span>
-                  </div>
-
-                  {/* Year */}
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 11,
-                      color: "var(--fg-3)",
-                      fontVariantNumeric: "tabular-nums",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {project.year}
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Right panel: hover preview */}
-          <div
-            className="hidden md:block"
-            style={{
-              flex: "0 0 35%",
-              position: "sticky",
-              top: 80,
-              alignSelf: "flex-start",
-            }}
+    <main id="main" className="game-screen">
+      {/* Full-screen media background */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active.slug}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <GeometricFrame variant="default" layoutId="index-preview">
-              <div
-                style={{
-                  aspectRatio: "4 / 3",
-                  overflow: "hidden",
-                  position: "relative",
-                  backgroundColor: hovered?.cover.bg ?? "var(--bg-2)",
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  {hovered && (
-                    <motion.div
-                      key={hovered.slug}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                      }}
-                    >
-                      {hovered.video ? (
-                        <video
-                          src={hovered.video}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : hovered.image ? (
-                        <Image
-                          src={hovered.image}
-                          alt={hovered.title}
-                          fill
-                          sizes="35vw"
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: hovered.cover.bg,
-                          }}
-                        />
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </GeometricFrame>
+            {active.video ? (
+              <video
+                src={active.video}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : active.image ? (
+              <Image
+                src={active.image}
+                alt={active.title}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="w-full h-full" style={{ background: active.cover.bg }} />
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-            {/* Preview meta */}
-            <AnimatePresence mode="wait">
-              {hovered && (
-                <motion.div
-                  key={`meta-${hovered.slug}`}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  style={{ marginTop: 16 }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: 18,
-                      color: "var(--fg)",
-                      display: "block",
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {hovered.title}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      color: "var(--fg-2)",
-                      display: "block",
-                      marginTop: 6,
-                      lineHeight: 1.5,
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {hovered.description}
-                  </span>
-
-                  {/* Tags */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 6,
-                      marginTop: 12,
-                    }}
-                  >
-                    {hovered.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em",
-                          border: "1px solid var(--fg-4)",
-                          borderRadius: 2,
-                          paddingLeft: 8,
-                          paddingRight: 8,
-                          paddingTop: 2,
-                          paddingBottom: 2,
-                          color: "var(--fg-3)",
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+        {/* Left-side readability gradient */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(10,10,11,0.85) 0%, rgba(10,10,11,0.4) 50%, rgba(10,10,11,0.15) 100%)",
+          }}
+        />
+        {/* Bottom gradient */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background: "linear-gradient(to top, rgba(10,10,11,0.6) 0%, transparent 25%)",
+          }}
+        />
       </div>
 
-      <Footer />
+      {/* Top bar */}
+      <div
+        className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between h-14"
+        style={{ paddingInline: "clamp(32px, 8vw, 96px)" }}
+      >
+        <GameLink
+          href="/"
+          className="font-mono text-[11px] tracking-[0.04em] hover:opacity-60 transition-opacity"
+          style={{ color: "var(--fg-2)" }}
+          data-cursor="link"
+        >
+          ← Back
+        </GameLink>
+        <span
+          className="font-mono text-[10px] tracking-[0.12em] uppercase"
+          style={{ color: "var(--fg-3)" }}
+        >
+          Index — Projects
+        </span>
+      </div>
+
+      {/* Project info — left side, vertically centered */}
+      <div
+        className="absolute left-[clamp(32px,8vw,96px)] top-1/2 -translate-y-1/2 z-20"
+        style={{ maxWidth: "380px" }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active.slug}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* Number */}
+            <span
+              className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-4 tabular-nums"
+              style={{ color: "var(--accent-warm-1)" }}
+            >
+              {String(active.order).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+            </span>
+
+            {/* Title */}
+            <h1
+              className="font-display font-normal tracking-[-0.02em] leading-[1.05] mb-4"
+              style={{ fontSize: "clamp(36px, 5vw, 56px)", color: "var(--fg)" }}
+            >
+              {active.title}
+            </h1>
+
+            {/* Description */}
+            <p className="text-[13px] leading-[1.7] mb-6" style={{ color: "var(--fg-2)" }}>
+              {active.description}
+            </p>
+
+            {/* Tags */}
+            <div className="flex gap-2 flex-wrap mb-8">
+              {active.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="font-mono text-[9px] uppercase tracking-[0.1em] px-2.5 py-1 border rounded-sm"
+                  style={{ color: "var(--fg-3)", borderColor: "var(--fg-4)" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* View project CTA */}
+            <GameLink
+              href={`/index/${active.slug}`}
+              className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-all duration-300 group"
+              style={{ color: "var(--fg-2)" }}
+              data-cursor="link"
+            >
+              <span className="group-hover:text-[var(--fg)] transition-colors duration-300">
+                View project
+              </span>
+              <div
+                className="w-6 group-hover:w-10 h-px transition-all duration-500"
+                style={{ background: "linear-gradient(90deg, var(--accent-warm-1), transparent)" }}
+              />
+            </GameLink>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Character selector — right side, vertical strip */}
+      <div className="absolute right-[clamp(32px,8vw,96px)] top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3">
+        {projects.map((piece, i) => {
+          const isActive = i === activeIndex;
+          return (
+            <button
+              key={piece.slug}
+              onClick={() => setActiveIndex(i)}
+              className="relative w-16 h-16 overflow-hidden transition-all duration-500"
+              data-cursor="link"
+              style={{
+                border: isActive
+                  ? "1px solid var(--accent-warm-1)"
+                  : "1px solid var(--fg-4)",
+                opacity: isActive ? 1 : 0.5,
+              }}
+            >
+              {piece.image ? (
+                <Image src={piece.image} alt={piece.title} fill sizes="64px" className="object-cover" />
+              ) : (
+                <div className="w-full h-full" style={{ background: piece.cover.bg }} />
+              )}
+              {isActive && (
+                <>
+                  <motion.div
+                    className="absolute top-0 left-0 w-2.5 h-px"
+                    style={{ background: "var(--accent-warm-1)" }}
+                    layoutId="selector-h"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                  <motion.div
+                    className="absolute top-0 left-0 h-2.5 w-px"
+                    style={{ background: "var(--accent-warm-1)" }}
+                    layoutId="selector-v"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                </>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Bottom info */}
+      <div
+        className="absolute bottom-6 left-[clamp(32px,8vw,96px)] right-[clamp(32px,8vw,96px)] z-20 flex justify-between items-end"
+      >
+        <span className="font-mono text-[10px] tracking-[0.06em] tabular-nums" style={{ color: "var(--fg-3)" }}>
+          {active.status === "wip" ? "In progress" : active.year}
+        </span>
+        <span className="font-mono text-[10px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
+          {active.type === "project" ? "Project" : "Experiment"}
+        </span>
+      </div>
     </main>
   );
 }
