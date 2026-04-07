@@ -2,183 +2,240 @@
 
 import { motion } from "framer-motion";
 import { SOCIALS, CONTACT_EMAIL } from "@/constants/contact";
-import Footer from "@/components/Footer";
+import GameLink from "@/components/GameLink";
 
-const reveal = {
-  initial: { opacity: 0, y: 12 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { type: "spring" as const, stiffness: 120, damping: 20, mass: 0.8 },
-};
+const stagger = (delay: number) => ({
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
 
-function DiamondDivider() {
-  return (
-    <motion.div {...reveal} className="relative mt-10 mb-8">
-      <div className="h-px bg-fg-4" />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[6px] h-[6px] bg-fg-4 rotate-45" />
-    </motion.div>
-  );
-}
-
-const DETAILS = [
+const STATS = [
   { label: "Location", value: "New York" },
   { label: "Focus", value: "Design Engineering" },
-  { label: "Status", value: "Available for select projects" },
+  { label: "Experience", value: "3+ years" },
+  { label: "Status", value: "Available" },
 ];
 
 const EXPERIENCE = [
-  { period: "2024\u2013", role: "HKJ Studio", desc: "Independent design engineering" },
-  { period: "2023\u201324", role: "Product", desc: "Mobile & AI products" },
-  { period: "2022\u201323", role: "Design Systems", desc: "Component architecture & tokens" },
+  { period: "2024 —", role: "HKJ Studio", desc: "Independent practice" },
+  { period: "2023 — 24", role: "Product", desc: "Mobile & AI" },
+  { period: "2022 — 23", role: "Design Systems", desc: "Components & tokens" },
+];
+
+const SKILLS = [
+  "React", "Next.js", "TypeScript", "Framer Motion", "Three.js",
+  "Figma", "Design Systems", "WebGL",
 ];
 
 export default function AboutPage() {
   return (
-    <main id="main" className="min-h-screen">
-      <section
-        className="pb-20"
-        style={{
-          paddingTop: "clamp(80px, 12vh, 140px)",
-          paddingLeft: "var(--pad)",
-          paddingRight: "var(--pad)",
-          maxWidth: 680,
-        }}
-      >
-        {/* ── Label ── */}
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="block mb-8 font-mono text-[10px] uppercase tracking-[0.06em] text-fg-3"
-        >
-          About
-        </motion.span>
-
-        {/* ── Lead paragraph ── */}
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
-          className="mb-5 font-display text-fg max-w-[58ch]"
+    <main id="main" className="game-screen">
+      {/* Background atmosphere */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute"
           style={{
-            fontSize: "clamp(22px, 3vw, 32px)",
-            lineHeight: 1.3,
-            letterSpacing: "-0.01em",
+            top: "20%", left: "60%",
+            width: "40vw", height: "40vh",
+            background: "radial-gradient(ellipse at center, rgba(200,164,85,0.025), transparent 60%)",
           }}
+        />
+      </div>
+
+      {/* Top bar */}
+      <div
+        className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between h-14"
+        style={{ paddingInline: "clamp(32px, 8vw, 96px)" }}
+      >
+        <GameLink
+          href="/"
+          className="font-mono text-[11px] tracking-[0.04em] hover:opacity-60 transition-opacity"
+          style={{ color: "var(--fg-2)" }}
+          data-cursor="link"
         >
-          HKJ is a one-person design engineering practice based in New York. I
-          care about type, motion, and the invisible details that make software
-          feel intentional.
-        </motion.p>
-
-        {/* ── Second paragraph ── */}
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
-          className="text-[15px] leading-[1.7] text-fg-2 max-w-[54ch]"
-          style={{ letterSpacing: "-0.01em" }}
+          ← Back
+        </GameLink>
+        <span
+          className="font-mono text-[10px] tracking-[0.12em] uppercase"
+          style={{ color: "var(--fg-3)" }}
         >
-          Previously, I worked on products across mobile, AI, and design
-          systems. I believe the best digital work borrows from the rigor of
-          print and the warmth of physical objects.
-        </motion.p>
+          About — Profile
+        </span>
+      </div>
 
-        {/* ── Personal note ── */}
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
-          className="mt-8 font-mono text-[10px] text-fg-3"
-          style={{ lineHeight: 1.7, letterSpacing: "0.04em" }}
-        >
-          When I&rsquo;m not pushing pixels, I&rsquo;m probably hunting for good
-          light to photograph, reading about material science, or making
-          pour-overs that take too long.
-        </motion.p>
+      {/* Profile layout — two columns */}
+      <div
+        className="absolute inset-0 z-10 flex items-center"
+        style={{ paddingInline: "clamp(32px, 8vw, 96px)" }}
+      >
+        <div className="flex gap-[clamp(40px,6vw,100px)] w-full max-w-[1100px] max-md:flex-col">
+          {/* Left column — identity */}
+          <div className="w-[45%] max-md:w-full">
+            <motion.span
+              className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-4"
+              style={{ color: "var(--accent-warm-1)" }}
+              {...stagger(0.3)}
+            >
+              Profile
+            </motion.span>
 
-        {/* ── Diamond divider ── */}
-        <DiamondDivider />
+            <motion.h1
+              className="font-display font-normal tracking-[-0.02em] leading-[1.1] mb-5"
+              style={{ fontSize: "clamp(32px, 4vw, 48px)", color: "var(--fg)" }}
+              {...stagger(0.4)}
+            >
+              Hyeon Jun
+            </motion.h1>
 
-        {/* ── Details block (character-sheet stats) ── */}
-        <motion.div
-          {...reveal}
-          className="grid grid-cols-2 gap-x-8 gap-y-3"
-        >
-          {DETAILS.map((d) => (
-            <div key={d.label}>
-              <span className="block font-mono text-[10px] uppercase tracking-[0.06em] text-fg-3">
-                {d.label}
-              </span>
-              <span className="block text-[13px] text-fg">{d.value}</span>
-            </div>
-          ))}
-        </motion.div>
+            <motion.p
+              className="text-[14px] leading-[1.75] mb-6 max-w-[380px]"
+              style={{ color: "var(--fg-2)" }}
+              {...stagger(0.5)}
+            >
+              Design engineer building at the intersection of
+              craft and systems thinking. I care about type, motion,
+              and the invisible details that make software feel intentional.
+            </motion.p>
 
-        {/* ── Experience ── */}
-        <motion.div {...reveal} className="mt-10">
-          <span className="block mb-4 font-mono text-[10px] uppercase tracking-[0.06em] text-fg-3">
-            Experience
-          </span>
-          <div className="flex flex-col gap-3">
-            {EXPERIENCE.map((exp) => (
-              <div key={exp.period} className="flex flex-col gap-1">
-                <span
-                  className="font-mono text-[10px] text-fg-3"
-                  style={{ letterSpacing: "0.04em" }}
-                >
-                  {exp.period}
-                </span>
-                <span
-                  className="text-[15px] text-fg-2 leading-[1.5]"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  <span className="text-fg">{exp.role}</span> &mdash;{" "}
-                  {exp.desc}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+            <motion.p
+              className="font-mono text-[10px] leading-[1.8] max-w-[340px]"
+              style={{ color: "var(--fg-3)" }}
+              {...stagger(0.6)}
+            >
+              When I&rsquo;m not pushing pixels, I&rsquo;m probably hunting
+              for good light to photograph, reading about material science,
+              or making pour-overs that take too long.
+            </motion.p>
 
-        {/* ── Diamond divider ── */}
-        <DiamondDivider />
-
-        {/* ── Contact ── */}
-        <motion.div {...reveal}>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            data-cursor="link"
-            className="text-[15px] text-fg no-underline"
-            style={{ letterSpacing: "-0.01em" }}
-          >
-            {CONTACT_EMAIL}
-          </a>
-        </motion.div>
-
-        {/* ── Socials ── */}
-        <motion.div {...reveal} className="mt-4">
-          {SOCIALS.map((link, i) => (
-            <span key={link.label}>
+            {/* Contact */}
+            <motion.div className="mt-8" {...stagger(0.7)}>
               <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[10px] uppercase tracking-[0.06em] text-fg-3 no-underline transition-colors duration-300 hover:text-fg"
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="font-mono text-[11px] tracking-[0.02em] transition-colors duration-300"
+                style={{ color: "var(--fg-2)" }}
+                data-cursor="link"
               >
-                {link.label}
+                {CONTACT_EMAIL}
               </a>
-              {i < SOCIALS.length - 1 && (
-                <span className="font-mono text-[10px] text-fg-3 mx-2">
-                  &middot;
-                </span>
-              )}
-            </span>
-          ))}
-        </motion.div>
-      </section>
 
-      <Footer />
+              <div className="flex gap-4 mt-3">
+                {SOCIALS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-[9px] uppercase tracking-[0.1em] transition-colors duration-300 hover:text-[var(--fg)]"
+                    style={{ color: "var(--fg-3)" }}
+                    data-cursor="link"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right column — stats & experience */}
+          <div className="w-[55%] max-md:w-full">
+            {/* Stats grid */}
+            <motion.div {...stagger(0.5)}>
+              <span
+                className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-4"
+                style={{ color: "var(--fg-3)" }}
+              >
+                Stats
+              </span>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-8">
+                {STATS.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="pb-3"
+                    style={{ borderBottom: "1px solid var(--fg-4)" }}
+                  >
+                    <span
+                      className="block font-mono text-[9px] uppercase tracking-[0.1em] mb-1"
+                      style={{ color: "var(--fg-3)" }}
+                    >
+                      {stat.label}
+                    </span>
+                    <span className="text-[13px]" style={{ color: "var(--fg)" }}>
+                      {stat.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Experience */}
+            <motion.div {...stagger(0.6)}>
+              <span
+                className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-4"
+                style={{ color: "var(--fg-3)" }}
+              >
+                Experience
+              </span>
+              <div className="flex flex-col gap-3 mb-8">
+                {EXPERIENCE.map((exp) => (
+                  <div
+                    key={exp.period}
+                    className="flex items-baseline gap-4"
+                    style={{ borderBottom: "1px solid var(--fg-4)", paddingBottom: 12 }}
+                  >
+                    <span
+                      className="font-mono text-[10px] tracking-[0.04em] tabular-nums shrink-0"
+                      style={{ color: "var(--fg-3)", width: 80 }}
+                    >
+                      {exp.period}
+                    </span>
+                    <span className="text-[13px]" style={{ color: "var(--fg)" }}>
+                      {exp.role}
+                    </span>
+                    <span className="text-[12px]" style={{ color: "var(--fg-2)" }}>
+                      {exp.desc}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Skills / tools */}
+            <motion.div {...stagger(0.7)}>
+              <span
+                className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-3"
+                style={{ color: "var(--fg-3)" }}
+              >
+                Proficiencies
+              </span>
+              <div className="flex gap-2 flex-wrap">
+                {SKILLS.map((skill) => (
+                  <span
+                    key={skill}
+                    className="font-mono text-[9px] uppercase tracking-[0.08em] px-2.5 py-1 border rounded-sm"
+                    style={{ color: "var(--fg-3)", borderColor: "var(--fg-4)" }}
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom decorative */}
+      <div
+        className="absolute bottom-6 left-[clamp(32px,8vw,96px)] right-[clamp(32px,8vw,96px)] z-20 flex justify-between"
+      >
+        <span className="font-mono text-[10px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
+          New York
+        </span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M24 0L24 8M24 0L16 0" stroke="var(--accent-warm-1)" strokeWidth="0.75" opacity="0.3" />
+          <path d="M0 24L0 16M0 24L8 24" stroke="var(--accent-warm-1)" strokeWidth="0.75" opacity="0.15" />
+        </svg>
+      </div>
     </main>
   );
 }
