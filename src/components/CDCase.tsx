@@ -1,62 +1,45 @@
 "use client";
 
 import { useRef, useMemo, useState, Suspense } from "react";
-import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+
+interface DragState {
+  isDragging: boolean;
+  velocityX: number;
+  velocityY: number;
+}
 
 interface CDCaseProps {
   textureUrl?: string;
   coverColor?: string;
+  dragRef: React.MutableRefObject<DragState>;
 }
 
-const MAX_TILT = 0.14; // ~8 degrees
+const MAX_TILT = 0.14;
 const LERP_FACTOR = 0.05;
-const IDLE_SPEED = 0.1; // rad/s
+const IDLE_SPEED = 0.1;
 
-function useCDCaseInteraction() {
+function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { pointer } = useThree();
-  const isDragging = useRef(false);
-  const lastPointer = useRef({ x: 0, y: 0 });
-  const dragVelocity = useRef({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
   const targetScale = hovered ? 1.05 : 1;
-
-  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    isDragging.current = true;
-    lastPointer.current = { x: e.pointer.x, y: e.pointer.y };
-    dragVelocity.current = { x: 0, y: 0 };
-  };
-
-  const onPointerUp = () => {
-    isDragging.current = false;
-  };
-
-  const onPointerMove = (e: ThreeEvent<PointerEvent>) => {
-    if (!isDragging.current) return;
-    const dx = e.pointer.x - lastPointer.current.x;
-    const dy = e.pointer.y - lastPointer.current.y;
-    dragVelocity.current = { x: dx * 3, y: dy * 3 };
-    lastPointer.current = { x: e.pointer.x, y: e.pointer.y };
-  };
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
 
-    if (isDragging.current) {
-      // User is dragging — apply drag velocity directly
-      meshRef.current.rotation.y += dragVelocity.current.x;
-      meshRef.current.rotation.x += dragVelocity.current.y;
-      // Clamp vertical rotation
+    if (dragRef.current.isDragging) {
+      meshRef.current.rotation.y += dragRef.current.velocityX;
+      meshRef.current.rotation.x += dragRef.current.velocityY;
       meshRef.current.rotation.x = THREE.MathUtils.clamp(
         meshRef.current.rotation.x,
         -Math.PI / 3,
         Math.PI / 3
       );
     } else {
-      // Idle: slow Y rotation + cursor tilt
+      // Idle rotation + cursor tilt
       meshRef.current.rotation.y += delta * IDLE_SPEED;
       meshRef.current.rotation.x = THREE.MathUtils.lerp(
         meshRef.current.rotation.x,
@@ -70,38 +53,30 @@ function useCDCaseInteraction() {
       );
 
       // Decay drag velocity
-      dragVelocity.current.x *= 0.95;
-      dragVelocity.current.y *= 0.95;
+      dragRef.current.velocityX *= 0.95;
+      dragRef.current.velocityY *= 0.95;
     }
 
-    // Smooth scale on hover
-    const currentScale = meshRef.current.scale.x;
-    const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.08);
-    meshRef.current.scale.setScalar(newScale);
+    // Smooth hover scale
+    const s = THREE.MathUtils.lerp(meshRef.current.scale.x, targetScale, 0.08);
+    meshRef.current.scale.setScalar(s);
   });
 
-  return {
-    meshRef,
-    hovered,
-    setHovered,
-    onPointerDown,
-    onPointerUp,
-    onPointerMove,
-  };
+  return { meshRef, setHovered };
 }
 
 function CDCaseWithTexture({
   textureUrl,
   coverColor = "#1a1a1a",
+  dragRef,
 }: {
   textureUrl: string;
   coverColor?: string;
+  dragRef: React.MutableRefObject<DragState>;
 }) {
   const texture = useTexture(textureUrl);
-  const { meshRef, setHovered, onPointerDown, onPointerUp, onPointerMove } =
-    useCDCaseInteraction();
+  const { meshRef, setHovered } = useCDCaseRotation(dragRef);
 
-  // Create materials array: [+x, -x, +y, -y, +z (front), -z (back)]
   const materials = useMemo(() => {
     const edge = new THREE.MeshStandardMaterial({
       color: "#0d0d0d",
@@ -121,10 +96,6 @@ function CDCaseWithTexture({
     <mesh
       ref={meshRef}
       material={materials}
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onPointerMove={onPointerMove}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
@@ -133,9 +104,14 @@ function CDCaseWithTexture({
   );
 }
 
-function CDCaseWithColor({ coverColor = "#1a1a1a" }: { coverColor?: string }) {
-  const { meshRef, setHovered, onPointerDown, onPointerUp, onPointerMove } =
-    useCDCaseInteraction();
+function CDCaseWithColor({
+  coverColor = "#1a1a1a",
+  dragRef,
+}: {
+  coverColor?: string;
+  dragRef: React.MutableRefObject<DragState>;
+}) {
+  const { meshRef, setHovered } = useCDCaseRotation(dragRef);
 
   const materials = useMemo(() => {
     const edge = new THREE.MeshStandardMaterial({
@@ -155,10 +131,6 @@ function CDCaseWithColor({ coverColor = "#1a1a1a" }: { coverColor?: string }) {
     <mesh
       ref={meshRef}
       material={materials}
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onPointerMove={onPointerMove}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
@@ -170,13 +142,14 @@ function CDCaseWithColor({ coverColor = "#1a1a1a" }: { coverColor?: string }) {
 export default function CDCase({
   textureUrl,
   coverColor = "#1a1a1a",
+  dragRef,
 }: CDCaseProps) {
   if (textureUrl) {
     return (
-      <Suspense fallback={<CDCaseWithColor coverColor={coverColor} />}>
-        <CDCaseWithTexture textureUrl={textureUrl} coverColor={coverColor} />
+      <Suspense fallback={<CDCaseWithColor coverColor={coverColor} dragRef={dragRef} />}>
+        <CDCaseWithTexture textureUrl={textureUrl} coverColor={coverColor} dragRef={dragRef} />
       </Suspense>
     );
   }
-  return <CDCaseWithColor coverColor={coverColor} />;
+  return <CDCaseWithColor coverColor={coverColor} dragRef={dragRef} />;
 }
