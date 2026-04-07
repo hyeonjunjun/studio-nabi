@@ -44,31 +44,35 @@ export default function TheaterStage() {
       <TopBar />
       <BottomBar />
 
-      {/* Left zone — content views */}
+      {/* Content zone — overlaps with 3D scene for poster-style compositions */}
       <div
-        className="absolute flex items-center"
+        className="absolute"
         style={{
           left: 0,
           top: 56,
           bottom: 44,
-          width: "40%",
+          width: "55%",
           paddingLeft: "clamp(32px, 8vw, 96px)",
-          paddingRight: 24,
+          zIndex: 10,
+          pointerEvents: "none",
         }}
       >
-        <AnimatePresence mode="wait">
-          <ActiveView activeTab={activeTab} isDetailExpanded={isDetailExpanded} />
-        </AnimatePresence>
+        <div className="relative w-full h-full" style={{ pointerEvents: "auto" }}>
+          <AnimatePresence mode="wait">
+            <ActiveView activeTab={activeTab} isDetailExpanded={isDetailExpanded} />
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Right zone — 3D scene */}
+      {/* 3D scene — positioned to be partially behind the text */}
       <div
         className="absolute flex items-center justify-center"
         style={{
           right: 0,
           top: 56,
           bottom: 44,
-          width: "58%",
+          width: "62%",
+          zIndex: 5,
         }}
       >
         <Scene3D />

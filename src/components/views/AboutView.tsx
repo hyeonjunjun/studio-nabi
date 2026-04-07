@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import { SOCIALS, CONTACT_EMAIL } from "@/constants/contact";
 
 const anim = {
-  initial: { opacity: 0, x: -12 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -12 },
-  transition: { duration: 0.3 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.4 },
 };
 
 const stats: [string, string][] = [
@@ -19,182 +19,133 @@ const stats: [string, string][] = [
 ];
 
 const experience = [
-  {
-    period: "2024 —",
-    role: "Freelance Design Engineer",
-    desc: "Digital products and brand experiences for select clients.",
-  },
-  {
-    period: "2023 — 24",
-    role: "Design Technologist",
-    desc: "Bridging design and engineering on product teams.",
-  },
-  {
-    period: "2021 — 23",
-    role: "Frontend Developer",
-    desc: "Interfaces and design systems at scale.",
-  },
+  { period: "2024 —", role: "Freelance Design Engineer" },
+  { period: "2023 — 24", role: "Design Technologist" },
+  { period: "2021 — 23", role: "Frontend Developer" },
 ];
-
-function Divider() {
-  return (
-    <div
-      style={{
-        height: 1,
-        width: 32,
-        background: "var(--fg-4)",
-        marginTop: 28,
-        marginBottom: 24,
-      }}
-    />
-  );
-}
 
 export default function AboutView() {
   return (
-    <motion.div className="w-full" {...anim}>
-      {/* Profile label */}
-      <span
-        className="font-mono uppercase block"
+    <motion.div className="w-full h-full relative" {...anim}>
+      {/* ═══ Large statement — poster scale ═══ */}
+      <div
+        className="absolute font-display"
         style={{
-          fontSize: 10,
-          letterSpacing: "0.08em",
-          color: "var(--fg-3)",
-          marginBottom: 16,
-        }}
-      >
-        Profile
-      </span>
-
-      {/* Lead paragraph */}
-      <p
-        className="font-display"
-        style={{
-          fontSize: "clamp(26px, 3vw, 34px)",
-          letterSpacing: "-0.025em",
-          lineHeight: 1.25,
+          bottom: 80,
+          left: 0,
+          right: -40,
+          fontSize: "clamp(36px, 5vw, 56px)",
+          letterSpacing: "-0.03em",
+          lineHeight: 1.1,
           color: "var(--fg)",
           fontWeight: 500,
-          maxWidth: 440,
+          zIndex: 2,
         }}
       >
-        Design engineer building at the intersection of craft and systems
-        thinking.
-      </p>
-
-      {/* Body */}
-      <p
-        className="font-body"
-        style={{
-          fontSize: 14,
-          lineHeight: 1.75,
-          letterSpacing: "-0.005em",
-          color: "var(--fg-2)",
-          maxWidth: 360,
-          marginTop: 16,
-        }}
-      >
-        I care about type, motion, and the invisible details that make digital
-        products feel considered. Currently based in New York, open to
-        collaboration.
-      </p>
-
-      <Divider />
-
-      {/* Stats grid */}
-      <div
-        className="grid font-mono uppercase"
-        style={{
-          gridTemplateColumns: "80px 1fr",
-          gap: "8px 16px",
-          fontSize: 9,
-          letterSpacing: "0.06em",
-        }}
-      >
-        {stats.map(([key, value]) => (
-          <Fragment key={key}>
-            <span style={{ color: "var(--fg-3)" }}>{key}</span>
-            <span style={{ color: "var(--fg-2)" }}>{value}</span>
-          </Fragment>
-        ))}
+        Design
+        <br />
+        engineering
+        <br />
+        <span style={{ color: "var(--fg-2)" }}>at the intersection</span>
       </div>
 
-      <Divider />
+      {/* ═══ Info block — top left ═══ */}
+      <div className="absolute" style={{ top: 0, left: 0, zIndex: 3 }}>
+        <span
+          className="font-mono uppercase block"
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.1em",
+            color: "var(--fg-3)",
+            marginBottom: 20,
+          }}
+        >
+          Profile
+        </span>
 
-      {/* Experience */}
-      <div className="flex flex-col" style={{ gap: 16 }}>
-        {experience.map((entry) => (
-          <div key={entry.period} className="flex" style={{ gap: 16 }}>
-            <span
-              className="font-mono shrink-0"
-              style={{
-                fontSize: 9,
-                letterSpacing: "0.04em",
-                fontVariantNumeric: "tabular-nums",
-                width: 80,
-                color: "var(--fg-3)",
-                paddingTop: 3,
-              }}
-            >
-              {entry.period}
-            </span>
-            <div>
-              <div
-                className="font-body"
-                style={{ fontSize: 14, letterSpacing: "-0.005em", color: "var(--fg)" }}
-              >
-                {entry.role}
-              </div>
-              <div
-                className="font-body"
-                style={{
-                  fontSize: 12,
-                  letterSpacing: "0",
-                  color: "var(--fg-3)",
-                  marginTop: 2,
-                  lineHeight: 1.5,
-                }}
-              >
-                {entry.desc}
-              </div>
+        {/* Stats */}
+        <div
+          className="font-mono uppercase"
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.06em",
+            lineHeight: 2.2,
+          }}
+        >
+          {stats.map(([key, value]) => (
+            <div key={key}>
+              <span style={{ color: "var(--fg-3)" }}>{key}</span>
+              {"  "}
+              <span style={{ color: "var(--fg-2)" }}>{value}</span>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <Divider />
+        {/* Divider */}
+        <div
+          style={{
+            height: 1,
+            width: 24,
+            background: "var(--fg-4)",
+            marginTop: 20,
+            marginBottom: 16,
+          }}
+        />
 
-      {/* Contact */}
-      <a
-        href={`mailto:${CONTACT_EMAIL}`}
-        className="font-mono block"
-        style={{
-          fontSize: 10,
-          letterSpacing: "0.02em",
-          color: "var(--fg-2)",
-        }}
-      >
-        {CONTACT_EMAIL}
-      </a>
+        {/* Experience — compact */}
+        <div
+          className="font-mono"
+          style={{
+            fontSize: 9,
+            letterSpacing: "0.04em",
+            lineHeight: 2,
+          }}
+        >
+          {experience.map((e) => (
+            <div key={e.period}>
+              <span style={{ color: "var(--fg-3)", fontVariantNumeric: "tabular-nums" }}>
+                {e.period}
+              </span>
+              {"  "}
+              <span style={{ color: "var(--fg-2)" }}>{e.role}</span>
+            </div>
+          ))}
+        </div>
 
-      {/* Social links */}
-      <div className="flex" style={{ gap: 16, marginTop: 12 }}>
-        {SOCIALS.map((s) => (
-          <a
-            key={s.label}
-            href={s.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono uppercase"
-            style={{
-              fontSize: 8,
-              letterSpacing: "0.06em",
-              color: "var(--fg-3)",
-            }}
-          >
-            {s.label}
-          </a>
-        ))}
+        {/* Divider */}
+        <div
+          style={{
+            height: 1,
+            width: 24,
+            background: "var(--fg-4)",
+            marginTop: 20,
+            marginBottom: 16,
+          }}
+        />
+
+        {/* Contact */}
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="font-mono block"
+          style={{ fontSize: 9, color: "var(--fg-2)", letterSpacing: "0.02em" }}
+        >
+          {CONTACT_EMAIL}
+        </a>
+
+        <div className="flex" style={{ gap: 12, marginTop: 8 }}>
+          {SOCIALS.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono uppercase"
+              style={{ fontSize: 8, letterSpacing: "0.06em", color: "var(--fg-3)" }}
+            >
+              {s.label}
+            </a>
+          ))}
+        </div>
       </div>
     </motion.div>
   );
