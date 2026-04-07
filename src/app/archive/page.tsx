@@ -53,20 +53,21 @@ export default function ArchivePage() {
         className="absolute inset-0 z-10 flex items-center justify-center"
         style={{ paddingInline: "clamp(32px, 8vw, 96px)" }}
       >
-        <div className="w-full max-w-[900px]">
-          {/* Section label */}
-          <motion.span
-            className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-6"
-            style={{ color: "var(--fg-3)" }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            Collection — {experiments.length} {experiments.length === 1 ? "item" : "items"}
-          </motion.span>
+        <motion.div
+          className="w-full max-w-[800px] ui-panel ui-panel--cool"
+          style={{ padding: 0 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          {/* Panel header */}
+          <div className="ui-panel-header">
+            <span>Collection</span>
+            <span>{experiments.length} {experiments.length === 1 ? "item" : "items"}</span>
+          </div>
 
           {/* Grid of items */}
-          <div className="grid grid-cols-4 gap-4 max-md:grid-cols-2">
+          <div className="grid grid-cols-4 gap-px max-md:grid-cols-2" style={{ padding: 1 }}>
             {experiments.map((piece, i) => {
               const isSelected = piece.slug === selectedSlug;
               return (
@@ -187,11 +188,14 @@ export default function ArchivePage() {
             )}
           </div>
 
-          {/* Detail panel — appears below when item selected */}
+        </motion.div>
+
+          {/* Detail panel — appears below the grid panel */}
           <AnimatePresence>
             {selected && (
               <motion.div
-                className="mt-6 flex items-start gap-6"
+                className="mt-4 ui-panel ui-panel--cool flex items-start gap-6"
+                style={{ padding: "20px 24px" }}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
@@ -243,20 +247,22 @@ export default function ArchivePage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
       </div>
 
-      {/* Bottom decorative */}
+      {/* Bottom bar */}
       <div
-        className="absolute bottom-6 left-[clamp(32px,8vw,96px)] right-[clamp(32px,8vw,96px)] z-20 flex justify-between"
+        className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between h-10"
+        style={{
+          paddingInline: "clamp(32px, 8vw, 96px)",
+          borderTop: "1px solid rgba(240,238,232,0.06)",
+        }}
       >
-        <span className="font-mono text-[10px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
+        <span className="font-mono text-[9px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
           {experiments.length} collected
         </span>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M24 0L24 8M24 0L16 0" stroke="var(--accent-cool-1)" strokeWidth="0.75" opacity="0.3" />
-          <path d="M0 24L0 16M0 24L8 24" stroke="var(--accent-cool-1)" strokeWidth="0.75" opacity="0.15" />
-        </svg>
+        <span className="font-mono text-[9px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
+          Archive
+        </span>
       </div>
     </main>
   );

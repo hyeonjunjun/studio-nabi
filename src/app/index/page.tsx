@@ -70,93 +70,112 @@ export default function IndexPage() {
 
       {/* Top bar */}
       <div
-        className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between h-14"
-        style={{ paddingInline: "clamp(32px, 8vw, 96px)" }}
+        className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between h-12"
+        style={{
+          paddingInline: "clamp(32px, 8vw, 96px)",
+          borderBottom: "1px solid rgba(240,238,232,0.06)",
+        }}
       >
         <GameLink
           href="/"
-          className="font-mono text-[11px] tracking-[0.04em] hover:opacity-60 transition-opacity"
+          className="font-mono text-[10px] tracking-[0.04em] hover:opacity-60 transition-opacity"
           style={{ color: "var(--fg-2)" }}
           data-cursor="link"
         >
           ← Back
         </GameLink>
         <span
-          className="font-mono text-[10px] tracking-[0.12em] uppercase"
+          className="font-mono text-[9px] tracking-[0.12em] uppercase"
           style={{ color: "var(--fg-3)" }}
         >
           Index — Projects
         </span>
       </div>
 
-      {/* Project info — left side, vertically centered */}
+      {/* Project info — left side, in a panel */}
       <div
         className="absolute left-[clamp(32px,8vw,96px)] top-1/2 -translate-y-1/2 z-20"
-        style={{ maxWidth: "380px" }}
+        style={{ width: "clamp(320px, 28vw, 420px)" }}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active.slug}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Number */}
-            <span
-              className="block font-mono text-[10px] tracking-[0.14em] uppercase mb-4 tabular-nums"
-              style={{ color: "var(--accent-warm-1)" }}
+        <div className="ui-panel" style={{ padding: "24px 28px" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.slug}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
-              {String(active.order).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
-            </span>
-
-            {/* Title */}
-            <h1
-              className="font-display font-normal tracking-[-0.02em] leading-[1.05] mb-4"
-              style={{ fontSize: "clamp(36px, 5vw, 56px)", color: "var(--fg)" }}
-            >
-              {active.title}
-            </h1>
-
-            {/* Description */}
-            <p className="text-[13px] leading-[1.7] mb-6" style={{ color: "var(--fg-2)" }}>
-              {active.description}
-            </p>
-
-            {/* Tags */}
-            <div className="flex gap-2 flex-wrap mb-8">
-              {active.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="font-mono text-[9px] uppercase tracking-[0.1em] px-2.5 py-1 border rounded-sm"
-                  style={{ color: "var(--fg-3)", borderColor: "var(--fg-4)" }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            {/* View project CTA */}
-            <GameLink
-              href={`/index/${active.slug}`}
-              className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-all duration-300 group"
-              style={{ color: "var(--fg-2)" }}
-              data-cursor="link"
-            >
-              <span className="group-hover:text-[var(--fg)] transition-colors duration-300">
-                View project
+              {/* Number */}
+              <span
+                className="block font-mono text-[9px] tracking-[0.14em] uppercase mb-3 tabular-nums"
+                style={{ color: "var(--accent-warm-1)" }}
+              >
+                {String(active.order).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
               </span>
-              <div
-                className="w-6 group-hover:w-10 h-px transition-all duration-500"
-                style={{ background: "linear-gradient(90deg, var(--accent-warm-1), transparent)" }}
-              />
-            </GameLink>
-          </motion.div>
-        </AnimatePresence>
+
+              {/* Title */}
+              <h1
+                className="font-display font-normal tracking-[-0.02em] leading-[1.05] mb-3"
+                style={{ fontSize: "clamp(32px, 4vw, 48px)", color: "var(--fg)" }}
+              >
+                {active.title}
+              </h1>
+
+              {/* Separator */}
+              <div className="h-px w-8 mb-3" style={{ background: "var(--fg-4)" }} />
+
+              {/* Description */}
+              <p className="text-[12px] leading-[1.7] mb-5" style={{ color: "var(--fg-2)" }}>
+                {active.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex gap-2 flex-wrap mb-6">
+                {active.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="font-mono text-[8px] uppercase tracking-[0.1em] px-2 py-0.5 border"
+                    style={{ color: "var(--fg-3)", borderColor: "var(--fg-4)" }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* View project CTA */}
+              <GameLink
+                href={`/index/${active.slug}`}
+                className="inline-flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.1em] transition-all duration-300 group"
+                style={{ color: "var(--accent-warm-1)" }}
+                data-cursor="link"
+              >
+                <span className="group-hover:text-[var(--fg)] transition-colors duration-300">
+                  View project
+                </span>
+                <div
+                  className="w-5 group-hover:w-10 h-px transition-all duration-500"
+                  style={{ background: "linear-gradient(90deg, var(--accent-warm-1), transparent)" }}
+                />
+              </GameLink>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Year below panel */}
+        <div className="mt-3 pl-1">
+          <span className="font-mono text-[9px] tracking-[0.06em] tabular-nums" style={{ color: "var(--fg-3)" }}>
+            {active.status === "wip" ? "In progress" : active.year}
+          </span>
+        </div>
       </div>
 
-      {/* Character selector — right side, vertical strip */}
-      <div className="absolute right-[clamp(32px,8vw,96px)] top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3">
+      {/* Character selector — right side, in a panel container */}
+      <div className="absolute right-[clamp(32px,8vw,96px)] top-1/2 -translate-y-1/2 z-30">
+        <div className="ui-panel flex flex-col gap-0 overflow-hidden" style={{ padding: 0 }}>
+          <div className="ui-panel-header">
+            <span>Select</span>
+          </div>
         {projects.map((piece, i) => {
           const isActive = i === activeIndex;
           return (
@@ -196,16 +215,21 @@ export default function IndexPage() {
             </button>
           );
         })}
+        </div>
       </div>
 
-      {/* Bottom info */}
+      {/* Bottom bar */}
       <div
-        className="absolute bottom-6 left-[clamp(32px,8vw,96px)] right-[clamp(32px,8vw,96px)] z-20 flex justify-between items-end"
+        className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between h-10"
+        style={{
+          paddingInline: "clamp(32px, 8vw, 96px)",
+          borderTop: "1px solid rgba(240,238,232,0.06)",
+        }}
       >
-        <span className="font-mono text-[10px] tracking-[0.06em] tabular-nums" style={{ color: "var(--fg-3)" }}>
+        <span className="font-mono text-[9px] tracking-[0.06em] tabular-nums" style={{ color: "var(--fg-3)" }}>
           {active.status === "wip" ? "In progress" : active.year}
         </span>
-        <span className="font-mono text-[10px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
+        <span className="font-mono text-[9px] tracking-[0.06em]" style={{ color: "var(--fg-3)" }}>
           {active.type === "project" ? "Project" : "Experiment"}
         </span>
       </div>
