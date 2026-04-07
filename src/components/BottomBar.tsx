@@ -25,20 +25,32 @@ export default function BottomBar() {
     <div
       className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between"
       style={{
-        height: 44,
-        paddingInline: "clamp(32px, 8vw, 96px)",
+        height: 40,
+        paddingInline: "clamp(32px, 6vw, 80px)",
         borderTop: "1px solid var(--fg-4)",
       }}
     >
       <span
         className="font-mono uppercase"
-        style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--fg-3)" }}
+        style={{
+          fontSize: 9,
+          fontWeight: 400,
+          letterSpacing: "0.06em",
+          lineHeight: 1.8,
+          color: "var(--fg-3)",
+        }}
       >
         {contextText}
       </span>
       <span
         className="font-mono"
-        style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--fg-3)", fontVariantNumeric: "tabular-nums" }}
+        style={{
+          fontSize: 9,
+          fontWeight: 400,
+          letterSpacing: "0.06em",
+          lineHeight: 1.8,
+          color: "var(--fg-3)",
+        }}
       >
         v1.0
       </span>
