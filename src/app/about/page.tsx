@@ -8,7 +8,7 @@ const reveal = {
   initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { type: "spring", stiffness: 120, damping: 20, mass: 0.8 },
+  transition: { type: "spring" as const, stiffness: 120, damping: 20, mass: 0.8 },
 };
 
 function DiamondDivider() {

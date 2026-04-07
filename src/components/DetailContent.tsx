@@ -13,7 +13,7 @@ const reveal = {
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.2 },
   transition: {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 120,
     damping: 20,
     mass: 0.8,

@@ -12,7 +12,7 @@ interface ProjectSectionProps {
   index: number;
 }
 
-const spring = { type: "spring", stiffness: 120, damping: 20, mass: 0.8 };
+const spring = { type: "spring" as const, stiffness: 120, damping: 20, mass: 0.8 };
 
 export default function ProjectSection({ piece, index }: ProjectSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
