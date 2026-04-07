@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
       { source: "/experiments/:slug",   destination: "/exploration", permanent: true },
       { source: "/journal",             destination: "/writing",      permanent: true },
       { source: "/journal/:slug",       destination: "/writing/:slug", permanent: true },
+      { source: "/work",                destination: "/index",         permanent: true },
+      { source: "/work/:slug",          destination: "/index/:slug",   permanent: true },
+      { source: "/lab",                 destination: "/archive",       permanent: true },
+      { source: "/lab/:slug",           destination: "/archive/:slug", permanent: true },
     ];
   },
 };
