@@ -179,7 +179,7 @@ Triggered by clicking "View project →" or clicking the 3D object.
 - Idle: slow Y-axis rotation (~0.1 rad/s)
 - Cursor influence: the object tilts slightly toward the cursor position (parallax via `useSpring`). Max tilt: ~8 degrees on each axis.
 - On project switch: current texture fades out (opacity → 0, ~200ms), new texture fades in (~200ms). The object itself doesn't move or resize during switch.
-- On FLIP to detail: the object scales up and repositions via Framer Motion `layoutId` — the R3F canvas resizes to match.
+- On FLIP to detail: the R3F `<Canvas>` lives inside a `motion.div` with a `layoutId`. Framer Motion animates the *container div's* size and position — the Canvas responds to the resize automatically, and the 3D object scales within it. Framer Motion cannot animate WebGL objects directly — the FLIP operates on the DOM wrapper, not the Three.js scene graph.
 
 **Performance:**
 - Single `<Canvas>` that persists across all states. Never unmounts.
@@ -252,7 +252,7 @@ This is a single-page app in terms of UX, but uses Next.js App Router for SEO/SS
 - `/archive` — renders Main Stage with Archive tab active
 - `/about` — renders Main Stage with About tab active
 
-URL updates via shallow routing (`router.push(url, { shallow: true })` or `window.history.pushState`) so the page doesn't remount. The state management (which tab, which project, whether detail is expanded) drives the UI, not the route.
+URL updates via `window.history.pushState` only — Next.js App Router has no shallow routing. The actual rendering is driven entirely by the Zustand store, not by the route. Routes exist for SEO (SSR fallback) and direct-link support, but normal in-app navigation never triggers a route change — it only updates state and pushState. If a user lands on `/index/gyeol` directly, the server renders the page and the client hydrates with `isDetailExpanded: true` and `selectedProject: "gyeol"`.
 
 ### State
 
@@ -267,10 +267,15 @@ A single Zustand store (already installed) or React context:
 ```
 
 ### Key Dependencies
-- `framer-motion` — FLIP (`layoutId`), springs, AnimatePresence
-- `@react-three/fiber` + `@react-three/drei` — 3D scene (already have `three` installed)
-- `zustand` — state management (already installed)
-- React Three Fiber and Framer Motion coexist: the R3F canvas lives in a `motion.div` with a `layoutId` so it participates in FLIP transitions.
+- `framer-motion` — FLIP (`layoutId`), springs, AnimatePresence (installed)
+- `@react-three/fiber` + `@react-three/drei` — 3D scene (**must be installed**, `three` is already present)
+- `zustand` — state management (installed)
+- React Three Fiber and Framer Motion coexist: the R3F `<Canvas>` lives in a `motion.div` with a `layoutId` so the container participates in FLIP transitions while the 3D scene renders inside it.
+
+### New Dependencies to Install
+```bash
+npm install @react-three/fiber @react-three/drei
+```
 
 ### What Gets Removed
 - `TransitionProvider.tsx`, `GameLink.tsx` — replaced by in-page state transitions
@@ -284,7 +289,8 @@ A single Zustand store (already installed) or React context:
 ### What Gets Kept
 - `ParticleCanvas.tsx` — simplified (fewer particles)
 - `Cursor.tsx` — rebuilt as frequency cursor
-- `pieces.ts`, `case-studies.ts`, `contact.ts` — data layer unchanged
+- `pieces.ts` — add optional `coverArt?: string` field for 3D texture (distinct from `image`). Falls back to `image`, then to a generated texture from `cover.bg` color. Projects without any imagery show a matte solid-color CD case.
+- `case-studies.ts`, `contact.ts` — unchanged
 - `RouteAnnouncer.tsx` — accessibility
 - Font setup in `layout.tsx`
 - Color tokens in `globals.css` (simplified)
@@ -311,6 +317,8 @@ A single Zustand store (already installed) or React context:
 - Route announcer for URL changes
 - Keyboard navigation: Tab through selector items, Enter to select/expand
 - `prefers-reduced-motion`: all FLIP transitions become instant (0ms), 3D rotation stops, particles freeze
+- 3D fallback: if WebGL is unavailable, the right zone shows a static image (uses `piece.image` or `piece.coverArt`). The Canvas component wraps in an error boundary that renders the fallback.
+- Project selector keyboard: Arrow Up/Down navigates the list, Enter selects (updates metadata + 3D object), Shift+Enter or a dedicated key expands to Detail View
 - 3D canvas has `aria-hidden="true"` — it's decorative
 - All text meets WCAG AA contrast against `--bg`
 - Focus-visible outlines on all interactive elements
