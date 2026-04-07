@@ -35,7 +35,7 @@ function createParticle(w: number, h: number): Particle {
     vy: -(Math.random() * 0.1 + 0.02), // mostly upward
     radius: Math.random() * 1.5 + 0.5,
     color: ALL_COLORS[Math.floor(Math.random() * ALL_COLORS.length)],
-    opacity: Math.random() * 0.03 + 0.02, // 0.02–0.05
+    opacity: Math.random() * 0.01 + 0.02, // 0.02–0.03
   };
 }
 
@@ -49,7 +49,7 @@ export default function ParticleCanvas({
   const rafRef = useRef<number>(0);
   const reducedMotionRef = useRef(false);
 
-  const count = density === "dense" ? 50 : 35;
+  const count = density === "dense" ? 50 : 15;
 
   const initParticles = useCallback(
     (w: number, h: number) => {

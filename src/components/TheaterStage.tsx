@@ -6,6 +6,7 @@ import Scene3D from "@/components/Scene3D";
 import IndexView from "@/components/views/IndexView";
 import ArchiveView from "@/components/views/ArchiveView";
 import AboutView from "@/components/views/AboutView";
+import DetailView from "@/components/views/DetailView";
 
 function ActiveView({
   activeTab,
@@ -14,7 +15,7 @@ function ActiveView({
   activeTab: string;
   isDetailExpanded: boolean;
 }) {
-  if (isDetailExpanded) return null;
+  if (isDetailExpanded) return <DetailView key="detail" />;
 
   switch (activeTab) {
     case "index":
