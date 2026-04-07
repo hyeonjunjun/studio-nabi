@@ -325,12 +325,44 @@ Panel content area scrolls within the text column bounds if content exceeds view
   selectedSlug: string
   isDetailExpanded: boolean
   activeDetailPanel: "overview" | "process" | "engineering"
+  setActiveDetailPanel: (panel: "overview" | "process" | "engineering") => void
 }
 ```
 
+### Detail content source
+
+Detail panel content comes from `src/constants/case-studies.ts` (the `CASE_STUDIES` record, keyed by piece slug). The `CaseStudy` interface has `editorial` (heading, subhead, copy), `process` (title, copy), and `engineering` (title, copy, signals). If no case study exists for a piece, the detail view shows only the overview panel with `piece.description`.
+
+### Texture fallback chain
+
+For the 3D object's front face texture:
+1. `piece.coverArt` — if defined (dedicated texture URL)
+2. `piece.image` — hero image as fallback
+3. `piece.cover.bg` as solid color material — for pieces with neither image nor coverArt
+
+Note: Light-colored `cover.bg` values (like Sift's `#e8e2d8`) will appear as a light-colored CD case on the dark background. This is intentional — the case takes on the project's identity color.
+
+### Archive minimum state
+
+Only one experiment exists (Clouds at Sea). The Archive tab functions identically to Index but with a single item. The selector shows one row. This is expected — the design scales to 1 or 20 items without layout changes. No special empty/minimum state needed.
+
+### Camera change rationale
+
+Camera changes from `[0, 0, 4.5], fov: 45` to `[0, 0, 5], fov: 40`. This is intentional — narrower FOV + greater distance produces a more telephoto, flatter rendering similar to luxury product photography (long lens, minimal perspective distortion). The object will appear slightly smaller but more photographic.
+
+### Box thickness
+
+Change from 0.15 to 0.12 is intentional — slightly thinner for a more elegant, less chunky feel.
+
+### About view 3D behavior
+
+The 3D object scales to 0.7x and remains with its current texture (whatever project/experiment was last selected). No special About-only state. The reduced scale makes the text column feel primary.
+
 ### Routing
 
-Single-page UX. URL updates via `window.history.pushState`. Routes for SEO:
+Single-page UX. URL updates via `window.history.pushState` exclusively — this bypasses Next.js routing. The Zustand store drives all rendering. Next.js `page.tsx` files must exist for each route so that hard refreshes and direct URL entry don't 404. These page files hydrate by reading the pathname and setting the store accordingly (already implemented in `src/app/index/[slug]/page.tsx` and `src/app/archive/[slug]/page.tsx`).
+
+Routes:
 - `/` — Index tab
 - `/archive` — Archive tab
 - `/about` — About tab
@@ -340,15 +372,15 @@ Single-page UX. URL updates via `window.history.pushState`. Routes for SEO:
 ### What changes from current build
 
 **Keep:**
-- `src/store/useTheaterStore.ts` — add `activeDetailPanel` field
-- `src/components/Preloader.tsx` — minor refinements (64px line, 5→dot size)
+- `src/store/useTheaterStore.ts` — add `activeDetailPanel` field + setter
+- `src/components/Preloader.tsx` — minor refinements (64px line, 5px dot)
 - `src/components/Cursor.tsx` — minor refinements (5px dot, 0.4 opacity)
 - `src/hooks/useCursorState.ts` — unchanged
 - `src/hooks/useURLSync.ts` — unchanged
 - `src/components/TopBar.tsx` — restyle to spec
 - `src/components/BottomBar.tsx` — restyle to spec
-- `src/components/CDCase.tsx` — update geometry (0.12 thickness), camera, lighting
-- `src/components/Scene3D.tsx` — update lighting, add ContactShadows, camera changes
+- `src/components/CDCase.tsx` — update geometry (0.12 thickness), material opacity transitions
+- `src/components/Scene3D.tsx` — update lighting (3-point), add ContactShadows, camera [0,0,5] fov 40
 - `src/constants/pieces.ts`, `src/constants/case-studies.ts`, `src/constants/contact.ts` — unchanged
 - `src/app/globals.css` — strip particles CSS, keep resets and tokens
 - `src/app/layout.tsx` — remove ParticleCanvas import
