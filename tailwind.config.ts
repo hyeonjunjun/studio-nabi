@@ -9,39 +9,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "var(--color-bg)",
-        surface: "var(--color-surface)",
-        border: "var(--color-border)",
-        text: "var(--color-text)",
-        "text-dim": "var(--color-text-dim)",
-        accent: "var(--color-accent)",
+        bg: "var(--bg)",
+        "bg-elevated": "var(--bg-elevated)",
+        fg: "var(--fg)",
+        "fg-2": "var(--fg-2)",
+        "fg-3": "var(--fg-3)",
+        "fg-4": "var(--fg-4)",
+        "accent-warm-1": "var(--accent-warm-1)",
+        "accent-warm-2": "var(--accent-warm-2)",
+        "accent-warm-3": "var(--accent-warm-3)",
+        "accent-cool-1": "var(--accent-cool-1)",
+        "accent-cool-2": "var(--accent-cool-2)",
+        "accent-cool-3": "var(--accent-cool-3)",
       },
       fontFamily: {
-        display: ["var(--font-sans)", "system-ui", "sans-serif"],
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        serif: ["var(--font-serif)", "Georgia", "serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        body: ["var(--font-body)"],
+        mono: ["var(--font-mono)"],
+        display: ["var(--font-display)"],
       },
-      gridTemplateColumns: {
-        layout: "repeat(12, 1fr)",
+      transitionTimingFunction: {
+        ease: "var(--ease)",
       },
-      gap: {
-        gutter: "1rem",
-      },
-      maxWidth: {
-        grid: "1440px",
-      },
-      container: {
-        center: true,
-        padding: {
-          DEFAULT: "1rem",
-          sm: "1.5rem",
-          lg: "2rem",
-          xl: "2rem",
-        },
-        screens: {
-          "2xl": "1440px",
-        },
+      screens: {
+        mobile: { max: "768px" },
       },
     },
   },
