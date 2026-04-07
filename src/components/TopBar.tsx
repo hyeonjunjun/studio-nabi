@@ -42,9 +42,10 @@ export default function TopBar() {
         <span
           className="font-display"
           style={{
-            fontSize: 16,
-            letterSpacing: "0.01em",
+            fontSize: 18,
+            letterSpacing: "-0.01em",
             color: "var(--fg)",
+            fontWeight: 500,
           }}
         >
           HKJ

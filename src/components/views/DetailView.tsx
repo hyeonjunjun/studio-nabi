@@ -59,9 +59,10 @@ export default function DetailView() {
         className="font-display"
         style={{
           fontSize: "clamp(32px, 4.5vw, 48px)",
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.03em",
           lineHeight: 1.05,
           color: "var(--fg)",
+          fontWeight: 600,
           margin: 0,
           marginBottom: 20,
         }}
@@ -126,10 +127,11 @@ export default function DetailView() {
           <h2
             className="font-display"
             style={{
-              fontSize: "clamp(20px, 2.5vw, 28px)",
-              letterSpacing: "-0.01em",
+              fontSize: "clamp(22px, 2.5vw, 30px)",
+              letterSpacing: "-0.02em",
               lineHeight: 1.2,
               color: "var(--fg)",
+              fontWeight: 500,
               margin: 0,
               marginBottom: cs.editorial.subhead ? 8 : 16,
             }}

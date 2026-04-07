@@ -71,9 +71,10 @@ export default function AboutView() {
         className="font-display"
         style={{
           fontSize: "clamp(26px, 3vw, 34px)",
-          letterSpacing: "-0.02em",
-          lineHeight: 1.2,
+          letterSpacing: "-0.025em",
+          lineHeight: 1.25,
           color: "var(--fg)",
+          fontWeight: 500,
           maxWidth: 440,
         }}
       >

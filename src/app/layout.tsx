@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import ParticleCanvas from "@/components/ParticleCanvas";
 import Cursor from "@/components/Cursor";
 
-const generalSans = localFont({
-  src: "../fonts/general-sans/GeneralSans-Variable.woff2",
+const switzer = localFont({
+  src: "../fonts/switzer/Switzer-Variable.woff2",
   variable: "--font-sans",
-  weight: "200 700",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
+});
+
+const gambetta = localFont({
+  src: "../fonts/gambetta/Gambetta-Variable.woff2",
+  variable: "--font-serif",
+  weight: "300 700",
   display: "swap",
   preload: true,
 });
@@ -20,13 +27,6 @@ const fragmentMono = localFont({
   weight: "400",
   display: "swap",
   preload: true,
-});
-
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-serif",
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${generalSans.variable} ${fragmentMono.variable} ${dmSerif.variable}`}
+        className={`${switzer.variable} ${gambetta.variable} ${fragmentMono.variable}`}
       >
         <RouteAnnouncer />
         <ParticleCanvas density="normal" cursorResponsive />

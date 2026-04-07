@@ -6,9 +6,9 @@
   --fg-2: rgba(240, 238, 232, 0.50);
   --fg-3: rgba(240, 238, 232, 0.20);
   --fg-4: rgba(240, 238, 232, 0.08);
-  --font-body: var(--font-sans), system-ui, sans-serif;
-  --font-mono: var(--font-fragment), "SF Mono", monospace;
-  --font-display: var(--font-serif), Georgia, serif;
+  --font-body: var(--font-sans), "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: var(--font-fragment), "SF Mono", "Consolas", monospace;
+  --font-display: var(--font-serif), "Georgia", serif;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
