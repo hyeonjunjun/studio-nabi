@@ -7,7 +7,7 @@ import { CASE_STUDIES } from "@/constants/case-studies";
 
 const enter = { opacity: 0, y: 16 };
 const visible = { opacity: 1, y: 0 };
-const transition = { duration: 0.4, ease: [0.16, 1, 0.3, 1] };
+const transition = { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const };
 
 export default function DetailView() {
   const selectedSlug = useTheaterStore((s) => s.selectedSlug);
