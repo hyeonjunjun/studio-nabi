@@ -1,32 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useCursorState, type CursorState } from "@/hooks/useCursorState";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useAnimationFrame,
+} from "framer-motion";
+import { useCursorState } from "@/hooks/useCursorState";
 
-const SPRING = { stiffness: 500, damping: 35, mass: 0.3 };
-
-const SIZE: Record<CursorState, number> = {
-  default: 16,
-  media: 40,
-  link: 6,
-  idle: 16,
-};
+const POS_SPRING = { stiffness: 500, damping: 35, mass: 0.3 };
+const HZ_SPRING = { stiffness: 100, damping: 20 };
 
 export default function Cursor() {
-  const [isTouch, setIsTouch] = useState(true);
-
-  useEffect(() => {
-    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
-  }, []);
-
-  const { state, velocity } = useCursorState();
+  const { velocity, label, isIdle, isTouch } = useCursorState();
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
-  const springX = useSpring(mouseX, SPRING);
-  const springY = useSpring(mouseY, SPRING);
+  const springX = useSpring(mouseX, POS_SPRING);
+  const springY = useSpring(mouseY, POS_SPRING);
 
+  // Hz spring: maps velocity to frequency display
+  const rawHz = useMotionValue(0);
+  const smoothHz = useSpring(rawHz, HZ_SPRING);
+
+  // Bridge spring value to React for rendering
+  const hzRef = useRef("0.00");
+  const [, forceRender] = useState(0);
+
+  // Update rawHz when velocity changes
+  useEffect(() => {
+    rawHz.set(Math.min(120, velocity * 0.8));
+  }, [velocity, rawHz]);
+
+  // Read smoothHz every frame and update ref
+  useAnimationFrame(() => {
+    const val = smoothHz.get();
+    const formatted = val.toFixed(2);
+    if (hzRef.current !== formatted) {
+      hzRef.current = formatted;
+      forceRender((n) => n + 1);
+    }
+  });
+
+  // Track pointer position
   useEffect(() => {
     if (isTouch) return;
     const onMove = (e: PointerEvent) => {
@@ -39,10 +56,11 @@ export default function Cursor() {
 
   if (isTouch) return null;
 
-  const r = SIZE[state] / 2;
-  const tickOp = state === "idle" ? 0.15 : state === "link" ? 0 : 0.3;
-  const rot = state === "idle" ? 45 : velocity > 10 ? velocity * 0.3 : 0;
-  const circleOp = state === "idle" ? 0.15 : 0.35;
+  // Dot scales with velocity: 6px base, up to ~10px
+  const dotSize = Math.min(10, 6 + velocity * 0.04);
+  const dotOpacity = isIdle ? 0.15 : 0.5;
+  const textOpacity = isIdle ? 0.08 : 0.2;
+  const displayText = label ?? `${hzRef.current} Hz`;
 
   return (
     <motion.div
@@ -54,52 +72,43 @@ export default function Cursor() {
         translateY: "-50%",
       }}
     >
-      <svg width={64} height={64} viewBox="-32 -32 64 64" overflow="visible">
-        {/* Main ring */}
-        <motion.circle
-          cx={0}
-          cy={0}
-          fill="none"
-          stroke="var(--accent-cool-1)"
-          strokeWidth={0.75}
-          animate={{ r, opacity: circleOp }}
-          transition={{ type: "spring" as const, ...SPRING }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {/* Dot */}
+        <div
+          style={{
+            width: dotSize,
+            height: dotSize,
+            borderRadius: "50%",
+            backgroundColor: "var(--fg)",
+            opacity: dotOpacity,
+            transition: "opacity 0.3s ease, width 0.15s ease, height 0.15s ease",
+            flexShrink: 0,
+          }}
         />
-
-        {/* Tick marks */}
-        <motion.g
-          animate={{ rotate: rot, opacity: tickOp }}
-          transition={{ type: "spring" as const, stiffness: 150, damping: 20 }}
+        {/* Hz / Label */}
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 8,
+            color: "var(--fg)",
+            opacity: textOpacity,
+            transition: "opacity 0.3s ease",
+            lineHeight: 1,
+            userSelect: "none",
+            position: "relative",
+            left: -1, // fine-tune: 14px from center = gap(8) + dot(6)/2 - 1 ≈ 14
+          }}
         >
-          {[0, 90, 180, 270].map((angle) => (
-            <line
-              key={angle}
-              x1={0}
-              y1={-(r + 3)}
-              x2={0}
-              y2={-(r + 6)}
-              stroke="var(--accent-cool-1)"
-              strokeWidth={0.75}
-              transform={`rotate(${angle})`}
-            />
-          ))}
-        </motion.g>
-
-        {/* Warm ring on media hover */}
-        {state === "media" && (
-          <motion.circle
-            cx={0}
-            cy={0}
-            r={22}
-            fill="none"
-            stroke="var(--accent-warm-1)"
-            strokeWidth={0.5}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 0.25, scale: 1 }}
-            transition={{ type: "spring" as const, ...SPRING }}
-          />
-        )}
-      </svg>
+          {displayText}
+        </span>
+      </div>
     </motion.div>
   );
 }

@@ -2,51 +2,57 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-export type CursorState = "default" | "media" | "link" | "idle";
-
-interface CursorData {
-  state: CursorState;
+interface CursorStateData {
   velocity: number;
+  label: string | null;
+  isIdle: boolean;
+  isTouch: boolean;
 }
 
-function resolveState(target: EventTarget | null): Exclude<CursorState, "idle"> {
-  if (!(target instanceof HTMLElement)) return "default";
+function resolveLabel(target: EventTarget | null): string | null {
+  if (!(target instanceof HTMLElement)) return null;
 
-  // Check for media
-  if (target.closest("[data-cursor='media']")) return "media";
+  // Check for explicit data-cursor-label
+  const labeled = target.closest("[data-cursor-label]");
+  if (labeled) return (labeled as HTMLElement).dataset.cursorLabel || null;
 
   // Check for link / button
   if (
     target.closest("a") ||
     target.closest("button") ||
-    target.closest("[role='button']") ||
-    target.closest("[data-cursor='link']")
+    target.closest("[role='button']")
   )
-    return "link";
+    return "Select";
 
-  return "default";
+  return null;
 }
 
-export function useCursorState(): CursorData {
-  const [state, setState] = useState<CursorState>("default");
+export function useCursorState(): CursorStateData {
   const [velocity, setVelocity] = useState(0);
+  const [label, setLabel] = useState<string | null>(null);
+  const [isIdle, setIsIdle] = useState(false);
+  const [isTouch, setIsTouch] = useState(true); // SSR-safe default
 
   const lastPos = useRef({ x: 0, y: 0 });
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const activeState = useRef<Exclude<CursorState, "idle">>("default");
 
   const resetIdle = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
+    setIsIdle(false);
     idleTimer.current = setTimeout(() => {
-      setState("idle");
+      setIsIdle(true);
     }, 2000);
   }, []);
 
   useEffect(() => {
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return;
+
     const handlePointerOver = (e: PointerEvent) => {
-      const resolved = resolveState(e.target);
-      activeState.current = resolved;
-      setState(resolved);
+      setLabel(resolveLabel(e.target));
     };
 
     const handlePointerMove = (e: PointerEvent) => {
@@ -54,11 +60,7 @@ export function useCursorState(): CursorData {
       const dy = e.clientY - lastPos.current.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       setVelocity(dist);
-
       lastPos.current = { x: e.clientX, y: e.clientY };
-
-      // Revert from idle to the active state
-      setState(activeState.current);
       resetIdle();
     };
 
@@ -71,7 +73,7 @@ export function useCursorState(): CursorData {
       window.removeEventListener("pointermove", handlePointerMove);
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
-  }, [resetIdle]);
+  }, [isTouch, resetIdle]);
 
-  return { state, velocity };
+  return { velocity, label, isIdle, isTouch };
 }

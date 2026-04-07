@@ -4,6 +4,7 @@ import { DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import ParticleCanvas from "@/components/ParticleCanvas";
+import Cursor from "@/components/Cursor";
 
 const generalSans = localFont({
   src: "../fonts/general-sans/GeneralSans-Variable.woff2",
@@ -61,6 +62,7 @@ export default function RootLayout({
       >
         <RouteAnnouncer />
         <ParticleCanvas density="normal" cursorResponsive />
+        <Cursor />
         <a href="#main" className="skip-to-content">
           Skip to content
         </a>
