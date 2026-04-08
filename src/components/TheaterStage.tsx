@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { useTheaterStore } from "@/store/useTheaterStore";
 import { useURLSync } from "@/hooks/useURLSync";
 import TopBar from "@/components/TopBar";
-import BottomBar from "@/components/BottomBar";
 import Scene3D from "@/components/Scene3D";
 import IndexView from "@/components/views/IndexView";
 import ArchiveView from "@/components/views/ArchiveView";
@@ -23,23 +22,22 @@ export default function TheaterStage() {
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden" id="main">
       <TopBar />
-      <BottomBar />
 
-      {/* Text column — left 35% */}
+      {/* Text column — narrow, left, generous padding */}
       <div
         className="absolute z-10"
         style={{
           left: 0,
-          top: 52,
-          bottom: 40,
-          width: "35%",
-          paddingLeft: "clamp(32px, 6vw, 80px)",
-          paddingRight: 24,
+          top: 48,
+          bottom: 0,
+          width: "30%",
+          paddingLeft: "clamp(24px, 5vw, 64px)",
+          paddingRight: 16,
           display: "flex",
           alignItems: "center",
         }}
       >
-        <div style={{ maxWidth: 320, width: "100%" }}>
+        <div style={{ maxWidth: 280, width: "100%" }}>
           <AnimatePresence mode="wait">
             {isDetailExpanded ? (
               <DetailView key="detail" />
@@ -54,29 +52,17 @@ export default function TheaterStage() {
         </div>
       </div>
 
-      {/* Vertical divider between zones */}
-      <div
-        className="absolute z-10"
-        style={{
-          left: "35%",
-          top: 52,
-          bottom: 40,
-          width: 1,
-          background: "linear-gradient(to bottom, transparent 10%, var(--fg-4) 30%, var(--fg-4) 70%, transparent 90%)",
-        }}
-      />
-
-      {/* 3D canvas — right 65% */}
+      {/* 3D canvas — right 68%, no chrome around it */}
       <div
         className="absolute flex items-center justify-center"
         style={{
           right: 0,
-          top: 52,
-          bottom: 40,
-          width: "65%",
+          top: 0,
+          bottom: 0,
+          width: "68%",
           zIndex: 5,
-          transform: activeTab === "about" ? "scale(0.7)" : "scale(1)",
-          transition: "transform 0.5s ease",
+          transform: activeTab === "about" ? "scale(0.75)" : "scale(1)",
+          transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
         <Scene3D />

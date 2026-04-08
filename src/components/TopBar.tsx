@@ -19,12 +19,10 @@ export default function TopBar() {
     <div
       className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between"
       style={{
-        height: 52,
-        paddingInline: "clamp(32px, 6vw, 80px)",
-        borderBottom: "1px solid var(--fg-4)",
+        height: 48,
+        paddingInline: "clamp(24px, 5vw, 64px)",
       }}
     >
-      {/* Left: mark or back */}
       {isDetailExpanded ? (
         <button
           onClick={collapseDetail}
@@ -32,44 +30,39 @@ export default function TopBar() {
           className="font-mono uppercase"
           style={{
             fontSize: 10,
-            fontWeight: 400,
-            letterSpacing: "0.08em",
-            color: "var(--fg-2)",
+            letterSpacing: "0.06em",
+            color: "var(--fg-3)",
           }}
         >
-          ← BACK
+          Back
         </button>
       ) : (
         <span
-          className="font-display"
+          className="font-body"
           style={{
-            fontSize: 20,
-            fontWeight: 500,
+            fontSize: 13,
             letterSpacing: "-0.01em",
-            lineHeight: 1,
             color: "var(--fg)",
+            fontWeight: 400,
           }}
         >
           HKJ
         </span>
       )}
 
-      {/* Right: tabs or title */}
       {isDetailExpanded ? (
         <span
           className="font-mono uppercase"
           style={{
             fontSize: 9,
-            fontWeight: 400,
             letterSpacing: "0.06em",
-            lineHeight: 1.8,
             color: "var(--fg-3)",
           }}
         >
           {selectedPiece?.title ?? ""}
         </span>
       ) : (
-        <div className="flex items-center gap-6">
+        <div className="flex items-center" style={{ gap: 24 }}>
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -77,23 +70,12 @@ export default function TopBar() {
               className="relative font-mono uppercase"
               style={{
                 fontSize: 10,
-                fontWeight: 400,
-                letterSpacing: "0.08em",
-                lineHeight: 1,
-                paddingBottom: 4,
+                letterSpacing: "0.06em",
                 color: activeTab === tab ? "var(--fg)" : "var(--fg-3)",
-                transition: "color 0.2s ease",
+                transition: "color 0.3s ease",
               }}
             >
               {tab}
-              {activeTab === tab && (
-                <motion.div
-                  layoutId="tab-indicator"
-                  className="absolute bottom-0 left-0 right-0"
-                  style={{ height: 1, background: "var(--fg)" }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
             </button>
           ))}
         </div>

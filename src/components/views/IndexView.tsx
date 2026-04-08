@@ -20,24 +20,9 @@ export default function IndexView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4 }}
     >
-      {/* Section label */}
-      <span
-        className="font-mono uppercase block"
-        style={{
-          fontSize: 10,
-          fontWeight: 400,
-          letterSpacing: "0.08em",
-          lineHeight: 1,
-          color: "var(--fg-3)",
-          marginBottom: 32,
-        }}
-      >
-        Projects
-      </span>
-
-      {/* Selector list */}
+      {/* Selector — just numbered text, nothing else */}
       <div className="flex flex-col" style={{ gap: 0 }}>
         {projects.map((p) => {
           const isActive = p.slug === selected.slug;
@@ -45,116 +30,93 @@ export default function IndexView() {
             <button
               key={p.slug}
               onClick={() => setSelectedSlug(p.slug)}
-              className="text-left"
+              className="text-left font-body"
               style={{
-                padding: "10px 0",
+                padding: "12px 0",
                 display: "flex",
                 alignItems: "baseline",
-                gap: 12,
-                borderBottom: "1px solid var(--fg-4)",
-                transition: "all 0.2s ease",
+                gap: 16,
+                color: isActive ? "var(--fg)" : "var(--fg-3)",
+                transition: "color 0.3s ease",
               }}
             >
               <span
                 className="font-mono"
                 style={{
                   fontSize: 9,
-                  letterSpacing: "0.06em",
+                  letterSpacing: "0.04em",
                   fontVariantNumeric: "tabular-nums",
-                  width: 24,
-                  flexShrink: 0,
-                  color: isActive ? "var(--fg-2)" : "var(--fg-3)",
                 }}
               >
                 {String(p.order).padStart(2, "0")}
               </span>
               <span
-                className="font-body"
                 style={{
                   fontSize: 13,
                   letterSpacing: "-0.005em",
-                  fontWeight: isActive ? 500 : 400,
-                  color: isActive ? "var(--fg)" : "var(--fg-3)",
                 }}
               >
                 {p.title}
-              </span>
-              {/* Year — right aligned, only on active */}
-              <span
-                className="font-mono ml-auto"
-                style={{
-                  fontSize: 9,
-                  letterSpacing: "0.06em",
-                  fontVariantNumeric: "tabular-nums",
-                  color: "var(--fg-3)",
-                  opacity: isActive ? 1 : 0,
-                  transition: "opacity 0.2s",
-                }}
-              >
-                {p.status === "wip" ? "WIP" : p.year}
               </span>
             </button>
           );
         })}
       </div>
 
-      {/* ── Animated detail section ── */}
+      {/* Selected project info — appears below with space */}
       <AnimatePresence mode="wait">
         <motion.div
           key={selected.slug}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          style={{ marginTop: 32 }}
+          transition={{ duration: 0.25 }}
+          style={{ marginTop: 48 }}
         >
-          {/* Compact metadata — just type and status */}
-          <div
-            className="font-mono uppercase"
+          {/* Type line */}
+          <span
+            className="font-mono uppercase block"
             style={{
               fontSize: 9,
-              fontWeight: 400,
               letterSpacing: "0.06em",
-              lineHeight: 1.8,
               color: "var(--fg-3)",
-              marginBottom: 16,
+              marginBottom: 12,
             }}
           >
             {selected.tags.join(" / ")}
-            <span style={{ margin: "0 8px", opacity: 0.3 }}>—</span>
-            {selected.status === "shipped" ? "Shipped" : "In progress"}
-          </div>
+          </span>
 
           {/* Description */}
           <p
-            className="font-body"
+            className="font-display"
             style={{
-              fontSize: 13,
-              lineHeight: 1.7,
-              letterSpacing: "-0.005em",
+              fontSize: 14,
+              lineHeight: 1.65,
+              letterSpacing: "-0.01em",
               color: "var(--fg-2)",
-              maxWidth: 280,
+              fontWeight: 400,
             }}
           >
             {selected.description}
           </p>
 
-          {/* CTA */}
+          {/* View — just text, no arrow */}
           <button
             onClick={expandDetail}
             data-cursor-label="View"
             className="font-mono uppercase"
             style={{
-              fontSize: 10,
-              fontWeight: 400,
-              letterSpacing: "0.08em",
-              lineHeight: 1,
-              color: "var(--fg)",
-              marginTop: 24,
+              fontSize: 9,
+              letterSpacing: "0.06em",
+              color: "var(--fg-3)",
+              marginTop: 32,
               display: "block",
+              transition: "color 0.3s ease",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--fg-3)")}
           >
-            View project →
+            View
           </button>
         </motion.div>
       </AnimatePresence>
