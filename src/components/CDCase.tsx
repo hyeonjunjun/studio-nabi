@@ -19,7 +19,6 @@ interface CDCaseProps {
 
 const MAX_TILT = 0.1;
 const LERP_FACTOR = 0.04;
-const IDLE_SPEED = 0.08;
 
 function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -27,7 +26,7 @@ function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
   const [hovered, setHovered] = useState(false);
   const targetScale = hovered ? 1.03 : 1;
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (!meshRef.current) return;
 
     if (dragRef.current.isDragging) {
@@ -37,7 +36,7 @@ function useCDCaseRotation(dragRef: React.MutableRefObject<DragState>) {
         meshRef.current.rotation.x, -Math.PI / 3, Math.PI / 3
       );
     } else {
-      meshRef.current.rotation.y += delta * IDLE_SPEED;
+      // No auto-rotation — object stays still until interacted with
       meshRef.current.rotation.x = THREE.MathUtils.lerp(
         meshRef.current.rotation.x, pointer.y * MAX_TILT, LERP_FACTOR
       );

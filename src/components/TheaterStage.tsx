@@ -19,7 +19,7 @@ export default function TheaterStage() {
   if (!preloaderDone) return null;
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden" id="main">
+    <div className="relative w-full h-[100dvh]" style={{ overflow: isDetailExpanded ? "visible" : "hidden" }} id="main">
       <TopBar />
 
       {/* Main content area — full viewport below nav */}
