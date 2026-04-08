@@ -87,12 +87,14 @@ Fragment Mono at scale is the neo-brutalist signature. Monospace at 40vw is arch
 | Body text | 15px | 400 | General Sans, `--ink-secondary`, max 54ch |
 | Project description | 15px | 400 | General Sans, `--ink-secondary`, max 42ch |
 | Nav links | 11px | 400 | Fragment Mono, uppercase, 0.06em tracking |
-| Section labels | 10px | 400 | Fragment Mono, uppercase, 0.06em tracking, `--ink-muted` |
-| Metadata | 10px | 400 | Fragment Mono, 0.04em tracking, `--ink-muted` |
+| Section labels | 11px | 400 | Fragment Mono, uppercase, 0.06em tracking, `--ink-muted` |
+| Metadata | 11px | 400 | Fragment Mono, 0.04em tracking, `--ink-muted` |
 | Ghost numbers | `clamp(120px, 15vw, 200px)` | 400 | Fragment Mono, `--ink-whisper` (0.05) |
-| Project numbers (chrome) | 10px | 400 | Fragment Mono, chrome gradient (see Chrome section) |
-| Clock | 10px | 400 | Fragment Mono, tabular-nums, `--ink-muted` |
-| Colophon | 9px | 400 | Fragment Mono, `--ink-ghost` |
+| Project numbers (chrome) | 11px | 400 | Fragment Mono, chrome gradient (see Chrome section) |
+| Clock | 11px | 400 | Fragment Mono, tabular-nums, `--ink-muted` |
+| Colophon | 11px | 400 | Fragment Mono, `--ink-ghost` |
+
+**Minimum type size: 11px.** Nothing smaller. Brutalism is raw, not illegible. At `--ink-muted` (0.35) and below, 11px Fragment Mono needs 0.06em tracking to remain legible on standard displays. Ghost numbers and ghost letters are exempt (they're spatial architecture, not meant to be read).
 
 Typography rules:
 - `text-rendering: optimizeLegibility` on body
@@ -487,6 +489,38 @@ Zustand (minimal: hoveredSlug only)
 
 No Three.js. No WebGL. No heavy dependencies. The craft is in the composition, not the tech stack.
 
+### Performance Budget
+
+The main thread carries: GSAP ScrollTrigger (intersection calculations), Canvas waveform (60fps lerp loop), Framer Motion (hover states). These must not compete.
+
+| Metric | Target |
+|--------|--------|
+| LCP | < 2.0s |
+| CLS | < 0.05 |
+| INP | < 100ms |
+| Lighthouse | 90+ |
+| Initial JS | < 150KB gzipped |
+| Waveform frame budget | < 4ms per frame (leaves 12ms for browser) |
+| Scroll handler budget | < 2ms per frame |
+
+**Mitigation strategies:**
+- Waveform canvas runs on its own `requestAnimationFrame` loop, decoupled from GSAP/FM
+- GSAP ScrollTrigger uses `will-change: transform` on parallax elements, `will-change: opacity` on reveal elements — set during animation, removed after
+- Scroll zone calculations are cached and only recomputed on resize
+- Canvas uses `OffscreenCanvas` if supported, falling back to main-thread canvas
+- Margin images use `loading="lazy"` and `sizes` attribute for responsive loading
+- Waveform reduces to 30fps on battery saver / low-power devices via `navigator.getBattery()` check
+
+### Blur-Reveal Fallback Strategy
+
+CSS `filter: blur()` is GPU-accelerated on desktop but expensive on mobile (triggers main-thread compositing on some devices).
+
+**Approach:**
+1. Desktop: use full blur-reveal preset (`opacity + y + blur`)
+2. Mobile (< 768px): replace blur with opacity + slight scale mask: `opacity:0, y:16, scale:0.98` → clear. Same timing, no blur. Visually similar, dramatically cheaper.
+3. Detection: media query `@media (hover: none)` as proxy for mobile, or check `navigator.hardwareConcurrency < 4`
+4. If any jank is detected on first entrance animation, store flag in sessionStorage and skip blur for remaining session
+
 ### Animation library boundaries
 
 - **GSAP** owns: scroll-triggered reveals (ScrollTrigger), entrance choreography sequencing, waveform draw-in animation, parallax (ghost letters)
@@ -559,6 +593,37 @@ interface Piece {
 ```
 
 The `accent`, `frequency`, `amplitude`, and `waveMode` fields are the resonance signature — each project's unique frequency identity.
+
+---
+
+## Imagery Direction
+
+The surface is a controlled environment — cold mineral, monospace structure, strict ink hierarchy. Images are the ONE place where warmth, color, and texture enter. They must be treated as precious intrusions, not decorative fills.
+
+### Image Treatment Rules
+
+1. **Desaturated by default.** All images receive a CSS treatment: `filter: saturate(0.7) contrast(1.05)`. This pulls them toward the mineral surface tone without going full grayscale. Color is present but suppressed — the image lives IN the surface, not ON it.
+
+2. **Grain overlay on everything.** Every image gets the feTurbulence grain at 0.03 opacity. This is the material texture that ties images to the surface. Without it, images feel pasted on.
+
+3. **No borders, no shadows, no radius.** Images bleed directly into the surface or into each other. Borders would be decorative. The image's own content edge IS the boundary. Raw.
+
+4. **Aspect ratio is content-driven.** No forced crops to fit a grid. If Gyeol's hero is 16:9, it's 16:9. If Sift's is 4:3, it's 4:3. The column/bleed system accommodates any ratio.
+
+5. **The margin hover image is a window, not a preview.** It appears in negative space at 85% opacity — translucent, like seeing through a layer. It doesn't demand attention; it rewards curiosity. On hover-out, it dissolves back into the surface.
+
+### Per-Project Image Personality
+
+- **Gyeol:** Warm amber tones, material textures (hanji paper, ceramic, grain). The images should feel tactile — surfaces you want to touch. These are the warmest images on the site, creating the starkest contrast against the cold surface.
+- **Sift:** Clean, geometric, muted terra cotta. UI screenshots treated with the desaturation filter to feel like documentation, not marketing. Clinical warmth.
+- **Promptineer:** No images (WIP). The absence IS the visual. The project exists only as text and an unstable waveform.
+- **Clouds at Sea:** Video only. Dark, atmospheric, oceanic. The video strip is the most visually immersive moment on the homepage — full-width, edge-to-edge, no grain overlay on video (grain + video compression artifacts = noise).
+
+### Case Study Media
+
+Inside case studies, images and videos follow the same rules. They bleed to the right viewport edge (breaking the column) and use scroll-triggered opacity reveals — no blur on images to avoid filter stacking with the desaturation.
+
+Video clips autoplay muted, looped, `playsInline`. Captions in Fragment Mono 11px, `--ink-ghost`. Videos are the highest-fidelity moment in the case study — they should feel like looking through a window into the actual project.
 
 ---
 
