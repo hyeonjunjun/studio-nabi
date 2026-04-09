@@ -42,7 +42,7 @@ interface WaveState {
 
 /* ── rest defaults ─────────────────────────────────────── */
 
-const REST_AMPLITUDE = 8;
+const REST_AMPLITUDE = 4;
 const REST_FREQUENCY = 0.003;
 const SPEED = 0.0008;
 const LERP = 0.04;
@@ -150,7 +150,7 @@ export default function Waveform() {
         targetFreq = piece.frequency || REST_FREQUENCY;
         if (piece.accent) {
           targetColor = hexToRgb(piece.accent);
-          targetAlpha = 1;
+          targetAlpha = 0.2; // subtle tint, not full blast
         }
         targetMode = piece.waveMode;
       }
@@ -225,18 +225,10 @@ export default function Waveform() {
 
       const c = st.color;
       ctx.strokeStyle = `rgba(${Math.round(c.r)},${Math.round(c.g)},${Math.round(c.b)},${st.alpha.toFixed(2)})`;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
-
-      /* secondary ghost line — creates depth/echo effect */
-      ctx.globalAlpha = 0.15;
-      ctx.lineWidth = 4;
-      ctx.filter = "blur(3px)";
-      ctx.stroke();
-      ctx.filter = "none";
-      ctx.globalAlpha = 1;
 
       rafRef.current = requestAnimationFrame(frame);
     }

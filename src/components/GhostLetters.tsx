@@ -61,7 +61,7 @@ export default function GhostLetters() {
         backgroundClip: "text",
         userSelect: "none",
         pointerEvents: "none",
-        opacity: 0,
+        opacity: 0.1,
         fontWeight: 400,
       }}
     >
