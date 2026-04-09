@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PIECES, type Piece } from "@/constants/pieces";
 import { CASE_STUDIES } from "@/constants/case-studies";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const allPieces = [...PIECES].sort((a, b) => a.order - b.order);
 
@@ -13,86 +15,181 @@ interface CaseStudyProps {
   piece: Piece;
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="font-mono uppercase block"
+      style={{
+        fontSize: 11,
+        letterSpacing: "0.06em",
+        color: "var(--ink-muted)",
+        marginBottom: 24,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 export default function CaseStudy({ piece }: CaseStudyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const cs = CASE_STUDIES[piece.slug];
 
   const currentIdx = allPieces.findIndex((p) => p.slug === piece.slug);
   const nextPiece = allPieces[(currentIdx + 1) % allPieces.length];
 
+  // Fixed header elements (metadata, silence, paradox, stakes) — simple entrance
   useEffect(() => {
     if (!containerRef.current) return;
-    const sections = containerRef.current.querySelectorAll("[data-reveal]");
 
+    const fixedEls = containerRef.current.querySelectorAll("[data-entrance]");
     gsap.fromTo(
-      sections,
-      { opacity: 0, y: 32, filter: "blur(3px)" },
+      fixedEls,
+      { opacity: 0, y: 24, filter: "blur(2px)" },
       {
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
         duration: 0.5,
-        stagger: 0.06,
+        stagger: 0.07,
         ease: "power3.out",
-        delay: 0.15,
+        delay: 0.1,
       }
     );
+
+    // Hero image reveal
+    if (heroRef.current) {
+      gsap.fromTo(
+        heroRef.current,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top 85%",
+            once: true,
+          },
+        }
+      );
+    }
+
+    // Modular blocks — scroll-triggered reveals
+    const blocks = containerRef.current.querySelectorAll("[data-reveal]");
+    blocks.forEach((block) => {
+      gsap.fromTo(
+        block,
+        { opacity: 0, y: 32, filter: "blur(3px)" },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: block,
+            start: "top 85%",
+            once: true,
+          },
+        }
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
   }, [piece.slug]);
+
+  // Column layout — left-shifted, same as homepage
+  const colStyle: React.CSSProperties = {
+    maxWidth: 900,
+    marginLeft: "8vw",
+    marginRight: 0,
+    paddingInline: 0,
+  };
+
+  // Responsive: on mobile fall back to full-width with 24px padding
+  // We handle this with a wrapper that has a responsive class
 
   return (
     <div
       ref={containerRef}
-      style={{
-        maxWidth: 900,
-        margin: "0 auto",
-        paddingInline: "clamp(24px, 5vw, 64px)",
-      }}
+      className="case-study-outer"
+      style={{ paddingBottom: 0 }}
     >
-      {/* ── Hero metadata ── */}
+      <style>{`
+        .case-study-outer {
+          --col-max: 900px;
+          --col-offset: 8vw;
+        }
+        .case-study-col {
+          max-width: var(--col-max);
+          margin-left: var(--col-offset);
+          margin-right: 0;
+        }
+        /* Hero bleed: extend from column left to right viewport edge */
+        .case-study-bleed {
+          max-width: var(--col-max);
+          margin-left: var(--col-offset);
+          /* Break column to right edge */
+          margin-right: calc(-1 * (100vw - var(--col-max) - var(--col-offset)));
+        }
+        @media (max-width: 767px) {
+          .case-study-col,
+          .case-study-bleed {
+            max-width: none;
+            margin-left: 0;
+            margin-right: 0;
+            padding-inline: 24px;
+          }
+        }
+      `}</style>
+
+      {/* ── 1. Metadata bar ── */}
       <div
-        data-reveal
+        className="case-study-col"
+        data-entrance
         style={{
           paddingTop: 96,
-          paddingBottom: 48,
           opacity: 0,
         }}
       >
         <span
           className="font-mono uppercase"
           style={{
-            fontSize: 10,
+            fontSize: 11,
             letterSpacing: "0.06em",
             color: "var(--ink-muted)",
           }}
         >
-          {piece.number} / {piece.title.toUpperCase()} / {piece.status === "wip" ? "IN PROGRESS" : piece.year} / {piece.sector.toUpperCase()}
+          <span className="chrome-text">{piece.number}</span>
+          {" / "}
+          {piece.title.toUpperCase()}
+          {" / "}
+          {piece.status === "wip" ? "IN PROGRESS" : piece.year}
+          {" / "}
+          {piece.sector.toUpperCase()}
         </span>
       </div>
 
-      {/* ── Hero image ── */}
-      {piece.image && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
-          <Image
-            src={piece.image}
-            alt={piece.title}
-            width={1600}
-            height={1000}
-            sizes="900px"
-            className="w-full"
-            style={{ display: "block", objectFit: "cover" }}
-            priority
-          />
-        </div>
-      )}
+      {/* ── 2. Silence — 72px ── */}
+      <div style={{ height: 72 }} aria-hidden />
 
-      {/* ── Narrative lede ── */}
+      {/* ── 3. Paradox line ── */}
       {cs?.paradox && (
-        <div data-reveal style={{ marginBottom: 48, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-entrance
+          style={{ marginBottom: 48, opacity: 0 }}
+        >
           <p
             className="font-display italic"
             style={{
-              fontSize: "clamp(18px, 2.5vw, 24px)",
-              lineHeight: 1.4,
+              fontSize: "clamp(20px, 2.5vw, 28px)",
+              lineHeight: 1.35,
               fontWeight: 400,
               color: "var(--ink-primary)",
               maxWidth: "54ch",
@@ -103,8 +200,13 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
+      {/* ── 5. Stakes paragraph ── */}
       {cs?.stakes && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-entrance
+          style={{ marginBottom: 0, opacity: 0 }}
+        >
           <p
             className="font-body"
             style={{
@@ -119,9 +221,41 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Editorial body ── */}
+      {/* ── 6. Hero image — bleed right ── */}
+      {piece.image && (
+        <div
+          ref={heroRef}
+          className="case-study-bleed"
+          style={{
+            marginTop: 64,
+            marginBottom: 80,
+            opacity: 0,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={piece.image}
+            alt={piece.title}
+            className="image-treatment"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "auto",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+      )}
+
+      {/* ── Modular blocks ── */}
+
+      {/* TextBlock: editorial */}
       {cs?.editorial && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>{cs.editorial.heading}</SectionLabel>
           <p
             className="font-body"
@@ -137,9 +271,13 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Process ── */}
+      {/* TextBlock: process */}
       {cs?.process && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>{cs.process.title}</SectionLabel>
           <p
             className="font-body"
@@ -155,22 +293,27 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Process steps ── */}
+      {/* StepsBlock: processSteps */}
       {cs?.processSteps && cs.processSteps.length > 0 && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>Process</SectionLabel>
-          <div className="flex flex-col" style={{ gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
             {cs.processSteps.map((step, i) => (
-              <div key={i} className="flex" style={{ gap: 20 }}>
+              <div key={i} style={{ display: "flex", gap: 20 }}>
                 <span
                   className="font-mono"
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     letterSpacing: "0.04em",
                     fontVariantNumeric: "tabular-nums",
                     color: "var(--ink-ghost)",
                     flexShrink: 0,
-                    width: 20,
+                    width: 24,
+                    paddingTop: 2,
                   }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -206,11 +349,15 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Highlights ── */}
+      {/* HighlightsBlock */}
       {cs?.highlights && cs.highlights.length > 0 && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>Key Details</SectionLabel>
-          <div className="flex flex-col" style={{ gap: 40 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
             {cs.highlights.map((h) => (
               <div key={h.id}>
                 <h4
@@ -232,7 +379,7 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
                     lineHeight: 1.7,
                     color: "var(--ink-secondary)",
                     maxWidth: "54ch",
-                    marginBottom: 12,
+                    marginBottom: 10,
                   }}
                 >
                   {h.description}
@@ -243,6 +390,7 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
                     fontSize: 14,
                     lineHeight: 1.5,
                     color: "var(--ink-muted)",
+                    maxWidth: "54ch",
                   }}
                 >
                   {h.challenge}
@@ -253,9 +401,13 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Engineering ── */}
+      {/* SignalsBlock: engineering */}
       {cs?.engineering && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>{cs.engineering.title}</SectionLabel>
           <p
             className="font-body"
@@ -269,17 +421,17 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
           >
             {cs.engineering.copy}
           </p>
-          <div className="flex flex-wrap" style={{ gap: 8 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {cs.engineering.signals.map((s) => (
               <span
                 key={s}
                 className="font-mono uppercase"
                 style={{
-                  fontSize: 9,
+                  fontSize: 11,
                   letterSpacing: "0.06em",
                   color: "var(--ink-muted)",
                   padding: "4px 8px",
-                  border: "1px solid var(--ink-whisper)",
+                  border: "1px solid var(--ink-ghost)",
                 }}
               >
                 {s}
@@ -289,29 +441,34 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Statistics ── */}
+      {/* StatsBlock */}
       {cs?.statistics && cs.statistics.length > 0 && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>Numbers</SectionLabel>
-          <div className="flex flex-wrap" style={{ gap: 32 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 40 }}>
             {cs.statistics.map((stat) => (
               <div key={stat.label}>
                 <span
                   className="font-mono block"
                   style={{
-                    fontSize: 20,
+                    fontSize: 24,
                     fontVariantNumeric: "tabular-nums",
                     color: "var(--ink-primary)",
                     letterSpacing: "-0.02em",
                     lineHeight: 1.2,
+                    marginBottom: 4,
                   }}
                 >
                   {stat.value}
                 </span>
                 <span
-                  className="font-mono uppercase"
+                  className="font-mono uppercase block"
                   style={{
-                    fontSize: 9,
+                    fontSize: 11,
                     letterSpacing: "0.06em",
                     color: "var(--ink-muted)",
                   }}
@@ -324,13 +481,17 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
 
-      {/* ── Videos ── */}
+      {/* MediaBlock: videos */}
       {cs?.videos && cs.videos.length > 0 && (
-        <div data-reveal style={{ marginBottom: 64, opacity: 0 }}>
+        <div
+          className="case-study-col"
+          data-reveal
+          style={{ marginBottom: 64, opacity: 0 }}
+        >
           <SectionLabel>Media</SectionLabel>
           <div
-            className="grid"
             style={{
+              display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               gap: 16,
             }}
@@ -344,18 +505,18 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
                   muted
                   loop
                   playsInline
-                  className="w-full"
                   style={{
                     display: "block",
+                    width: "100%",
                     aspectRatio: v.aspect || "16/9",
                     objectFit: "cover",
                   }}
                 />
                 {v.caption && (
                   <span
-                    className="font-mono uppercase block"
+                    className="font-mono block"
                     style={{
-                      fontSize: 9,
+                      fontSize: 11,
                       letterSpacing: "0.04em",
                       color: "var(--ink-ghost)",
                       marginTop: 8,
@@ -373,48 +534,45 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
       {/* ── Next project ── */}
       {nextPiece && (
         <div
+          className="case-study-col"
           data-reveal
           style={{
-            borderTop: "1px solid var(--ink-whisper)",
+            borderTop: "1px solid var(--ink-ghost)",
             paddingTop: 48,
             paddingBottom: 72,
             opacity: 0,
           }}
         >
-          <Link
-            href={`/work/${nextPiece.slug}`}
-            className="group block"
-          >
+          <Link href={`/work/${nextPiece.slug}`} style={{ display: "block" }}>
             <span
               className="font-mono uppercase block"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 letterSpacing: "0.06em",
                 color: "var(--ink-muted)",
                 marginBottom: 12,
               }}
             >
-              Next Project
+              Next
             </span>
             <span
-              className="font-display block"
+              className="font-mono block"
               style={{
                 fontSize: "clamp(18px, 2.5vw, 24px)",
                 fontWeight: 400,
-                lineHeight: 1.35,
+                lineHeight: 1.3,
                 color: "var(--ink-primary)",
-                transition: "color 0.3s var(--ease-swift)",
+                marginBottom: 4,
               }}
             >
               {nextPiece.title}
             </span>
             <span
-              className="font-mono uppercase"
+              className="font-mono uppercase block"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 letterSpacing: "0.06em",
-                color: "var(--ink-ghost)",
-                marginTop: 4,
+                color: "var(--ink-muted)",
               }}
             >
               {nextPiece.sector} · {nextPiece.year}
@@ -423,21 +581,5 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
         </div>
       )}
     </div>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="font-mono uppercase block"
-      style={{
-        fontSize: 10,
-        letterSpacing: "0.06em",
-        color: "var(--ink-muted)",
-        marginBottom: 24,
-      }}
-    >
-      {children}
-    </span>
   );
 }

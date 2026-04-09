@@ -10,29 +10,32 @@ export default function WorkDetailPage() {
 
   if (!piece) {
     return (
-      <>
-        <main
-          id="main"
+      <main
+        id="main"
+        style={{
+          paddingTop: 120,
+          paddingLeft: "8vw",
+          paddingRight: "clamp(24px, 5vw, 64px)",
+          maxWidth: 900,
+        }}
+      >
+        <p
+          className="font-mono uppercase"
           style={{
-            paddingTop: 120,
-            paddingInline: "clamp(24px, 5vw, 64px)",
-            maxWidth: 900,
-            margin: "0 auto",
+            fontSize: 11,
+            letterSpacing: "0.06em",
+            color: "var(--ink-muted)",
           }}
         >
-          <p className="font-display" style={{ color: "var(--ink-secondary)" }}>
-            Project not found.
-          </p>
-        </main>
-      </>
+          Project not found.
+        </p>
+      </main>
     );
   }
 
   return (
-    <>
-      <main id="main">
-        <CaseStudy piece={piece} />
-      </main>
-    </>
+    <main id="main">
+      <CaseStudy piece={piece} />
+    </main>
   );
 }
