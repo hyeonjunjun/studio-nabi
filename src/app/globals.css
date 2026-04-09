@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f5f1ec;
-  --fg: rgba(42, 37, 32, 0.90);
-  --fg-2: rgba(42, 37, 32, 0.55);
-  --fg-3: rgba(42, 37, 32, 0.25);
-  --fg-4: rgba(42, 37, 32, 0.08);
+  --surface: #f0f0ed;
+  --ink-full: rgba(35, 32, 28, 1.00);
+  --ink-primary: rgba(35, 32, 28, 0.82);
+  --ink-secondary: rgba(35, 32, 28, 0.52);
+  --ink-muted: rgba(35, 32, 28, 0.35);
+  --ink-faint: rgba(35, 32, 28, 0.20);
+  --ink-ghost: rgba(35, 32, 28, 0.10);
+  --ink-whisper: rgba(35, 32, 28, 0.05);
   --font-body: var(--font-sans), "Helvetica Neue", system-ui, sans-serif;
   --font-mono: var(--font-fragment), "SF Mono", "Consolas", monospace;
   --font-display: var(--font-serif), "Georgia", serif;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-swift: cubic-bezier(.23, .88, .26, .92);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,38 +21,50 @@ html { -webkit-text-size-adjust: 100%; }
 * { scrollbar-width: none; }
 
 body {
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--surface);
+  color: var(--ink-primary);
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.7;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
-  height: 100dvh;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
-::selection { background: var(--fg-4); }
-:focus-visible { outline: 1px solid var(--fg-3); outline-offset: 3px; }
+::selection { background: var(--ink-ghost); }
+:focus-visible { outline: 1px solid var(--ink-muted); outline-offset: 3px; }
 a { color: inherit; text-decoration: none; }
 
 .skip-to-content {
   position: absolute; top: -100px; left: 24px;
   z-index: 999; padding: 8px 16px;
-  background: var(--fg); color: var(--bg);
-  font: 500 10px/1 var(--font-mono);
-  letter-spacing: 0.04em; text-decoration: none;
-  transition: top 0.3s var(--ease);
+  background: var(--ink-full); color: var(--surface);
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.06em; text-decoration: none;
+  transition: top 0.3s var(--ease-swift);
 }
 .skip-to-content:focus { top: 8px; }
 
-.cursor-overlay { position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none; }
+.chrome-text {
+  background: linear-gradient(
+    135deg,
+    var(--ink-muted) 0%,
+    var(--ink-ghost) 30%,
+    var(--ink-secondary) 50%,
+    var(--ink-ghost) 70%,
+    var(--ink-muted) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-@media (hover: hover) and (pointer: fine) {
-  html { cursor: none; }
-  a, button, [role="button"] { cursor: none; }
+.image-treatment {
+  filter: saturate(0.7) contrast(1.05);
 }
 
 @media (prefers-reduced-motion: reduce) {
