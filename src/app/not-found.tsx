@@ -2,21 +2,50 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="font-display text-[clamp(32px,5vw,48px)] font-normal text-fg mb-4 tracking-[-0.02em]">
-          404
-        </h1>
-        <p className="text-[14px] text-fg-2 mb-6">
-          This page doesn&apos;t exist.
-        </p>
-        <Link
-          href="/"
-          className="font-mono text-[10px] uppercase tracking-[0.06em] text-fg-3 no-underline hover:text-fg transition-colors duration-300"
-        >
-          Back to home
-        </Link>
-      </div>
+    <div
+      style={{
+        maxWidth: 900,
+        marginLeft: "8vw",
+        paddingTop: 96,
+        paddingRight: "clamp(24px, 5vw, 64px)",
+      }}
+    >
+      <p
+        className="font-mono"
+        style={{
+          fontSize: "clamp(48px, 8vw, 80px)",
+          lineHeight: 1,
+          color: "var(--ink-ghost)",
+          letterSpacing: "-0.02em",
+        }}
+      >
+        404
+      </p>
+
+      <p
+        className="font-body"
+        style={{
+          fontSize: 15,
+          color: "var(--ink-secondary)",
+          marginTop: 16,
+        }}
+      >
+        This page doesn&apos;t exist.
+      </p>
+
+      <Link
+        href="/"
+        className="font-mono uppercase"
+        style={{
+          display: "inline-block",
+          fontSize: 11,
+          letterSpacing: "0.06em",
+          color: "var(--ink-muted)",
+          marginTop: 24,
+        }}
+      >
+        Return home
+      </Link>
     </div>
   );
 }
