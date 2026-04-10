@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import BloomNode from "@/components/BloomNode";
 import BloomBar from "@/components/BloomBar";
+import BloomPath from "@/components/BloomPath";
 
 export default function BloomTestPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -103,6 +104,68 @@ export default function BloomTestPage() {
           }}
         >
           Click the nav items above. The bloom bar tracks the active section with a flowing, undulating line. Particles rise from the active zone.
+        </p>
+      </section>
+
+      {/* Section: BloomPath — Vertical Navigation */}
+      <section>
+        <span
+          className="font-mono uppercase"
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.1em",
+            color: "var(--ink-muted)",
+            display: "block",
+            marginBottom: 32,
+          }}
+        >
+          Vertical Path — WuWa Menu Treatment
+        </span>
+
+        <div style={{ display: "flex", gap: 80 }}>
+          {/* Path with text labels */}
+          <div>
+            <BloomPath
+              nodes={[
+                { id: "work", label: "Work", icon: "◆" },
+                { id: "about", label: "About", icon: "◇" },
+                { id: "archive", label: "Archive", icon: "○" },
+              ]}
+              activeId={activeNav}
+              onSelect={setActiveNav}
+            />
+          </div>
+
+          {/* Path with just icons — more WuWa-like */}
+          <div>
+            <span
+              className="font-mono"
+              style={{ fontSize: 11, color: "var(--ink-ghost)", display: "block", marginBottom: 16 }}
+            >
+              Icons only
+            </span>
+            <BloomPath
+              nodes={[
+                { id: "work", label: "", icon: "◆" },
+                { id: "about", label: "", icon: "◇" },
+                { id: "archive", label: "", icon: "○" },
+              ]}
+              activeId={activeNav}
+              onSelect={setActiveNav}
+            />
+          </div>
+        </div>
+
+        <p
+          className="font-body"
+          style={{
+            fontSize: 14,
+            color: "var(--ink-ghost)",
+            marginTop: 24,
+            maxWidth: "50ch",
+          }}
+        >
+          Click any node. The glow radiates from the active icon center. The connecting line brightens near the active node and fades to dim elsewhere. Particles float along the path.
         </p>
       </section>
 
