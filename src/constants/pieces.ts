@@ -18,6 +18,9 @@ export interface Piece {
   image?: string;
   coverArt?: string;
   video?: string;
+  /** Full-viewport atmospheric environment image — art-directed per project.
+   *  When present, used as the homepage background instead of `image`. */
+  atmosphere?: string;
   tags: string[];
 }
 
