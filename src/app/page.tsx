@@ -34,6 +34,7 @@ export default function Home() {
   const rafRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
   const panRef = useRef({ x: 0, y: 0 });
+  const velocityRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -48,9 +49,19 @@ export default function Home() {
       const targetX = (mouse.x - 0.5) * 2;
       const targetY = (mouse.y - 0.5) * 2;
 
-      /* Soft lerp — 0.04 gives ~1.5s to fully reach target, feels drifty */
-      panRef.current.x += (targetX - panRef.current.x) * 0.04;
-      panRef.current.y += (targetY - panRef.current.y) * 0.04;
+      /* Spring physics — gives the pan weight + momentum.
+         Stiffness builds force toward target, damping settles it.
+         Slight overshoot is desirable — that's the "weight." */
+      const stiffness = 0.025;
+      const damping = 0.86;
+
+      velocityRef.current.x += (targetX - panRef.current.x) * stiffness;
+      velocityRef.current.y += (targetY - panRef.current.y) * stiffness;
+      velocityRef.current.x *= damping;
+      velocityRef.current.y *= damping;
+
+      panRef.current.x += velocityRef.current.x;
+      panRef.current.y += velocityRef.current.y;
 
       if (sceneRef.current) {
         /* Scene is scaled 1.2 → 10% overflow each axis available
