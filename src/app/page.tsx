@@ -17,51 +17,38 @@ export default function Home() {
 
   const activePiece = allPieces[activeIndex];
 
-  // Update store for waveform
   useEffect(() => {
     setStoreHovered(activePiece.slug);
     return () => setStoreHovered(null);
   }, [activePiece.slug, setStoreHovered]);
 
-  // Entrance animation
+  // Entrance
   useEffect(() => {
     if (!containerRef.current) return;
     const els = containerRef.current.querySelectorAll("[data-reveal]");
-    gsap.fromTo(
-      els,
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: "power2.out", delay: 0.2 }
-    );
+    gsap.set(els, { opacity: 0, y: 14 });
+    gsap.to(els, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, ease: "power2.out", delay: 0.3 });
   }, []);
 
-  // Animate on project switch
+  // Project switch animation
   useEffect(() => {
     if (!containerRef.current) return;
-    const info = containerRef.current.querySelector("[data-project-info]");
-    if (info) {
-      gsap.fromTo(
-        info.querySelectorAll("[data-info-item]"),
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }
-      );
-    }
+    const items = containerRef.current.querySelectorAll("[data-info-item]");
+    gsap.fromTo(items,
+      { opacity: 0, x: -8 },
+      { opacity: 1, x: 0, duration: 0.45, stagger: 0.035, ease: "power3.out" }
+    );
   }, [activeIndex]);
 
   return (
     <main
       id="main"
       ref={containerRef}
-      style={{
-        height: "100vh",
-        width: "100vw",
-        overflow: "hidden",
-        position: "relative",
-      }}
+      style={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}
     >
-      {/* ════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════
           LAYER 0 — Full-viewport project visual
-          The project IS the background. It owns the space.
-          ════════════════════════════════════════════════════════ */}
+          ══════════════════════════════════════════════════ */}
       {allPieces.map((piece, i) => (
         <div
           key={piece.slug}
@@ -70,7 +57,7 @@ export default function Home() {
             inset: 0,
             zIndex: 0,
             opacity: i === activeIndex ? 1 : 0,
-            transition: "opacity 0.8s cubic-bezier(.23,.88,.26,.92)",
+            transition: "opacity 1s cubic-bezier(.23,.88,.26,.92)",
             pointerEvents: "none",
           }}
         >
@@ -84,86 +71,83 @@ export default function Home() {
               style={{
                 objectFit: "cover",
                 objectPosition: "center 30%",
-                filter: "brightness(0.35) saturate(0.7) contrast(1.1)",
+                /* Brighter than before — let the image breathe.
+                   Vignette overlay handles the darkening selectively. */
+                filter: "brightness(0.5) saturate(0.75) contrast(1.15)",
               }}
             />
           ) : piece.video ? (
             <video
               src={piece.video}
-              autoPlay
-              muted
-              loop
-              playsInline
+              autoPlay muted loop playsInline
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                filter: "brightness(0.3) saturate(0.6) contrast(1.1)",
+                width: "100%", height: "100%", objectFit: "cover",
+                filter: "brightness(0.4) saturate(0.6) contrast(1.1)",
               }}
             />
           ) : (
-            /* WIP — color field */
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                background: `radial-gradient(ellipse at 60% 40%, ${piece.accent || "#1a1a1a"}22 0%, #0D0D0D 70%)`,
-              }}
-            />
+            <div style={{
+              width: "100%", height: "100%",
+              background: `radial-gradient(ellipse at 55% 40%, ${piece.accent || "#1a1a1a"}18 0%, #0D0D0D 80%)`,
+            }} />
           )}
 
-          {/* Atmospheric gradient overlay — creates depth */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: `
-                linear-gradient(180deg, rgba(13,13,13,0.3) 0%, transparent 30%, transparent 60%, rgba(13,13,13,0.7) 100%),
-                linear-gradient(90deg, rgba(13,13,13,0.6) 0%, transparent 40%)
-              `,
-            }}
-          />
+          {/* Cinematic vignette — dark edges, breathing center.
+              Left side darker (for text readability).
+              Bottom darker (grounds the composition). */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: `
+              radial-gradient(ellipse 70% 60% at 55% 45%, transparent 0%, rgba(13,13,13,0.5) 100%),
+              linear-gradient(90deg, rgba(13,13,13,0.65) 0%, rgba(13,13,13,0.15) 35%, transparent 55%),
+              linear-gradient(180deg, rgba(13,13,13,0.2) 0%, transparent 20%, transparent 70%, rgba(13,13,13,0.6) 100%)
+            `,
+          }} />
         </div>
       ))}
 
-      {/* ════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════
           LAYER 1 — Left info panel
-          Floating over the visual. Semi-transparent.
-          Like WuWa's character stats panel.
-          ════════════════════════════════════════════════════════ */}
+          Semi-transparent backdrop. Precise spacing.
+          ══════════════════════════════════════════════════ */}
       <div
         data-project-info
         style={{
           position: "absolute",
-          left: "clamp(32px, 5vw, 80px)",
+          left: "clamp(36px, 5vw, 80px)",
           top: "50%",
-          transform: "translateY(-50%)",
+          transform: "translateY(-55%)", /* slightly above true center — feels better */
           zIndex: 3,
-          maxWidth: 400,
+          maxWidth: 420,
         }}
       >
-        {/* Project number — large, like WuWa's level number */}
-        <div data-info-item style={{ marginBottom: 4 }}>
+        {/* Subtle backdrop panel — barely visible, aids readability */}
+        <div style={{
+          position: "absolute",
+          inset: "-24px -28px",
+          background: "rgba(13,13,13,0.25)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,255,255,0.03)",
+          zIndex: -1,
+        }} />
+
+        {/* Project number — large, thin, like WuWa's level display */}
+        <div data-info-item style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 2 }}>
           <span
             className="font-mono"
             style={{
-              fontSize: "clamp(48px, 6vw, 72px)",
-              fontWeight: 300,
-              color: "var(--ink-primary)",
+              fontSize: "clamp(56px, 7vw, 88px)",
+              fontWeight: 200,
+              color: "rgba(255,255,255,0.9)",
               lineHeight: 1,
               fontVariantNumeric: "tabular-nums",
+              letterSpacing: "-0.03em",
             }}
           >
             {activePiece.number}
           </span>
-          <span
-            className="font-mono"
-            style={{
-              fontSize: 14,
-              color: "var(--ink-muted)",
-              marginLeft: 8,
-            }}
-          >
+          <span className="font-mono" style={{ fontSize: 13, color: "var(--ink-ghost)" }}>
             /{String(allPieces.length).padStart(2, "0")}
           </span>
         </div>
@@ -173,344 +157,276 @@ export default function Home() {
           data-info-item
           className="font-display"
           style={{
-            fontSize: "clamp(28px, 3.5vw, 44px)",
+            fontSize: "clamp(30px, 3.8vw, 52px)",
             fontWeight: 400,
             fontStyle: "italic",
-            lineHeight: 1.15,
+            lineHeight: 1.1,
             color: "var(--ink-full)",
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.025em",
           }}
         >
           {activePiece.title}
         </h1>
 
-        {/* Sector + Year tag */}
-        <div
-          data-info-item
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-            marginTop: 12,
-          }}
-        >
+        {/* Sector tag + year — WuWa-style tag with thin gold border */}
+        <div data-info-item style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 14 }}>
           <span
             className="font-mono uppercase"
             style={{
-              fontSize: 11,
-              letterSpacing: "0.08em",
+              fontSize: 10,
+              letterSpacing: "0.1em",
               color: "var(--gold)",
-              padding: "3px 8px",
-              border: "1px solid rgba(196,162,101,0.3)",
+              padding: "4px 10px",
+              border: "1px solid rgba(196,162,101,0.25)",
+              background: "rgba(196,162,101,0.04)",
             }}
           >
             {activePiece.sector}
           </span>
-          <span
-            className="font-mono"
-            style={{
-              fontSize: 11,
-              color: "var(--ink-muted)",
-            }}
-          >
+          <span className="font-mono" style={{ fontSize: 11, color: "var(--ink-muted)", fontVariantNumeric: "tabular-nums" }}>
             {activePiece.status === "wip" ? "In Progress" : activePiece.year}
           </span>
         </div>
 
-        {/* Divider line */}
-        <div
-          data-info-item
-          style={{
-            width: "100%",
-            height: 1,
-            background: "rgba(255,255,255,0.08)",
-            marginTop: 24,
-            marginBottom: 20,
-          }}
-        />
+        {/* Thin separator with corner marks */}
+        <div data-info-item style={{ position: "relative", marginTop: 28, marginBottom: 24 }}>
+          <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+          {/* Left registration mark */}
+          <div style={{
+            position: "absolute", top: -3, left: 0,
+            width: 6, height: 6,
+            borderTop: "1px solid rgba(196,162,101,0.3)",
+            borderLeft: "1px solid rgba(196,162,101,0.3)",
+          }} />
+          {/* Right registration mark */}
+          <div style={{
+            position: "absolute", top: -3, right: 0,
+            width: 6, height: 6,
+            borderTop: "1px solid rgba(196,162,101,0.3)",
+            borderRight: "1px solid rgba(196,162,101,0.3)",
+          }} />
+        </div>
 
         {/* Description */}
         <p
           data-info-item
           className="font-body"
-          style={{
-            fontSize: 15,
-            lineHeight: 1.7,
-            color: "var(--ink-secondary)",
-            maxWidth: "38ch",
-          }}
+          style={{ fontSize: 15, lineHeight: 1.75, color: "var(--ink-secondary)", maxWidth: "36ch" }}
         >
           {activePiece.description}
         </p>
 
-        {/* Tags */}
-        <div
-          data-info-item
-          style={{
-            display: "flex",
-            gap: 8,
-            marginTop: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          {activePiece.tags.map((tag) => (
-            <span
-              key={tag}
-              className="font-mono uppercase"
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.04em",
-                color: "var(--ink-ghost)",
-              }}
-            >
-              {tag}
+        {/* Tags as inline metadata */}
+        <div data-info-item style={{ display: "flex", gap: 12, marginTop: 14 }}>
+          {activePiece.tags.map((tag, i) => (
+            <span key={tag}>
+              <span className="font-mono uppercase" style={{ fontSize: 10, letterSpacing: "0.06em", color: "var(--ink-ghost)" }}>
+                {tag}
+              </span>
+              {i < activePiece.tags.length - 1 && (
+                <span style={{ color: "var(--ink-whisper)", margin: "0 0 0 12px", fontSize: 10 }}>·</span>
+              )}
             </span>
           ))}
         </div>
 
-        {/* CTA */}
+        {/* CTA — ghost bracket style */}
         <Link
           href={`/work/${activePiece.slug}`}
           data-info-item
           className="font-mono uppercase"
           style={{
-            display: "inline-block",
-            marginTop: 32,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            marginTop: 36,
             fontSize: 11,
-            letterSpacing: "0.08em",
+            letterSpacing: "0.1em",
             color: "var(--ink-muted)",
-            padding: "10px 24px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            transition: "all 0.3s var(--ease-swift)",
+            padding: "11px 28px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            transition: "all 0.4s var(--ease-swift)",
+            position: "relative",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(196,162,101,0.4)";
-            e.currentTarget.style.color = "var(--ink-primary)";
+            e.currentTarget.style.borderColor = "rgba(196,162,101,0.5)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.85)";
+            e.currentTarget.style.boxShadow = "0 0 20px 4px rgba(196,162,101,0.06)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
             e.currentTarget.style.color = "var(--ink-muted)";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
           View Case Study
+          <span style={{ fontSize: 14, opacity: 0.5 }}>→</span>
         </Link>
       </div>
 
-      {/* ════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════
           LAYER 2 — Right project selector
-          Circular thumbnails like WuWa's character selector.
-          Vertical stack with numbered indices.
-          ════════════════════════════════════════════════════════ */}
+          Circular portraits with numbered indices.
+          Connected by a thin vertical line.
+          ══════════════════════════════════════════════════ */}
       <div
         data-reveal
         style={{
           position: "absolute",
-          right: "clamp(24px, 3vw, 56px)",
+          right: "clamp(28px, 3.5vw, 60px)",
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 20,
+          gap: 0,
           opacity: 0,
         }}
       >
         {allPieces.map((piece, i) => {
           const isActive = i === activeIndex;
+          const size = isActive ? 58 : 46;
+          const isLast = i === allPieces.length - 1;
+
           return (
-            <button
-              key={piece.slug}
-              onClick={() => setActiveIndex(i)}
-              style={{
-                position: "relative",
-                width: isActive ? 56 : 44,
-                height: isActive ? 56 : 44,
-                borderRadius: "50%",
-                border: `2px solid ${isActive ? "rgba(196,162,101,0.6)" : "rgba(255,255,255,0.1)"}`,
-                background: "rgba(13,13,13,0.4)",
-                backdropFilter: "blur(8px)",
-                cursor: "pointer",
-                overflow: "hidden",
-                transition: "all 0.4s cubic-bezier(.23,.88,.26,.92)",
-                boxShadow: isActive
-                  ? "0 0 20px 4px rgba(196,162,101,0.12), 0 0 40px 10px rgba(196,162,101,0.05)"
-                  : "none",
-                padding: 0,
-              }}
-            >
-              {/* Thumbnail image */}
-              {(piece.image || piece.coverArt) ? (
-                <Image
-                  src={piece.coverArt || piece.image!}
-                  alt={piece.title}
-                  fill
-                  sizes="56px"
+            <div key={piece.slug} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              {/* Node */}
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setActiveIndex(i)}
                   style={{
-                    objectFit: "cover",
-                    filter: isActive ? "saturate(0.8) brightness(0.9)" : "saturate(0.2) brightness(0.5)",
-                    transition: "filter 0.4s",
+                    position: "relative",
+                    width: size, height: size,
+                    borderRadius: "50%",
+                    border: `1.5px solid ${isActive ? "rgba(196,162,101,0.7)" : "rgba(255,255,255,0.08)"}`,
+                    background: "rgba(13,13,13,0.5)",
+                    backdropFilter: "blur(6px)",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    transition: "all 0.5s cubic-bezier(.23,.88,.26,.92)",
+                    boxShadow: isActive
+                      ? "0 0 16px 3px rgba(196,162,101,0.15), 0 0 40px 8px rgba(196,162,101,0.06), inset 0 0 12px rgba(196,162,101,0.08)"
+                      : "0 2px 8px rgba(0,0,0,0.3)",
+                    padding: 0,
                   }}
-                />
-              ) : (
-                <div
+                >
+                  {(piece.image || piece.coverArt) ? (
+                    <Image
+                      src={piece.coverArt || piece.image!}
+                      alt={piece.title}
+                      fill
+                      sizes="58px"
+                      style={{
+                        objectFit: "cover",
+                        filter: isActive ? "saturate(0.85) brightness(0.95)" : "saturate(0.15) brightness(0.4)",
+                        transition: "filter 0.5s",
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: "100%", height: "100%",
+                      background: piece.accent || "rgba(255,255,255,0.03)",
+                      opacity: isActive ? 0.35 : 0.1,
+                    }} />
+                  )}
+                </button>
+
+                {/* Number index — positioned to the left of the circle */}
+                <span
+                  className="font-mono"
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    background: piece.accent || "rgba(255,255,255,0.05)",
-                    opacity: isActive ? 0.4 : 0.15,
+                    position: "absolute",
+                    right: size + 10,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    fontSize: 10,
+                    letterSpacing: "0.04em",
+                    color: isActive ? "var(--gold)" : "var(--ink-ghost)",
+                    fontVariantNumeric: "tabular-nums",
+                    transition: "color 0.3s",
+                    whiteSpace: "nowrap",
                   }}
-                />
+                >
+                  {piece.number}
+                </span>
+              </div>
+
+              {/* Connecting line between nodes */}
+              {!isLast && (
+                <div style={{
+                  width: 1,
+                  height: 16,
+                  background: `linear-gradient(180deg,
+                    ${i === activeIndex ? "rgba(196,162,101,0.3)" : "rgba(255,255,255,0.04)"}
+                    0%,
+                    ${i + 1 === activeIndex ? "rgba(196,162,101,0.3)" : "rgba(255,255,255,0.04)"}
+                    100%
+                  )`,
+                  transition: "background 0.5s",
+                }} />
               )}
-            </button>
+            </div>
           );
         })}
-
-        {/* Index number below selector */}
-        <span
-          className="font-mono"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.06em",
-            color: "var(--ink-ghost)",
-            fontVariantNumeric: "tabular-nums",
-            marginTop: 4,
-          }}
-        >
-          {activePiece.number}/{String(allPieces.length).padStart(2, "0")}
-        </span>
       </div>
 
-      {/* ════════════════════════════════════════════════════════
-          LAYER 3 — Corner UI chrome (the marginalia)
-          ════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════
+          LAYER 3 — Corner chrome
+          ══════════════════════════════════════════════════ */}
 
-      {/* Top-left: Identity */}
-      <div
-        data-reveal
-        style={{
-          position: "absolute",
-          top: "clamp(16px, 2.5vh, 28px)",
-          left: "clamp(24px, 3vw, 48px)",
-          zIndex: 4,
-          opacity: 0,
-        }}
-      >
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 12,
-            letterSpacing: "0.1em",
-            color: "var(--ink-primary)",
-          }}
-        >
+      {/* Top-left: HKJ */}
+      <div data-reveal style={{
+        position: "absolute", top: "clamp(20px, 3vh, 32px)", left: "clamp(28px, 3.5vw, 52px)", zIndex: 4, opacity: 0,
+      }}>
+        <span className="font-mono uppercase" style={{ fontSize: 12, letterSpacing: "0.12em", color: "var(--ink-primary)" }}>
           HKJ
         </span>
       </div>
 
-      {/* Bottom-left: Contact */}
-      <div
-        data-reveal
-        style={{
-          position: "absolute",
-          bottom: "clamp(16px, 2.5vh, 28px)",
-          left: "clamp(24px, 3vw, 48px)",
-          zIndex: 4,
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-          opacity: 0,
-        }}
-      >
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          className="font-mono"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.04em",
-            color: "var(--ink-muted)",
-          }}
-        >
-          {CONTACT_EMAIL}
-        </a>
-        <span
-          className="font-mono"
-          style={{ fontSize: 11, color: "var(--ink-ghost)" }}
-        >
-          ·
-        </span>
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.06em",
-            color: "var(--ink-ghost)",
-          }}
-        >
+      {/* Bottom-left: Contact + Location */}
+      <div data-reveal style={{
+        position: "absolute", bottom: "clamp(20px, 3vh, 32px)", left: "clamp(28px, 3.5vw, 52px)", zIndex: 4,
+        display: "flex", alignItems: "center", gap: 14, opacity: 0,
+      }}>
+        <a href={`mailto:${CONTACT_EMAIL}`} className="font-mono" style={{
+          fontSize: 11, letterSpacing: "0.04em", color: "var(--ink-muted)", transition: "color 0.3s",
+        }}>{CONTACT_EMAIL}</a>
+        <span className="font-mono" style={{ fontSize: 9, color: "var(--ink-whisper)" }}>│</span>
+        <span className="font-mono uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--ink-ghost)" }}>
           New York
         </span>
       </div>
 
-      {/* Bottom-right: System label */}
-      <div
-        data-reveal
-        style={{
-          position: "absolute",
-          bottom: "clamp(16px, 2.5vh, 28px)",
-          right: "clamp(24px, 3vw, 56px)",
-          zIndex: 4,
-          opacity: 0,
-        }}
-      >
-        <span
-          className="font-mono"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.04em",
-            color: "var(--ink-ghost)",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
+      {/* Bottom-right: System */}
+      <div data-reveal style={{
+        position: "absolute", bottom: "clamp(20px, 3vh, 32px)", right: "clamp(28px, 3.5vw, 60px)", zIndex: 4, opacity: 0,
+      }}>
+        <span className="font-mono" style={{ fontSize: 10, letterSpacing: "0.06em", color: "var(--ink-ghost)", fontVariantNumeric: "tabular-nums" }}>
           Design Engineering · 2026
         </span>
       </div>
 
-      {/* Bottom-center: Enter prompt */}
-      <Link
-        href={`/work/${activePiece.slug}`}
-        data-reveal
-        style={{
-          position: "absolute",
-          bottom: "clamp(16px, 2.5vh, 28px)",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 4,
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          opacity: 0,
-          padding: "8px 20px",
-          border: "1px solid rgba(196,162,101,0.2)",
-          transition: "border-color 0.3s",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "rgba(196,162,101,0.5)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "rgba(196,162,101,0.2)";
-        }}
-      >
-        <span
+      {/* Bottom-center: View prompt with decorative flanking marks */}
+      <div data-reveal style={{
+        position: "absolute", bottom: "clamp(20px, 3vh, 32px)", left: "50%", transform: "translateX(-50%)",
+        zIndex: 4, display: "flex", alignItems: "center", gap: 14, opacity: 0,
+      }}>
+        <span style={{ width: 20, height: 1, background: "rgba(196,162,101,0.15)" }} />
+        <Link
+          href={`/work/${activePiece.slug}`}
           className="font-mono uppercase"
           style={{
-            fontSize: 11,
-            letterSpacing: "0.12em",
-            color: "var(--ink-muted)",
+            fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-muted)",
+            transition: "color 0.3s",
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ink-primary)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ink-muted)"; }}
         >
-          View Project
-        </span>
-      </Link>
+          Enter Project
+        </Link>
+        <span style={{ width: 20, height: 1, background: "rgba(196,162,101,0.15)" }} />
+      </div>
     </main>
   );
 }

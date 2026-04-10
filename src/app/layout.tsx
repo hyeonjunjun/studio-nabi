@@ -63,7 +63,6 @@ export default function RootLayout({
         className={`${generalSans.variable} ${newsreader.variable} ${fragmentMono.variable}`}
       >
         <RouteAnnouncer />
-        <Waveform />
         <NavCoordinates />
         <a href="#main" className="skip-to-content">
           Skip to content
