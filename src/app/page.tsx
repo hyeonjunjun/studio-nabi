@@ -130,7 +130,6 @@ export default function Home() {
   const accentColor = hoveredPiece?.accent && hoveredPiece.accent !== "" ? hoveredPiece.accent : "#C4A265";
 
   /* Velocity bar for HUD */
-  const barChars = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"];
   const barLength = 12;
   const velIntensity = Math.min(1, pan.speed * 40);
   const filledCells = Math.round(velIntensity * barLength);
@@ -168,10 +167,9 @@ export default function Home() {
         panRef.current.y = Math.max(-1, Math.min(1, panRef.current.y - dy * 0.1));
         dragStartRef.current = { x: e.clientX, y: e.clientY };
       }}
-      onPointerUp={() => {
+      onPointerUp={(e) => {
         isDraggingRef.current = false;
-        (document.getElementById("main") as HTMLElement | null)?.style &&
-          ((document.getElementById("main") as HTMLElement).style.cursor = "");
+        (e.currentTarget as HTMLElement).style.cursor = "";
       }}
       onPointerLeave={() => { isDraggingRef.current = false; }}
     >

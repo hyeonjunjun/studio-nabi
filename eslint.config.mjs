@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Stale worktree copies + build artifacts scanned erroneously
+    ".claude/**",
+    ".superpowers/**",
+    "node_modules/**",
   ]),
 ]);
 

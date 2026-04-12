@@ -117,16 +117,8 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
     };
   }, [piece.slug, reducedMotion]);
 
-  // Column layout — left-shifted, same as homepage
-  const colStyle: React.CSSProperties = {
-    maxWidth: 900,
-    marginLeft: "8vw",
-    marginRight: 0,
-    paddingInline: 0,
-  };
-
-  // Responsive: on mobile fall back to full-width with 24px padding
-  // We handle this with a wrapper that has a responsive class
+  // Column layout is controlled via .case-study-col and .case-study-hero
+  // CSS classes defined in the <style> block below (responsive-friendly)
 
   return (
     <div

@@ -169,7 +169,6 @@ function runBloomCanvas(
 
     // How many sample points around the perimeter
     const SAMPLES = 200;
-    const perim = 2 * (w + h);
 
     if (isActive) {
       /* ── Phase 1: Initial bounce (0-0.8s)
@@ -359,7 +358,6 @@ export default function BloomNode({
   className = "",
   style = {},
   accentColor = "#C4A265",
-  cornerSize = 16,
   noParticles = false,
   as: Tag = "div",
   onClick,
@@ -370,8 +368,14 @@ export default function BloomNode({
   const activeRef = useRef(active);
   const accentRef = useRef(accentColor);
   const cleanupRef = useRef<(() => void) | null>(null);
-  activeRef.current = active;
-  accentRef.current = accentColor;
+
+  /* Keep refs in sync with props — effect-based to avoid updating during render */
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+  useEffect(() => {
+    accentRef.current = accentColor;
+  }, [accentColor]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
