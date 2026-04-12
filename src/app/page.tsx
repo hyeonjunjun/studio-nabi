@@ -81,9 +81,9 @@ export default function Home() {
       const targetY = (mouse.y - 0.5) * 2;
 
       /* Critically damped spring — weighted but smooth, no overshoot.
-         Stiffness 0.05 + friction 0.78 = responsive but still damped. */
-      const stiffness = prefersReduced ? 0 : 0.05;
-      const friction = 0.78;
+         Stiffness 0.032 + friction 0.80 = weighted, cinematic, not twitchy. */
+      const stiffness = prefersReduced ? 0 : 0.032;
+      const friction = 0.80;
 
       velocityRef.current.x += (targetX - panRef.current.x) * stiffness;
       velocityRef.current.y += (targetY - panRef.current.y) * stiffness;
@@ -99,8 +99,8 @@ export default function Home() {
       if (sceneRef.current) {
         /* Scene scaled 1.25 → 12.5% overflow each axis.
            Pan amplitude: ±11% X, ±7% Y so the weight is visible. */
-        const tx = -panRef.current.x * 11;
-        const ty = -panRef.current.y * 7;
+        const tx = -panRef.current.x * 7;
+        const ty = -panRef.current.y * 4;
         sceneRef.current.style.transform = `scale(1.25) translate3d(${tx}%, ${ty}%, 0)`;
       }
 
