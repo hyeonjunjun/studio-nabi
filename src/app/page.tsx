@@ -470,7 +470,11 @@ export default function Home() {
         >
           <span style={{ color: "rgba(255,255,255,0.35)" }}>[PAN]</span>
           <span style={{ color: "rgba(255,255,255,0.75)" }}>
-            [X {pan.x >= 0 ? "+" : ""}{pan.x.toFixed(2)} // Y {pan.y >= 0 ? "+" : ""}{pan.y.toFixed(2)}]
+            {(() => {
+              const fx = Math.abs(pan.x) < 0.005 ? "+0.00" : `${pan.x >= 0 ? "+" : ""}${pan.x.toFixed(2)}`;
+              const fy = Math.abs(pan.y) < 0.005 ? "+0.00" : `${pan.y >= 0 ? "+" : ""}${pan.y.toFixed(2)}`;
+              return `[X ${fx} // Y ${fy}]`;
+            })()}
           </span>
         </div>
 

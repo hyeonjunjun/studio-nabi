@@ -85,6 +85,10 @@ function runBloomCanvas(
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   if (!ctx) return () => {};
 
+  /* Respect prefers-reduced-motion: render a single static frame and stop */
+  const prefersReduced = typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   const PAD = 60;
   let raf = 0;
   let time = 0;
@@ -136,6 +140,18 @@ function runBloomCanvas(
     const h = ch - PAD * 2;
 
     ctx.clearRect(0, 0, cw, ch);
+
+    /* Under reduced motion: draw a static inactive border and stop looping */
+    if (prefersReduced) {
+      ctx.save();
+      ctx.translate(PAD, PAD);
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.06)`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, 0, w, h);
+      ctx.restore();
+      return; // no rAF reschedule — one static frame only
+    }
+
     time += 1 / 60;
 
     const isActive = activeRef.current;

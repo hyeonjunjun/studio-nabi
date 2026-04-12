@@ -54,6 +54,15 @@ export default function AboutPage() {
           }
         }
       `}</style>
+      {/* ── Philosophy kicker ── */}
+      <div
+        data-reveal
+        style={{ fontSize: 9, letterSpacing: "0.14em", color: "rgba(255,255,255,0.35)", marginBottom: 32, paddingTop: 96, opacity: 0 }}
+        className="font-mono uppercase"
+      >
+        [ABOUT // HKJ_STUDIO_NY]
+      </div>
+
       {/* ── Philosophy statement ── */}
       <p
         data-reveal
@@ -65,7 +74,7 @@ export default function AboutPage() {
           fontWeight: 400,
           color: "var(--ink-primary)",
           maxWidth: "54ch",
-          paddingTop: 96,
+          paddingTop: 0,
           opacity: 0,
         }}
       >
@@ -122,9 +131,9 @@ export default function AboutPage() {
         </span>
 
         {[
-          ["2024 \u2014", "Independent, Design Engineering"],
-          ["2023 \u2014 24", "Design Technologist"],
-          ["2021 \u2014 23", "Frontend Developer"],
+          ["[2024 \u2192 PRESENT]", "Independent, Design Engineering"],
+          ["[2023 \u2192 2024]", "Design Technologist"],
+          ["[2021 \u2192 2023]", "Frontend Developer"],
         ].map(([period, role]) => (
           <div
             key={period}
@@ -143,7 +152,7 @@ export default function AboutPage() {
                 fontSize: 11,
                 fontVariantNumeric: "tabular-nums",
                 color: "var(--ink-muted)",
-                width: 80,
+                width: 130,
                 flexShrink: 0,
               }}
             >
