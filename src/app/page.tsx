@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PIECES, type Piece } from "@/constants/pieces";
 import { CONTACT_EMAIL } from "@/constants/contact";
 import { useStore } from "@/store/useStore";
+import BloomNode from "@/components/BloomNode";
 
 const allPieces = [...PIECES].sort((a, b) => a.order - b.order);
 
@@ -29,8 +30,22 @@ const HOTSPOTS: Hotspot[] = [
   { slug: "clouds-at-sea", x: 0.40, y: 0.24, labelSide: "bottom" },
 ];
 
+/* ════════════════════════════════════════════════════════════
+   Cursor-follow label offset state per hotspot wrapper
+   ════════════════════════════════════════════════════════════ */
+interface LabelOffset {
+  x: number;
+  y: number;
+}
+
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
+}
+
 export default function Home() {
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const [labelOffsets, setLabelOffsets] = useState<Record<string, LabelOffset>>({});
+
   const sceneRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -39,8 +54,15 @@ export default function Home() {
   const velocityRef = useRef({ x: 0, y: 0 });
   const frameCountRef = useRef(0);
 
+  // T2.4 drag state
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+
   const setPan = useStore((s) => s.setPan);
   const pan = useStore((s) => s.pan);
+
+  // T2.2 transition origin
+  const setTransitionOrigin = useStore((s) => s.setTransitionOrigin);
 
   useEffect(() => {
     /* Respect reduced motion preference */
@@ -129,6 +151,29 @@ export default function Home() {
         background: "#0a0a0c",
         "--accent-hover": accentColor,
       } as React.CSSProperties}
+      /* T2.4 — Drag-to-pan handlers */
+      onPointerDown={(e) => {
+        // Don't start drag if clicking a hotspot link
+        const target = e.target as HTMLElement;
+        if (target.closest("a[data-hotspot]")) return;
+        isDraggingRef.current = true;
+        dragStartRef.current = { x: e.clientX, y: e.clientY };
+        (e.currentTarget as HTMLElement).style.cursor = "grabbing";
+      }}
+      onPointerMove={(e) => {
+        if (!isDraggingRef.current) return;
+        const dx = (e.clientX - dragStartRef.current.x) / window.innerWidth * 2;
+        const dy = (e.clientY - dragStartRef.current.y) / window.innerHeight * 2;
+        panRef.current.x = Math.max(-1, Math.min(1, panRef.current.x - dx * 0.1));
+        panRef.current.y = Math.max(-1, Math.min(1, panRef.current.y - dy * 0.1));
+        dragStartRef.current = { x: e.clientX, y: e.clientY };
+      }}
+      onPointerUp={() => {
+        isDraggingRef.current = false;
+        (document.getElementById("main") as HTMLElement | null)?.style &&
+          ((document.getElementById("main") as HTMLElement).style.cursor = "");
+      }}
+      onPointerLeave={() => { isDraggingRef.current = false; }}
     >
       {/* ════════════════════════════════════════════════════════
           LAYER 0 — The scene
@@ -193,6 +238,7 @@ export default function Home() {
           if (!piece) return null;
           const isHovered = hoveredSlug === hotspot.slug;
           const isDimmed = hoveredSlug !== null && !isHovered;
+          const offset = labelOffsets[hotspot.slug] ?? { x: 0, y: 0 };
 
           return (
             <div
@@ -206,12 +252,36 @@ export default function Home() {
                 pointerEvents: "auto",
               }}
               onMouseEnter={() => setHoveredSlug(hotspot.slug)}
-              onMouseLeave={() => setHoveredSlug(null)}
+              onMouseLeave={() => {
+                setHoveredSlug(null);
+                setLabelOffsets((prev) => ({ ...prev, [hotspot.slug]: { x: 0, y: 0 } }));
+              }}
+              /* T2.3 — Track cursor delta relative to hotspot dot */
+              onMouseMove={(e) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                setLabelOffsets((prev) => ({
+                  ...prev,
+                  [hotspot.slug]: { x: e.clientX - cx, y: e.clientY - cy },
+                }));
+              }}
             >
               {/* The hotspot dot — link to case study */}
+              {/* T2.2 — data-hotspot attribute + transition origin capture */}
               <Link
                 href={`/work/${piece.slug}`}
                 aria-label={`View ${piece.title} case study`}
+                data-hotspot
+                onClick={(e) => {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                  setTransitionOrigin({
+                    slug: piece.slug,
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2,
+                  });
+                  // Don't preventDefault — let Next.js Link navigate
+                }}
                 style={{
                   position: "relative",
                   display: "block",
@@ -263,8 +333,16 @@ export default function Home() {
                 />
               </Link>
 
-              {/* Editorial label — appears on hover */}
-              {isHovered && <HotspotLabel piece={piece} side={hotspot.labelSide} accentColor={accentColor} />}
+              {/* Editorial label — appears on hover, cursor-aware */}
+              {isHovered && (
+                <HotspotLabel
+                  piece={piece}
+                  side={hotspot.labelSide}
+                  accentColor={accentColor}
+                  cursorOffsetX={offset.x}
+                  cursorOffsetY={offset.y}
+                />
+              )}
             </div>
           );
         })}
@@ -438,45 +516,40 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bottom-center: Contextual prompt */}
-      <div
+      {/* T2.1 — Bottom-center: Contextual prompt wrapped in BloomNode */}
+      <BloomNode
+        active={hoveredSlug !== null}
+        accentColor={accentColor}
+        cornerSize={10}
+        noParticles={false}
         style={{
           position: "fixed",
           bottom: "clamp(20px, 3vh, 32px)",
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 60,
-          padding: "10px 22px",
+          padding: "14px 32px",
           background: "rgba(10,10,12,0.35)",
           backdropFilter: "blur(18px) saturate(1.15)",
           WebkitBackdropFilter: "blur(18px) saturate(1.15)",
-          border: `1px solid color-mix(in oklab, var(--accent-hover) 18%, transparent)`,
+          minWidth: 280,
           display: "flex",
           alignItems: "center",
-          gap: 14,
-          minWidth: 320,
           justifyContent: "center",
-          transition: hudTransition,
+          gap: 12,
+          transition: "background 0.6s var(--ease-swift)",
         }}
       >
-        <HudCorners color="color-mix(in oklab, var(--accent-hover) 55%, transparent)" />
-
-        <span style={{ width: 18, height: 1, background: "color-mix(in oklab, var(--accent-hover) 35%, transparent)" }} />
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 10,
-            letterSpacing: "0.16em",
-            color: "rgba(255,255,255,0.6)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {hoveredPiece
-            ? `[→ CLICK TO ENTER {${hoveredPiece.title.toUpperCase()}}]`
-            : "[+ MOVE TO EXPLORE]"}
+        <span className="font-mono uppercase" style={{
+          fontSize: 10,
+          letterSpacing: "0.14em",
+          color: hoveredSlug ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
+          transition: "color 0.4s var(--ease-swift)",
+          whiteSpace: "nowrap",
+        }}>
+          {hoveredPiece ? `[→ CLICK TO ENTER ${hoveredPiece.title.toUpperCase()}]` : "[+ MOVE TO EXPLORE]"}
         </span>
-        <span style={{ width: 18, height: 1, background: "color-mix(in oklab, var(--accent-hover) 35%, transparent)" }} />
-      </div>
+      </BloomNode>
 
       {/* ════════════════════════════════════════════════════════
           Keyframes
@@ -516,18 +589,35 @@ function HudCorners({ color = "rgba(196,162,101,0.4)" }: { color?: string }) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   Editorial hotspot label with thin connecting line
+   Editorial hotspot label — cursor-aware tilt (T2.3)
    ════════════════════════════════════════════════════════════ */
-function HotspotLabel({ piece, side, accentColor }: { piece: Piece; side: LabelSide; accentColor: string }) {
+function HotspotLabel({
+  piece,
+  side,
+  accentColor,
+  cursorOffsetX = 0,
+  cursorOffsetY = 0,
+}: {
+  piece: Piece;
+  side: LabelSide;
+  accentColor: string;
+  cursorOffsetX?: number;
+  cursorOffsetY?: number;
+}) {
   const LINE_LEN = 56;
   const LABEL_OFFSET = 80;
 
+  /* Cursor-follow tilt — Shcherban pattern */
+  const tiltX = clamp(cursorOffsetX * 0.15, -14, 14);
+  const tiltY = clamp(cursorOffsetY * 0.15, -14, 14);
+  const tiltRot = clamp(cursorOffsetX * 0.08, -12, 12);
+
   /* Wrapper positioning — which side of the dot the label sits on */
   const wrapperStyle: Record<LabelSide, React.CSSProperties> = {
-    left: { right: LABEL_OFFSET, top: "50%", transform: "translateY(-50%)" },
-    right: { left: LABEL_OFFSET, top: "50%", transform: "translateY(-50%)" },
-    top: { bottom: LABEL_OFFSET, left: "50%", transform: "translateX(-50%)" },
-    bottom: { top: LABEL_OFFSET, left: "50%", transform: "translateX(-50%)" },
+    left: { right: LABEL_OFFSET, top: "50%", transform: `translateY(-50%) translate(${tiltX}px, ${tiltY}px) rotate(${tiltRot}deg)` },
+    right: { left: LABEL_OFFSET, top: "50%", transform: `translateY(-50%) translate(${tiltX}px, ${tiltY}px) rotate(${tiltRot}deg)` },
+    top: { bottom: LABEL_OFFSET, left: "50%", transform: `translateX(-50%) translate(${tiltX}px, ${tiltY}px) rotate(${tiltRot}deg)` },
+    bottom: { top: LABEL_OFFSET, left: "50%", transform: `translateX(-50%) translate(${tiltX}px, ${tiltY}px) rotate(${tiltRot}deg)` },
   };
 
   /* Connecting line — from edge of panel back toward hotspot dot */
@@ -573,6 +663,8 @@ function HotspotLabel({ piece, side, accentColor }: { piece: Piece; side: LabelS
         pointerEvents: "none",
         animation: "label-emerge 0.5s cubic-bezier(.2, .9, .2, 1) forwards",
         transformOrigin: "center",
+        /* Cursor-follow transition — slight lag for organic feel */
+        transition: "transform 0.25s cubic-bezier(.2,.9,.2,1)",
         ...wrapperStyle[side],
       }}
     >

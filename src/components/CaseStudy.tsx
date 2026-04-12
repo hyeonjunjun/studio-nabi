@@ -154,6 +154,18 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
           /* Break column to right edge */
           margin-right: calc(-1 * (100vw - var(--col-max) - var(--col-offset)));
         }
+        .case-study-hero {
+          min-height: 88vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding-top: clamp(96px, 15vh, 160px);
+          padding-bottom: clamp(48px, 8vh, 96px);
+          padding-left: 8vw;
+          padding-right: clamp(24px, 5vw, 64px);
+          max-width: 900px;
+          margin-left: 8vw;
+        }
         @media (max-width: 767px) {
           .case-study-col,
           .case-study-bleed {
@@ -162,82 +174,84 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
             margin-right: 0;
             padding-inline: 24px;
           }
+          .case-study-hero {
+            min-height: 80vh;
+            padding-left: 24px;
+            padding-right: 24px;
+            padding-top: clamp(72px, 12vh, 120px);
+            max-width: none;
+            margin-left: 0;
+          }
         }
       `}</style>
 
-      {/* ── 1. Metadata bar ── */}
-      {/* T1.8 — Bracketed metadata: [number] / TITLE / [year] / [SECTOR] */}
-      <div
-        className="case-study-col"
-        data-entrance
-        style={{
-          paddingTop: 96,
-          opacity: 0,
-        }}
-      >
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.06em",
-            color: "var(--ink-muted)",
-          }}
-        >
-          [<span className="chrome-text">{piece.number}</span>]
-          {" / "}
-          {piece.title.toUpperCase()}
-          {" / "}
-          [{piece.status === "wip" ? "IN PROGRESS" : piece.year}]
-          {" / "}
-          [{piece.sector.toUpperCase()}]
-        </span>
-      </div>
-
-      {/* ── 2. Silence — 72px ── */}
-      <div style={{ height: 72 }} aria-hidden />
-
-      {/* ── 3. Paradox line ── */}
-      {cs?.paradox && (
-        <div
-          className="case-study-col"
-          data-entrance
-          style={{ marginBottom: 48, opacity: 0 }}
-        >
-          <p
-            className="font-display italic"
+      {/* ── Hero header — 88vh opener ── */}
+      <header className="case-study-hero">
+        {/* ── 1. Metadata bar — top of header ── */}
+        {/* T1.8 — Bracketed metadata: [number] / TITLE / [year] / [SECTOR] */}
+        <div data-entrance style={{ opacity: 0 }}>
+          <span
+            className="font-mono uppercase"
             style={{
-              fontSize: "clamp(20px, 2.5vw, 28px)",
-              lineHeight: 1.35,
-              fontWeight: 400,
-              color: "var(--ink-primary)",
-              maxWidth: "54ch",
+              fontSize: 11,
+              letterSpacing: "0.06em",
+              color: "var(--ink-muted)",
             }}
           >
-            {cs.paradox}
-          </p>
+            [<span className="chrome-text">{piece.number}</span>]
+            {" / "}
+            {piece.title.toUpperCase()}
+            {" / "}
+            [{piece.status === "wip" ? "IN PROGRESS" : piece.year}]
+            {" / "}
+            [{piece.sector.toUpperCase()}]
+          </span>
         </div>
-      )}
 
-      {/* ── 5. Stakes paragraph ── */}
-      {cs?.stakes && (
-        <div
-          className="case-study-col"
-          data-entrance
-          style={{ marginBottom: 0, opacity: 0 }}
-        >
-          <p
-            className="font-body"
-            style={{
-              fontSize: 15,
-              lineHeight: 1.7,
-              color: "var(--ink-secondary)",
-              maxWidth: "54ch",
-            }}
-          >
-            {cs.stakes}
-          </p>
-        </div>
-      )}
+        {/* ── 3. Paradox line — grows to fill space ── */}
+        {cs?.paradox && (
+          <div data-entrance style={{ opacity: 0, flex: 1, display: "flex", alignItems: "center" }}>
+            <p
+              className="font-display italic"
+              style={{
+                fontSize: "clamp(32px, 4.2vw, 56px)",
+                lineHeight: 1.25,
+                fontWeight: 400,
+                color: "var(--ink-primary)",
+                maxWidth: "54ch",
+              }}
+            >
+              {cs.paradox}
+            </p>
+          </div>
+        )}
+
+        {/* ── 5. Stakes paragraph — anchored at bottom ── */}
+        {cs?.stakes && (
+          <div data-entrance style={{ opacity: 0 }}>
+            <hr
+              style={{
+                border: "none",
+                borderTop: `1px solid ${piece.accent || "rgba(196,162,101,0.3)"}`,
+                width: "120px",
+                opacity: 0.4,
+                margin: "32px 0",
+              }}
+            />
+            <p
+              className="font-body"
+              style={{
+                fontSize: 15,
+                lineHeight: 1.7,
+                color: "var(--ink-secondary)",
+                maxWidth: "54ch",
+              }}
+            >
+              {cs.stakes}
+            </p>
+          </div>
+        )}
+      </header>
 
       {/* ── 6. Hero image — bleed right ── */}
       {piece.image && (

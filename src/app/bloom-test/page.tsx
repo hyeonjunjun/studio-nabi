@@ -1,35 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import BloomNode from "@/components/BloomNode";
-import BloomBar from "@/components/BloomBar";
-import BloomPath from "@/components/BloomPath";
 
 export default function BloomTestPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeNav, setActiveNav] = useState("work");
-  const navRef = useRef<HTMLDivElement>(null);
-  const [navWidth, setNavWidth] = useState(400);
-  const [navPositions, setNavPositions] = useState<Record<string, { center: number; width: number }>>({});
-
-  const navItems = ["work", "about", "archive"];
-
-  useEffect(() => {
-    if (!navRef.current) return;
-    const rect = navRef.current.getBoundingClientRect();
-    setNavWidth(rect.width);
-
-    const positions: Record<string, { center: number; width: number }> = {};
-    navRef.current.querySelectorAll("[data-nav-item]").forEach((el) => {
-      const itemRect = (el as HTMLElement).getBoundingClientRect();
-      const id = (el as HTMLElement).dataset.navItem!;
-      positions[id] = {
-        center: (itemRect.left - rect.left + itemRect.width / 2) / rect.width,
-        width: itemRect.width / rect.width,
-      };
-    });
-    setNavPositions(positions);
-  }, []);
 
   return (
     <main
@@ -42,133 +17,6 @@ export default function BloomTestPage() {
         gap: 80,
       }}
     >
-      {/* Section 0: BloomBar Navigation */}
-      <section>
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.1em",
-            color: "var(--ink-muted)",
-            display: "block",
-            marginBottom: 32,
-          }}
-        >
-          Navigation Bar — WuWa Active Section Treatment
-        </span>
-
-        <div
-          ref={navRef}
-          style={{
-            display: "inline-flex",
-            gap: 40,
-            paddingBottom: 0,
-            position: "relative",
-          }}
-        >
-          {navItems.map((item) => (
-            <button
-              key={item}
-              data-nav-item={item}
-              onClick={() => setActiveNav(item)}
-              className="font-mono uppercase"
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.08em",
-                color: activeNav === item ? "var(--ink-primary)" : "var(--ink-muted)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "8px 0",
-                transition: "color 200ms",
-              }}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <BloomBar
-          activePosition={navPositions[activeNav]?.center ?? 0.2}
-          activeWidth={navPositions[activeNav]?.width ? navPositions[activeNav].width + 0.06 : 0.15}
-          isActive={true}
-          width={navWidth}
-        />
-
-        <p
-          className="font-body"
-          style={{
-            fontSize: 14,
-            color: "var(--ink-ghost)",
-            marginTop: 24,
-            maxWidth: "50ch",
-          }}
-        >
-          Click the nav items above. The bloom bar tracks the active section with a flowing, undulating line. Particles rise from the active zone.
-        </p>
-      </section>
-
-      {/* Section: BloomPath — Vertical Navigation */}
-      <section>
-        <span
-          className="font-mono uppercase"
-          style={{
-            fontSize: 11,
-            letterSpacing: "0.1em",
-            color: "var(--ink-muted)",
-            display: "block",
-            marginBottom: 32,
-          }}
-        >
-          Vertical Path — WuWa Menu Treatment
-        </span>
-
-        <div style={{ display: "flex", gap: 80 }}>
-          {/* Path with text labels */}
-          <div>
-            <BloomPath
-              nodes={[
-                { id: "work", label: "Work", icon: "◆" },
-                { id: "about", label: "About", icon: "◇" },
-                { id: "archive", label: "Archive", icon: "○" },
-              ]}
-              activeId={activeNav}
-              onSelect={setActiveNav}
-            />
-          </div>
-
-          {/* Path with just icons — more WuWa-like */}
-          <div>
-            <span
-              className="font-mono"
-              style={{ fontSize: 11, color: "var(--ink-ghost)", display: "block", marginBottom: 16 }}
-            >
-              Icons only
-            </span>
-            <BloomPath
-              nodes={[
-                { id: "work", label: "", icon: "◆" },
-                { id: "about", label: "", icon: "◇" },
-                { id: "archive", label: "", icon: "○" },
-              ]}
-              activeId={activeNav}
-              onSelect={setActiveNav}
-            />
-          </div>
-        </div>
-
-        <p
-          className="font-body"
-          style={{
-            fontSize: 14,
-            color: "var(--ink-ghost)",
-            marginTop: 24,
-            maxWidth: "50ch",
-          }}
-        >
-          Click any node. The glow radiates from the active icon center. The connecting line brightens near the active node and fades to dim elsewhere. Particles float along the path.
-        </p>
-      </section>
-
       {/* Section 1: Side-by-side inactive vs active */}
       <section>
         <span
