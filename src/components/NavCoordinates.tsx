@@ -5,15 +5,12 @@ import { usePathname } from "next/navigation";
 
 export default function NavCoordinates() {
   const pathname = usePathname();
-  const aboutActive = pathname === "/about";
-  const archiveActive = pathname === "/archive";
-
-  const link = (active: boolean): React.CSSProperties => ({
+  const linkStyle = (active: boolean): React.CSSProperties => ({
     fontFamily: "var(--font-mono)",
-    fontSize: 10,
-    letterSpacing: "0.06em",
+    fontSize: 9,
+    letterSpacing: "0.08em",
     textTransform: "uppercase",
-    color: active ? "var(--text-primary)" : "var(--text-muted)",
+    color: active ? "var(--nd-100)" : "var(--nd-600)",
     textDecoration: "none",
     transition: "color 0.15s var(--ease)",
   });
@@ -23,14 +20,16 @@ export default function NavCoordinates() {
       aria-label="Site navigation"
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
+        top: 16,
+        left: 16,
+        right: 16,
         zIndex: 50,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "12px clamp(16px, 3vw, 48px)",
+        padding: "10px 16px",
+        background: "var(--pill-bg)",
+        borderRadius: 4,
         pointerEvents: "none",
       }}
     >
@@ -38,21 +37,32 @@ export default function NavCoordinates() {
         href="/"
         style={{
           fontFamily: "var(--font-mono)",
-          fontSize: 10,
+          fontSize: 9,
           letterSpacing: "0.08em",
           textTransform: "uppercase",
-          color: "var(--text-primary)",
+          color: "var(--nd-100)",
           textDecoration: "none",
           pointerEvents: "auto",
         }}
       >
-        HKJ
+        HKJ / Design Engineer
       </Link>
 
-      <div style={{ display: "flex", gap: 16, pointerEvents: "auto" }}>
-        <Link href="/about" style={link(aboutActive)}>About</Link>
-        <Link href="/archive" style={link(archiveActive)}>Archive</Link>
+      <div style={{ display: "flex", gap: 20, pointerEvents: "auto" }}>
+        <Link href="/" style={linkStyle(pathname === "/")}>Work</Link>
+        <Link href="/about" style={linkStyle(pathname === "/about")}>About</Link>
+        <Link href="/archive" style={linkStyle(pathname === "/archive")}>Archive</Link>
       </div>
+
+      <span style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: 9,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: "var(--nd-600)",
+      }}>
+        NY / 2026
+      </span>
     </nav>
   );
 }
