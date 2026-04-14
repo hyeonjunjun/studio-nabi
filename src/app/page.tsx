@@ -14,61 +14,37 @@ gsap.registerPlugin(ScrollTrigger);
 
 const allPieces = [...PIECES].sort((a, b) => a.order - b.order);
 
-/* ════════════════════════════════════════════════════════════
-   Shared inline-style constants
-   ════════════════════════════════════════════════════════════ */
+/* Values calibrated to NaughtyDuk + Cathy Dolle references */
+const MAX_W = 1200;
+const PAD = "clamp(16px, 3vw, 48px)";
 
-const CONTENT_MAX = 1000;
-const CONTENT_PAD = "clamp(24px, 5vw, 80px)";
-const PROJECT_GAP = "clamp(80px, 10vh, 120px)";
-
-const mono11: React.CSSProperties = {
+const mono: React.CSSProperties = {
   fontFamily: "var(--font-mono)",
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: 400,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.1em",
+  letterSpacing: "0.06em",
+  lineHeight: 1.2,
 };
-
-/* ════════════════════════════════════════════════════════════
-   Home
-   ════════════════════════════════════════════════════════════ */
 
 export default function Home() {
   const hoveredSlug = useStore((s) => s.hoveredSlug);
   const setHoveredSlug = useStore((s) => s.setHoveredSlug);
-
   const mainRef = useRef<HTMLElement>(null);
 
-  /* ── Entrance animations ──────────────────────────────── */
   useEffect(() => {
-    const prefersReduced =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
-      /* Hero reveals */
       gsap.from("[data-reveal]", {
-        opacity: 0,
-        y: 24,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power3.out",
-        delay: 0.3,
+        opacity: 0, y: 20, duration: 0.5,
+        stagger: 0.06, ease: "power2.out", delay: 0.2,
       });
 
-      /* Project items — scroll-triggered */
       gsap.utils.toArray<HTMLElement>("[data-project]").forEach((el) => {
         gsap.from(el, {
-          opacity: 0,
-          y: 32,
-          duration: 0.6,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%",
-            once: true,
-          },
+          opacity: 0, y: 24, duration: 0.5, ease: "power2.out",
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
         });
       });
     }, mainRef);
@@ -77,33 +53,25 @@ export default function Home() {
   }, []);
 
   return (
-    <main
-      ref={mainRef}
-      style={{
-        minHeight: "100vh",
-        background: "var(--surface)",
-        color: "var(--text-primary)",
-      }}
-    >
-      {/* ══════════════════════════════════════════════════════
-          HERO — 85vh breathing space
-          ══════════════════════════════════════════════════════ */}
+    <main ref={mainRef} id="main">
+      {/* ── Hero ── */}
       <section
         style={{
-          minHeight: "85vh",
+          minHeight: "100svh",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          maxWidth: CONTENT_MAX,
+          justifyContent: "flex-end",
+          maxWidth: MAX_W,
           margin: "0 auto",
-          paddingInline: CONTENT_PAD,
+          paddingInline: PAD,
+          paddingBottom: 64,
         }}
       >
         <h1
           data-reveal
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: "clamp(36px, 5vw, 64px)",
+            fontSize: "clamp(32px, 6vw, 96px)",
             fontWeight: 400,
             lineHeight: 1.1,
             letterSpacing: "-0.02em",
@@ -114,62 +82,28 @@ export default function Home() {
           Hyeon Jun
         </h1>
 
-        <p
-          data-reveal
-          style={{
-            ...mono11,
-            color: "var(--text-muted)",
-            margin: "24px 0 0",
-          }}
-        >
-          Design Engineer
-        </p>
-
-        <p
-          data-reveal
-          style={{
-            ...mono11,
-            color: "var(--text-muted)",
-            margin: "8px 0 0",
-          }}
-        >
-          New York
-        </p>
+        <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
+          <span data-reveal style={{ ...mono, color: "var(--text-muted)" }}>
+            Design Engineer
+          </span>
+          <span data-reveal style={{ ...mono, color: "var(--text-ghost)" }}>
+            /
+          </span>
+          <span data-reveal style={{ ...mono, color: "var(--text-muted)" }}>
+            New York
+          </span>
+        </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          DIVIDER
-          ══════════════════════════════════════════════════════ */}
-      <div
-        style={{
-          maxWidth: CONTENT_MAX,
-          margin: "0 auto",
-          paddingInline: CONTENT_PAD,
-        }}
-      >
-        <hr
-          style={{
-            border: "none",
-            borderTop: "1px solid var(--divider)",
-            margin: 0,
-          }}
-        />
-      </div>
-
-      {/* ══════════════════════════════════════════════════════
-          PROJECT LIST
-          ══════════════════════════════════════════════════════ */}
+      {/* ── Projects ── */}
       <section
-        className="project-list"
         style={{
-          maxWidth: CONTENT_MAX,
+          maxWidth: MAX_W,
           margin: "0 auto",
-          paddingInline: CONTENT_PAD,
-          paddingTop: PROJECT_GAP,
-          paddingBottom: PROJECT_GAP,
+          paddingInline: PAD,
         }}
       >
-        {allPieces.map((piece) => {
+        {allPieces.map((piece, i) => {
           const isHovered = hoveredSlug === piece.slug;
           const anyHovered = hoveredSlug !== null;
           const isDimmed = anyHovered && !isHovered;
@@ -179,61 +113,69 @@ export default function Home() {
               key={piece.slug}
               active={isHovered}
               accentColor={piece.accent || "#C4A265"}
-              style={{
-                marginBottom: PROJECT_GAP,
-                display: "block",
-              }}
+              noParticles={isDimmed}
+              style={{ display: "block" }}
             >
               <Link
                 href={`/work/${piece.slug}`}
                 data-project
+                className="project-item"
                 onMouseEnter={() => setHoveredSlug(piece.slug)}
                 onMouseLeave={() => setHoveredSlug(null)}
                 style={{
                   display: "block",
                   textDecoration: "none",
                   color: "inherit",
-                  opacity: isDimmed ? 0.25 : 1,
-                  filter: isDimmed ? "blur(2px)" : "none",
-                  transition:
-                    "opacity 200ms var(--ease-swift), filter 200ms var(--ease-swift)",
+                  paddingTop: 48,
+                  paddingBottom: 48,
+                  borderBottom: "1px solid var(--divider)",
+                  opacity: isDimmed ? 0.5 : 1,
+                  transition: "opacity 0.2s var(--ease)",
                 }}
               >
-                {/* ── Number ────────────────────────────── */}
-                <span
+                {/* Row 1: number + title + year */}
+                <div
                   style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "clamp(48px, 6vw, 80px)",
-                    fontWeight: 300,
-                    color: "var(--text-ghost)",
-                    lineHeight: 1,
-                    display: "block",
-                    marginBottom: 16,
+                    display: "flex",
+                    alignItems: "baseline",
+                    justifyContent: "space-between",
+                    marginBottom: 12,
                   }}
                 >
-                  {piece.number}
-                </span>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+                    <span style={{ ...mono, color: "var(--text-muted)", fontSize: 10 }}>
+                      {piece.number}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "clamp(16px, 1.4vw, 20px)",
+                        fontWeight: 500,
+                        lineHeight: 1.3,
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      {piece.title}_
+                    </span>
+                  </div>
 
-                {/* ── Title + Description ───────────────── */}
-                <h2
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "clamp(18px, 2vw, 24px)",
-                    fontWeight: 500,
-                    color: "var(--text-primary)",
-                    margin: "0 0 8px",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {piece.title}_
-                </h2>
+                  <div style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
+                    <span style={{ ...mono, color: "var(--text-muted)" }}>
+                      {piece.sector}
+                    </span>
+                    <span style={{ ...mono, color: "var(--text-ghost)" }}>
+                      {piece.status === "wip" ? "WIP" : piece.year}
+                    </span>
+                  </div>
+                </div>
 
+                {/* Row 2: description */}
                 <p
                   style={{
                     fontFamily: "var(--font-body)",
-                    fontSize: 15,
+                    fontSize: 13,
                     color: "var(--text-secondary)",
-                    maxWidth: "42ch",
+                    maxWidth: "48ch",
                     lineHeight: 1.5,
                     margin: "0 0 24px",
                   }}
@@ -241,62 +183,39 @@ export default function Home() {
                   {piece.description}
                 </p>
 
-                {/* ── Image ─────────────────────────────── */}
+                {/* Row 3: image */}
                 {piece.image && (
-                  <div
-                    style={{
-                      width: "100%",
-                      borderRadius: 2,
-                      overflow: "hidden",
-                      marginBottom: 16,
-                    }}
-                  >
+                  <div style={{ overflow: "hidden" }}>
                     <Image
                       src={piece.image}
                       alt={piece.title}
-                      width={1000}
-                      height={600}
-                      sizes="(max-width: 1000px) 100vw, 1000px"
+                      width={1200}
+                      height={700}
+                      sizes="(max-width: 768px) 100vw, 1200px"
+                      className="image-desaturated"
                       style={{
                         width: "100%",
                         height: "auto",
                         display: "block",
-                        filter: isHovered
-                          ? "saturate(1)"
-                          : "saturate(0.5)",
-                        transition:
-                          "filter 300ms var(--ease-swift)",
                       }}
                     />
                   </div>
                 )}
 
-                {/* ── Tags + metadata ───────────────────── */}
+                {/* Row 4: tags */}
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
+                    gap: 12,
+                    marginTop: 16,
                     flexWrap: "wrap",
-                    gap: 8,
                   }}
                 >
-                  <span
-                    style={{
-                      ...mono11,
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    {piece.tags.join("  ")}
-                  </span>
-                  <span
-                    style={{
-                      ...mono11,
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    {piece.year} · {piece.status === "wip" ? "WIP" : "Shipped"}
-                  </span>
+                  {piece.tags.map((tag) => (
+                    <span key={tag} style={{ ...mono, color: "var(--text-ghost)" }}>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </Link>
             </BloomNode>
@@ -304,77 +223,46 @@ export default function Home() {
         })}
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          FOOTER
-          ══════════════════════════════════════════════════════ */}
+      {/* ── Footer ── */}
       <footer
         style={{
-          maxWidth: CONTENT_MAX,
+          maxWidth: MAX_W,
           margin: "0 auto",
-          paddingInline: CONTENT_PAD,
-          paddingTop: "clamp(80px, 12vh, 140px)",
-          paddingBottom: "clamp(40px, 6vh, 80px)",
+          paddingInline: PAD,
+          paddingTop: 80,
+          paddingBottom: 32,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          flexWrap: "wrap",
+          gap: 16,
         }}
       >
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          data-reveal
-          style={{
-            ...mono11,
-            color: "var(--text-muted)",
-            display: "block",
-            marginBottom: 16,
-            textDecoration: "none",
-            transition: "color 200ms",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.color = "var(--text-primary)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = "var(--text-muted)")
-          }
+          style={{ ...mono, color: "var(--text-muted)" }}
         >
           {CONTACT_EMAIL}
         </a>
-
-        <div
-          data-reveal
-          style={{ display: "flex", gap: 24 }}
-        >
+        <div style={{ display: "flex", gap: 16 }}>
           {SOCIALS.map((s) => (
             <a
               key={s.label}
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                ...mono11,
-                color: "var(--text-muted)",
-                textDecoration: "none",
-                transition: "color 200ms",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "var(--text-primary)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "var(--text-muted)")
-              }
+              style={{ ...mono, color: "var(--text-muted)" }}
             >
-              {s.label.toUpperCase()}
+              {s.label}
             </a>
           ))}
         </div>
       </footer>
 
-      {/* ══════════════════════════════════════════════════════
-          MOBILE: disable depth-of-field on touch devices
-          ══════════════════════════════════════════════════════ */}
+      {/* Depth-of-field hover — CSS fallback for touch devices */}
       <style>{`
         @media (hover: none) {
-          .project-list [data-project] {
-            opacity: 1 !important;
-            filter: none !important;
-          }
+          .project-item { opacity: 1 !important; filter: none !important; }
         }
       `}</style>
     </main>
