@@ -1,14 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { PIECES } from "@/constants/pieces";
-import { CONTACT_EMAIL, SOCIALS } from "@/constants/contact";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const allPieces = [...PIECES].sort((a, b) => a.order - b.order);
 
@@ -17,240 +11,269 @@ const mono: React.CSSProperties = {
   fontSize: 9,
   letterSpacing: "0.08em",
   textTransform: "uppercase" as const,
-  lineHeight: 1.4,
+};
+
+/* Visual identity per project — flat color panels with centered mark */
+const CARD_STYLES: Record<string, { bg: string; fg: string; mark: string }> = {
+  gyeol: { bg: "#1a1a1a", fg: "#fafafa", mark: "T//" },
+  sift: { bg: "#efefef", fg: "#1a1a1a", mark: "◆" },
+  promptineer: { bg: "#d93b3b", fg: "#1a1a1a", mark: "///" },
+  "clouds-at-sea": { bg: "#1a1a1a", fg: "#fafafa", mark: "X" },
 };
 
 export default function Home() {
-  const mainRef = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const total = allPieces.length;
+
+  const next = useCallback(() => setActive((i) => (i + 1) % total), [total]);
+  const prev = useCallback(() => setActive((i) => (i - 1 + total) % total), [total]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from("[data-reveal]", {
-        opacity: 0, y: 16, duration: 0.6, stagger: 0.06,
-        ease: "power2.out", delay: 0.3,
-      });
-      gsap.utils.toArray<HTMLElement>("[data-project]").forEach((el) => {
-        gsap.from(el, {
-          opacity: 0, y: 24, duration: 0.7, ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 85%", once: true },
-        });
-      });
-    }, mainRef);
-    return () => ctx.revert();
-  }, []);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) < 20 && Math.abs(e.deltaY) < 20) return;
+      if (timer) return;
+      if (e.deltaX > 0 || e.deltaY > 0) next();
+      else prev();
+      timer = setTimeout(() => { timer = null; }, 400);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("wheel", onWheel, { passive: true });
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("wheel", onWheel);
+      if (timer) clearTimeout(timer);
+    };
+  }, [next, prev]);
+
+  const activePiece = allPieces[active];
 
   return (
-    <main ref={mainRef} id="main" style={{ position: "relative", zIndex: 2 }}>
-      {/* ── Hero: big statement, edge-to-edge ── */}
+    <main
+      id="main"
+      style={{
+        position: "relative",
+        minHeight: "100svh",
+        overflow: "hidden",
+      }}
+    >
+      {/* ── Carousel stage ── */}
       <section
         style={{
-          minHeight: "90svh",
-          padding: "120px 16px 64px",
+          position: "absolute",
+          inset: 0,
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <span data-reveal style={{ ...mono, color: "var(--text-muted)", display: "block", marginBottom: 40 }}>
-            Portfolio / 2021 — 2026
-          </span>
-        </div>
-
-        <div>
-          <h1
-            data-reveal
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "clamp(48px, 9vw, 160px)",
-              fontWeight: 500,
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              color: "var(--text-primary)",
-              margin: 0,
-              maxWidth: "14ch",
-            }}
-          >
-            Design engineer building considered digital work.
-          </h1>
-
-          <div
-            data-reveal
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              marginTop: 48,
-              flexWrap: "wrap",
-              gap: 16,
-            }}
-          >
-            <span style={{ ...mono, color: "var(--text-muted)" }}>
-              Hyeon Jun / New York
-            </span>
-            <span style={{ ...mono, color: "var(--text-muted)" }}>
-              Scroll to explore ↓
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Projects: full-bleed cards, 4rem gaps (NaughtyDuk pattern) ── */}
-      <section
-        style={{
-          padding: "0 16px",
-          display: "grid",
-          gridTemplateColumns: "repeat(12, 1fr)",
-          columnGap: 16,
-          rowGap: 64,
-        }}
-      >
-        {allPieces.map((piece, i) => {
-          /* Alternate layout: even = left-2-col, odd = right-offset */
-          const isOdd = i % 2 === 1;
-          return (
-            <Link
-              key={piece.slug}
-              href={`/work/${piece.slug}`}
-              data-project
-              style={{
-                gridColumn: isOdd
-                  ? "7 / span 6"
-                  : "1 / span 7",
-                display: "block",
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ProjectCard piece={piece} />
-            </Link>
-          );
-        })}
-      </section>
-
-      {/* ── Footer pill (matches nav) ── */}
-      <footer
-        style={{
-          margin: "120px 16px 16px",
-          padding: "16px 20px",
-          background: "var(--pill-bg)",
-          borderRadius: 4,
-          display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: 16,
+          justifyContent: "center",
+          perspective: "1400px",
         }}
       >
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          style={{ ...mono, color: "var(--nd-100)" }}
-        >
-          {CONTACT_EMAIL}
-        </a>
-        <div style={{ display: "flex", gap: 20 }}>
-          {SOCIALS.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ...mono, color: "var(--nd-600)" }}
-            >
-              {s.label}
-            </a>
-          ))}
-        </div>
-        <span style={{ ...mono, color: "var(--nd-600)" }}>
-          © {new Date().getFullYear()} HKJ
-        </span>
-      </footer>
-
-      {/* Mobile: collapse grid to single column */}
-      <style>{`
-        @media (max-width: 768px) {
-          main section:nth-of-type(2) > a {
-            grid-column: 1 / -1 !important;
-          }
-        }
-      `}</style>
-    </main>
-  );
-}
-
-/* ── Project card with image + metadata ── */
-function ProjectCard({ piece }: { piece: typeof allPieces[0] }) {
-  return (
-    <article>
-      {/* Image */}
-      {piece.image ? (
         <div
           style={{
             position: "relative",
-            aspectRatio: "4 / 3",
-            overflow: "hidden",
-            borderRadius: 2,
-            background: "var(--nd-400)",
+            width: "min(80vw, 1000px)",
+            height: "min(48vw, 560px)",
+            transformStyle: "preserve-3d",
           }}
         >
-          <Image
-            src={piece.image}
-            alt={piece.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            style={{
-              objectFit: "cover",
-              transition: "transform 0.6s var(--ease)",
-            }}
-          />
-        </div>
-      ) : (
-        <div
-          style={{
-            aspectRatio: "4 / 3",
-            background: "var(--nd-400)",
-            borderRadius: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span style={{ ...mono, color: "var(--text-faint)" }}>
-            {piece.status === "wip" ? "In progress" : piece.title}
-          </span>
-        </div>
-      )}
+          {allPieces.map((piece, i) => {
+            const offset = i - active;
+            const abs = Math.abs(offset);
+            const style = CARD_STYLES[piece.slug] ?? {
+              bg: "#1a1a1a",
+              fg: "#fafafa",
+              mark: piece.number,
+            };
+            /* Cards to the side get tilted + pushed back */
+            const translateX = offset * 62;
+            const translateZ = -abs * 260;
+            const rotateY = offset * -24;
+            const opacity = abs > 2 ? 0 : 1 - abs * 0.25;
 
-      {/* Meta row */}
-      <div
+            return (
+              <Link
+                key={piece.slug}
+                href={`/work/${piece.slug}`}
+                onMouseEnter={() => setActive(i)}
+                aria-label={piece.title}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  transform: `translate3d(${translateX}%, 0, ${translateZ}px) rotateY(${rotateY}deg)`,
+                  transition: "transform 0.7s cubic-bezier(.2,.8,.2,1), opacity 0.5s ease",
+                  transformOrigin: "center center",
+                  opacity,
+                  pointerEvents: abs > 1 ? "none" : "auto",
+                  zIndex: 10 - abs,
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    background: style.bg,
+                    borderRadius: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: abs === 0
+                      ? "0 40px 80px -20px rgba(0,0,0,0.4)"
+                      : "0 20px 40px -20px rgba(0,0,0,0.2)",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "clamp(48px, 8vw, 120px)",
+                      fontWeight: 700,
+                      color: style.fg,
+                      letterSpacing: "-0.04em",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {style.mark}
+                  </span>
+
+                  {/* Corner marks */}
+                  <span style={{ ...mono, position: "absolute", top: 12, left: 12, color: style.fg, opacity: 0.4 }}>
+                    CH# {piece.number}
+                  </span>
+                  <span style={{ ...mono, position: "absolute", top: 12, right: 12, color: style.fg, opacity: 0.4 }}>
+                    {piece.year}
+                  </span>
+                  <span style={{ ...mono, position: "absolute", bottom: 12, left: 12, color: style.fg, opacity: 0.4 }}>
+                    {piece.title.replace(/_$/, "")}
+                  </span>
+                  <span style={{ ...mono, position: "absolute", bottom: 12, right: 12, color: style.fg, opacity: 0.4 }}>
+                    {piece.status === "wip" ? "WIP" : "LIVE"}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Caption beneath carousel ── */}
+      <section
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          marginTop: 12,
-          gap: 12,
+          position: "absolute",
+          bottom: "calc(16vh)",
+          left: "50%",
+          transform: "translateX(-50%)",
+          textAlign: "center",
+          zIndex: 20,
+          pointerEvents: "none",
+          maxWidth: "min(90vw, 640px)",
         }}
       >
-        <div style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
-          <span style={{ ...mono, color: "var(--text-faint)" }}>
-            {piece.number}
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: 14,
-              fontWeight: 500,
-              color: "var(--text-primary)",
-            }}
-          >
-            {piece.title}
-          </span>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 16,
+          marginBottom: 12,
+        }}>
+          {allPieces.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              aria-label={`Go to project ${i + 1}`}
+              style={{
+                width: i === active ? 20 : 6,
+                height: 2,
+                background: i === active ? "var(--nd-1100)" : "var(--nd-600)",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                transition: "width 0.4s var(--ease)",
+                pointerEvents: "auto",
+              }}
+            />
+          ))}
         </div>
-        <span style={{ ...mono, color: "var(--text-muted)" }}>
-          {piece.sector} / {piece.status === "wip" ? "WIP" : piece.year}
-        </span>
-      </div>
-    </article>
+
+        <h1 style={{
+          fontFamily: "var(--font-body)",
+          fontSize: "clamp(18px, 1.8vw, 28px)",
+          fontWeight: 600,
+          color: "var(--nd-1100)",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.3,
+          margin: 0,
+        }}>
+          {activePiece.title.replace(/_$/, "")}
+        </h1>
+
+        <p style={{
+          fontFamily: "var(--font-body)",
+          fontSize: 13,
+          color: "var(--nd-700)",
+          lineHeight: 1.4,
+          margin: "8px auto 0",
+          maxWidth: "46ch",
+        }}>
+          {activePiece.description}
+        </p>
+
+        <div style={{ ...mono, marginTop: 16, color: "var(--nd-700)" }}>
+          {activePiece.sector}&nbsp;&nbsp;/&nbsp;&nbsp;{String(active + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
+        </div>
+      </section>
+
+      {/* ── Side arrow hints ── */}
+      <button
+        onClick={prev}
+        aria-label="Previous project"
+        style={{
+          position: "fixed",
+          left: 16,
+          top: "50%",
+          transform: "translateY(-50%)",
+          zIndex: 40,
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-mono)",
+          fontSize: 16,
+          color: "var(--nd-700)",
+          padding: 12,
+          transition: "color 0.15s var(--ease)",
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = "var(--nd-1100)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = "var(--nd-700)"; }}
+      >
+        ←
+      </button>
+      <button
+        onClick={next}
+        aria-label="Next project"
+        style={{
+          position: "fixed",
+          right: 16,
+          top: "50%",
+          transform: "translateY(-50%)",
+          zIndex: 40,
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-mono)",
+          fontSize: 16,
+          color: "var(--nd-700)",
+          padding: 12,
+          transition: "color 0.15s var(--ease)",
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = "var(--nd-1100)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = "var(--nd-700)"; }}
+      >
+        →
+      </button>
+    </main>
   );
 }
