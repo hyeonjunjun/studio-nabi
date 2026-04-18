@@ -462,27 +462,34 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
           style={{ marginBottom: 64, opacity: 0 }}
         >
           <SectionLabel>Numbers</SectionLabel>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 48 }}>
             {cs.statistics.map((stat, i) => (
-              <AsciiFrame
-                key={stat.label}
-                topLeft={`${String(i + 1).padStart(2, "0")} / ${stat.label.toUpperCase()}`}
-                padding={16}
-              >
+              <div key={stat.label}>
+                <span
+                  className="font-mono uppercase block"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.14em",
+                    color: "var(--ink-faint)",
+                    marginBottom: 12,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")} / {stat.label}
+                </span>
                 <span
                   className="block"
                   style={{
                     fontFamily: "var(--font-serif)",
                     fontStyle: "italic",
-                    fontSize: "clamp(28px, 4vw, 44px)",
+                    fontSize: "clamp(40px, 5vw, 72px)",
                     fontVariantNumeric: "tabular-nums",
-                    color: "var(--ink)",
+                    color: "var(--accent)",
                     lineHeight: 1,
                   }}
                 >
                   {stat.value}
                 </span>
-              </AsciiFrame>
+              </div>
             ))}
           </div>
         </div>
@@ -543,50 +550,49 @@ export default function CaseStudy({ piece }: CaseStudyProps) {
             opacity: 0,
           }}
         >
-          <Link href={`/work/${nextPiece.slug}`} style={{ display: "block" }}>
-            <AsciiFrame
-              topLeft="NEXT →"
-              topRight={String(nextPiece.year)}
-              bottomLeft={nextPiece.sector.toUpperCase()}
-              bottomRight={nextPiece.status === "wip" ? "IN PROGRESS" : "SHIPPED"}
-              padding={24}
+          <Link
+            href={`/work/${nextPiece.slug}`}
+            style={{
+              display: "block",
+              borderTop: "1px solid var(--ink-ghost)",
+              paddingTop: 24,
+            }}
+          >
+            <span
+              className="font-mono uppercase block"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                color: "var(--ink-muted)",
+                marginBottom: 12,
+              }}
             >
-              <span
-                className="font-mono uppercase block"
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.06em",
-                  color: "var(--ink-muted)",
-                  marginBottom: 12,
-                }}
-              >
-                Next
-              </span>
-              <span
-                className="block"
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontWeight: 400,
-                  fontSize: "clamp(24px, 3vw, 36px)",
-                  lineHeight: 1.2,
-                  color: "var(--ink)",
-                  marginBottom: 8,
-                }}
-              >
-                {nextPiece.title}
-              </span>
-              <span
-                className="font-mono uppercase block"
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.06em",
-                  color: "var(--ink-muted)",
-                }}
-              >
-                {nextPiece.sector} · {nextPiece.year}
-              </span>
-            </AsciiFrame>
+              NEXT →
+            </span>
+            <span
+              className="block"
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontStyle: "italic",
+                fontWeight: 400,
+                fontSize: "clamp(24px, 3vw, 36px)",
+                lineHeight: 1.2,
+                color: "var(--ink)",
+                marginBottom: 8,
+              }}
+            >
+              {nextPiece.title}
+            </span>
+            <span
+              className="font-mono uppercase block"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                color: "var(--ink-muted)",
+              }}
+            >
+              {nextPiece.sector} · {nextPiece.year}
+            </span>
           </Link>
         </div>
       )}

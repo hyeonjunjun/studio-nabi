@@ -56,29 +56,44 @@ export default function AboutPage() {
             padding={0}
           >
             <div className="about-portrait__media">
+              <pre className="about-portrait__ascii">{`      ........
+    ..::::::::..
+   .::=====-:-::
+  .-==+***+==-::
+  :-=+#####+=-::
+  :=+#######+=-:
+  .-=+######+=-:
+   .-=+####+=-:
+     .-====-..
+       ::::
+      :::::
+     :::::::
+    :::::::::
+   :::::::::::
+  :::::::::::::
+ :::::::::::::::`}</pre>
               <span className="about-portrait__label">
-                [ PORTRAIT / ASCII PLACEHOLDER ]
+                SUBJECT · HYEONJOON · 2026
               </span>
             </div>
           </AsciiFrame>
         </div>
 
         <div className="about-philosophy" data-reveal style={{ opacity: 0 }}>
-          <div className="about-kicker">ABOUT · HKJ · 2026</div>
+          <div className="about-kicker">ABOUT · HYEONJOON · 2026</div>
           <p className="about-statement">
-            Design engineer building at the intersection of{" "}
-            <span className="about-statement__em">craft</span> and systems
-            thinking.
+            I&apos;m a design engineer working at the intersection of craft
+            and systems thinking.
           </p>
           <p className="about-body">
             I care about type, motion, and the invisible details that make
-            digital products feel considered — the margins you only notice
-            when they&apos;re wrong, the easing curves that make a transition
-            feel alive.
+            digital products feel considered. I treat AI as a collaborator —
+            a force multiplier, not a shortcut — and I build brands,
+            interfaces, and atmospheres for people who take care of the work.
           </p>
           <p className="about-body">
-            Based in New York, working independently on projects that bridge
-            design engineering and brand craft.
+            Based in New York. Available for full-time design engineering
+            roles and selected consulting through 2026.
           </p>
         </div>
 
@@ -86,7 +101,7 @@ export default function AboutPage() {
           <AsciiFrame
             topLeft="EXPERIENCE / 03 ENTRIES"
             topRight="2021 – 2026"
-            bottomLeft="INDEPENDENT · DESIGN ENGINEERING"
+            bottomLeft="INDEPENDENT PRACTICE · DESIGN ENGINEERING"
             padding={0}
           >
             <div className="about-experience__inner">
@@ -118,7 +133,7 @@ export default function AboutPage() {
           >
             <div className="about-contact__inner">
               <p className="about-contact__lede">
-                For work inquiries, reach me at{" "}
+                For work inquiries, freelance, or a quick hello — reach me at{" "}
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="about-contact__mail"
@@ -147,7 +162,7 @@ export default function AboutPage() {
         <footer className="about-signoff" data-reveal style={{ opacity: 0 }}>
           <div className="about-signoff__name">Hyeonjoon</div>
           <div className="about-signoff__role">
-            — DESIGN ENGINEER, HKJ · 2026
+            — DESIGN ENGINEER · NEW YORK · AVAILABLE 2026
           </div>
         </footer>
       </div>
@@ -181,17 +196,38 @@ export default function AboutPage() {
           position: relative;
           width: 100%;
           aspect-ratio: 4 / 5;
-          background: var(--paper-2);
+          background-color: var(--paper-2);
+          background-image: radial-gradient(circle, rgba(28,28,26,0.1) 1px, transparent 1.5px);
+          background-size: 6px 6px;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-        .about-portrait__label {
+        .about-portrait__ascii {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           font-family: var(--font-mono);
-          font-size: 11px;
+          font-size: 8px;
+          line-height: 1;
+          color: var(--ink);
+          opacity: 0.7;
+          margin: 0;
+          white-space: pre;
+          text-align: center;
+        }
+        .about-portrait__label {
+          position: absolute;
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-family: var(--font-mono);
+          font-size: 9px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--ink-faint);
+          white-space: nowrap;
         }
         .about-kicker {
           font-family: var(--font-mono);

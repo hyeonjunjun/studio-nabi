@@ -29,7 +29,7 @@ export default function NavCoordinates() {
         style={{
           fontFamily: "var(--font-mono)",
           fontSize: 11,
-          letterSpacing: "0.14em",
+          letterSpacing: "0.08em",
           textTransform: "uppercase",
           color: "var(--ink)",
           textDecoration: "none",
@@ -39,19 +39,16 @@ export default function NavCoordinates() {
         onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
       >
-        HKJ
+        HYEONJOON
       </Link>
       <div style={{ display: "flex", gap: 24, pointerEvents: "auto" }}>
         <Link href="/about" className={`nav-link${pathname === "/about" ? " is-active" : ""}`}>
-          <span className="nav-link-arrow" aria-hidden>→</span>
           <span className="nav-link-text">About</span>
         </Link>
         <Link href="/" className={`nav-link${pathname === "/" ? " is-active" : ""}`}>
-          <span className="nav-link-arrow" aria-hidden>→</span>
           <span className="nav-link-text">Work</span>
         </Link>
         <a href="mailto:hyeonjunjun07@gmail.com" className="nav-link">
-          <span className="nav-link-arrow" aria-hidden>→</span>
           <span className="nav-link-text">Contact</span>
         </a>
       </div>
@@ -67,32 +64,13 @@ export default function NavCoordinates() {
           transition: color 200ms var(--ease);
         }
         .nav-link.is-active {
-          color: var(--ink);
+          color: var(--accent);
         }
         .nav-link:hover {
           color: var(--ink);
           text-decoration: underline;
           text-underline-offset: 4px;
           text-decoration-thickness: 1px;
-        }
-        .nav-link-arrow {
-          display: inline-block;
-          overflow: hidden;
-          font-family: var(--font-mono);
-          font-size: 10px;
-          color: var(--ink);
-          opacity: 0;
-          width: 0;
-          margin-right: 0;
-          transform: translateX(-4px);
-          transition: opacity 200ms var(--ease), width 200ms var(--ease),
-            margin-right 200ms var(--ease), transform 200ms var(--ease);
-        }
-        .nav-link:hover .nav-link-arrow {
-          opacity: 1;
-          width: 1em;
-          margin-right: 6px;
-          transform: translateX(0);
         }
       `}</style>
     </nav>

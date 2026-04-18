@@ -75,7 +75,7 @@ export default function BloomTestPage() {
           Hover to Activate
         </span>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-          {["Gyeol: 결", "Sift", "Promptineer", "Clouds at Sea"].map(
+          {["Gyeol: 결", "Sift", "Pane", "Clouds at Sea"].map(
             (name, i) => (
               <BloomNode
                 key={name}

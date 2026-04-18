@@ -10,7 +10,9 @@
   --ink-2:   #5A5A56;
   --ink-3:   #92928E;
   --ink-4:   #C6C6C2;
-  --accent:  #C4A265;
+  --accent:      #5B89B5;  /* Hanada — twilight sky blue, signature accent */
+  --accent-soft: rgba(91, 137, 181, 0.12);  /* wash / live-indicator background */
+  --accent-deep: #3E6C98;  /* hover / pressed state */
 
   /* Semantic aliases — used throughout pages */
   --ink-primary:   var(--ink);

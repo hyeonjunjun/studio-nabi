@@ -8,6 +8,7 @@ type AsciiFrameProps = {
   topRight?: string;
   bottomLeft?: string;
   bottomRight?: string;
+  bottomRightAccent?: boolean;
   className?: string;
   padding?: number;
   as?: React.ElementType;
@@ -19,6 +20,7 @@ export default function AsciiFrame({
   topRight,
   bottomLeft,
   bottomRight,
+  bottomRightAccent,
   className,
   padding = 0,
   as: Tag = "div",
@@ -46,7 +48,21 @@ export default function AsciiFrame({
         <div className="ascii-strip ascii-strip-bot">
           <span className="ascii-strip-text">{bottomLeft ?? ""}</span>
           <span className="ascii-strip-rule" />
-          <span className="ascii-strip-text">{bottomRight ?? ""}</span>
+          <span className="ascii-strip-text">
+            {bottomRightAccent ? (
+              <span
+                style={{
+                  fontFamily: "var(--font-stack-mono)",
+                  fontSize: 10,
+                  color: "var(--accent)",
+                  marginRight: 6,
+                }}
+              >
+                ●
+              </span>
+            ) : null}
+            {bottomRight}
+          </span>
         </div>
       ) : null}
       <style jsx>{`

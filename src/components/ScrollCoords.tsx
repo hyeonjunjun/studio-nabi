@@ -60,7 +60,7 @@ export default function ScrollCoords() {
   return (
     <>
       <div className="scroll-coords" aria-hidden="true">
-        <span>SCROLL {progress.toFixed(2)} / 1.00</span>
+        <span>SCROLL <span style={{ color: "var(--accent)" }}>{progress.toFixed(2)}</span> / 1.00</span>
         <span>PATH {pathname || "/"}</span>
         <span>POS {xStr},{yStr}</span>
       </div>

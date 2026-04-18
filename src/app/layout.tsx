@@ -7,7 +7,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import NavCoordinates from "@/components/NavCoordinates";
 import PageTransition from "@/components/PageTransition";
 import Reticle from "@/components/Reticle";
-import ScrollCoords from "@/components/ScrollCoords";
+import SystemBar from "@/components/SystemBar";
+import ColophonOverlay from "@/components/ColophonOverlay";
 
 const generalSans = localFont({
   src: "../fonts/general-sans/GeneralSans-Variable.woff2",
@@ -35,23 +36,23 @@ const fragmentMono = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hkjstudio.com"),
-  title: { default: "HKJ", template: "%s — HKJ" },
+  title: { default: "Hyeonjoon", template: "%s — Hyeonjoon" },
   description:
-    "HKJ is the studio of Hyeonjoon, design engineer based in New York.",
+    "Hyeonjoon — design engineer based in New York. Building brands, interfaces, and atmospheres.",
   openGraph: {
-    title: "HKJ — Hyeonjoon, design engineer",
+    title: "Hyeonjoon — design engineer, New York",
     description:
-      "HKJ is the studio of Hyeonjoon, design engineer based in New York.",
+      "Hyeonjoon — design engineer based in New York. Building brands, interfaces, and atmospheres.",
     url: "https://hkjstudio.com",
-    siteName: "HKJ",
+    siteName: "Hyeonjoon",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HKJ — Hyeonjoon, design engineer",
+    title: "Hyeonjoon — design engineer, New York",
     description:
-      "HKJ is the studio of Hyeonjoon, design engineer based in New York.",
+      "Hyeonjoon — design engineer based in New York. Building brands, interfaces, and atmospheres.",
     creator: "@hyeonjunjun",
   },
 };
@@ -68,7 +69,8 @@ export default function RootLayout({
         <SmoothScroll />
         <NavCoordinates />
         <Reticle />
-        <ScrollCoords />
+        <SystemBar />
+        <ColophonOverlay />
         <a href="#main" className="skip-to-content">
           Skip to content
         </a>

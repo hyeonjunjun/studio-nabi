@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "HKJ — Hyeonjoon, design engineer";
+export const alt = "Hyeonjoon — design engineer, New York";
 export const size = {
   width: 1200,
   height: 630,
@@ -36,13 +36,13 @@ export default async function Image() {
         >
           <div
             style={{
-              fontSize: 36,
+              fontSize: 28,
               fontFamily: "monospace",
               letterSpacing: "0.14em",
               color: "#1C1C1A",
             }}
           >
-            HKJ
+            Hyeonjoon
           </div>
           <div
             style={{
@@ -102,7 +102,7 @@ export default async function Image() {
               color: "#5A5A56",
             }}
           >
-            HKJ · N40.71° W74.00°
+            HYEONJOON · N40.71° W74.00°
           </div>
           <div
             style={{
