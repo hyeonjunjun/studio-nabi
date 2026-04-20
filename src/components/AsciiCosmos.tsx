@@ -107,41 +107,43 @@ export default function AsciiCosmos({ cell = 9 }: Props) {
           const dist = Math.sqrt(x * x + y * y);
 
           // ---- Core (bright saturated disk) ----
-          const core = Math.exp(-dist * 6.5) * 2.2 * breath;
-          const coreHalo = Math.exp(-dist * 2.2) * 0.28;
+          const core = Math.exp(-dist * 6.0) * 2.4 * breath;
+          const coreHalo = Math.exp(-dist * 2.0) * 0.38;
 
-          // ---- 4-point diffraction spikes (thin, sharp, dominant) ----
-          // Perpendicular is very tight; parallel falls off moderately.
+          // ---- 4-point diffraction spikes ----
+          // Horizontal: extends further across the frame (the "lens flare" axis).
+          // Vertical: tighter so it doesn't punch into the navbar.
           const spikeH =
             Math.exp(-Math.abs(y) * 95) *
-            Math.exp(-Math.abs(x) * 1.8) *
-            1.35;
+            Math.exp(-Math.abs(x) * 1.15) *
+            1.45;
           const spikeV =
             Math.exp(-Math.abs(x) * 95) *
-            Math.exp(-Math.abs(y) * 1.8) *
+            Math.exp(-Math.abs(y) * 2.8) *
             1.35;
 
-          // Secondary diagonal spikes — much weaker, shorter
+          // Secondary diagonal spikes — clearly present, classic telescope "X"
           const d1 = (x + y) * 0.7071;
           const d2 = (x - y) * 0.7071;
           const spikeD1 =
-            Math.exp(-Math.abs(d2) * 140) *
-            Math.exp(-Math.abs(d1) * 3.0) *
-            0.42;
+            Math.exp(-Math.abs(d2) * 130) *
+            Math.exp(-Math.abs(d1) * 2.2) *
+            0.58;
           const spikeD2 =
-            Math.exp(-Math.abs(d1) * 140) *
-            Math.exp(-Math.abs(d2) * 3.0) *
-            0.42;
+            Math.exp(-Math.abs(d1) * 130) *
+            Math.exp(-Math.abs(d2) * 2.2) *
+            0.58;
 
           // ---- Bipolar protostellar jet (asymmetric, dominant feature) ----
           const along = x * cosJ + y * sinJ; // projection onto jet axis
           const perp = -x * sinJ + y * cosJ; // perpendicular distance
           const jetWidth = 0.02 + 0.045 * Math.abs(along);
-          const jetStrength = along > 0 ? 1.0 : 0.4; // brighter toward lower-right
-          // Clumpiness — slow movement along the jet
+          const jetStrength = along > 0 ? 1.0 : 0.55; // brighter toward lower-right
+          // Clumpiness — slow movement along the jet. Floor stays high so the
+          // jet reads as a continuous line with brighter bands, not gaps.
           const clump =
-            0.5 +
-            0.5 *
+            0.72 +
+            0.28 *
               Math.abs(
                 Math.sin(along * 14 + tSec * 0.35) *
                   Math.cos(along * 28 + tSec * 0.12)
@@ -179,9 +181,9 @@ export default function AsciiCosmos({ cell = 9 }: Props) {
           const dux = x + 0.55;
           const duy = y + 0.35;
           const ddist2 = dux * dux + duy * duy;
-          const dustEnv = Math.exp(-ddist2 * 14); // very tight Gaussian
-          // Only show dust when noise happens to be high — sparse wisps, not a solid blob
-          const dust = dustEnv * Math.max(0, smoothNoise - 0.35) * 0.85;
+          const dustEnv = Math.exp(-ddist2 * 18); // very tight Gaussian
+          // Only show dust where noise is above threshold — sparse wisps only
+          const dust = dustEnv * Math.max(0, smoothNoise - 0.5) * 0.9;
 
           // ---- Sparse background starfield (bright pinpoints only) ----
           let stars = 0;
