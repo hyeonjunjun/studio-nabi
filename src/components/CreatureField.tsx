@@ -202,79 +202,137 @@ export default function CreatureField({
         ctx.arc(-1 * c.size, -B * 0.5, B * 0.32, 0, Math.PI * 2);
         ctx.fill();
       } else if (currentMode === "land") {
-        const beeAlpha = isDark ? 0.88 * a : 0.75 * a;
-        ctx.fillStyle = getInkColor(beeAlpha);
-        const R = 4.0 * c.size;
+        // Bee — chunky oval body with a pale band, two small oval wings above,
+        // rim highlight. Oriented to velocity.
+        const beeAlpha = isDark ? 0.88 * a : 0.78 * a;
+        const bodyL = 5.2 * c.size;
+        const bodyB = 3.4 * c.size;
+
+        // Wings — two small pale ellipses flanking the top of the body.
+        // Flap: scale on the minor axis driven by phase.
+        const flap = 0.55 + Math.sin(c.phase * 2.2) * 0.35;
+        const wingAlpha = isDark ? 0.42 * a : 0.32 * a;
+        const wingColor = isDark ? `rgba(245, 239, 227, ${wingAlpha})` : `rgba(255, 255, 255, ${wingAlpha * 2})`;
+        ctx.fillStyle = wingColor;
+        ctx.strokeStyle = getInkColor(wingAlpha * 1.4);
+        ctx.lineWidth = 0.8;
+        // left wing
         ctx.beginPath();
-        ctx.arc(0, 0, R, 0, Math.PI * 2);
+        ctx.ellipse(-bodyL * 0.1, -bodyB * 0.85, bodyL * 0.55, bodyB * 0.55 * flap, -0.3, 0, Math.PI * 2);
         ctx.fill();
-        const wingFlap = Math.sin(c.phase) * 0.3 + 0.7;
-        ctx.strokeStyle = getInkColor(0.28 * a * wingFlap);
-        ctx.lineWidth = 1;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.arc(-1, -2 * c.size, 3.6 * c.size, Math.PI, Math.PI * 1.8);
         ctx.stroke();
+        // right wing
         ctx.beginPath();
-        ctx.arc(1, -2 * c.size, 3.6 * c.size, Math.PI * 1.2, Math.PI * 2);
+        ctx.ellipse(bodyL * 0.3, -bodyB * 0.85, bodyL * 0.55, bodyB * 0.55 * flap, 0.3, 0, Math.PI * 2);
+        ctx.fill();
         ctx.stroke();
-        const hlAlpha = isDark ? 0.55 * a : 0.42 * a;
+
+        // Body
+        ctx.fillStyle = getInkColor(beeAlpha);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, bodyL, bodyB, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Single faint band across the body (bee stripe hint)
+        const bandColor = isDark ? `rgba(14, 17, 23, ${0.35 * a})` : `rgba(247, 247, 245, ${0.5 * a})`;
+        ctx.fillStyle = bandColor;
+        ctx.beginPath();
+        ctx.ellipse(-bodyL * 0.25, 0, bodyL * 0.22, bodyB, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Rim highlight on top-back of body
+        const hlAlpha = isDark ? 0.55 * a : 0.45 * a;
         const hlColor = isDark ? `rgba(245, 239, 227, ${hlAlpha})` : `rgba(255, 255, 255, ${hlAlpha})`;
         ctx.fillStyle = hlColor;
         ctx.beginPath();
-        ctx.arc(-R * 0.35, -R * 0.35, R * 0.3, 0, Math.PI * 2);
+        ctx.arc(bodyL * 0.35, -bodyB * 0.45, bodyB * 0.32, 0, Math.PI * 2);
         ctx.fill();
       } else if (currentMode === "sky") {
-        const birdAlpha = isDark ? 0.90 * a : 0.78 * a;
+        // Bird — seagull silhouette. Two arcing wings meeting at a small body oval.
+        // Drawn with quadratic curves for a soft sweep.
+        const birdAlpha = isDark ? 0.90 * a : 0.82 * a;
         ctx.strokeStyle = getInkColor(birdAlpha);
-        ctx.lineWidth = 1.8;
+        ctx.lineWidth = 2.0;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-        const W = 10 * c.size;
-        const H = 3.6 * c.size;
+
+        const W = 11 * c.size;  // wing span (each side)
+        const H = 2.5 * c.size; // wing height at tip
+        const apexY = -H * 0.1;
+
+        // Left wing — quadratic curve arcing up from tip, dipping slightly, to apex
         ctx.beginPath();
-        ctx.moveTo(-W, H);
-        ctx.lineTo(0, -H * 0.4);
-        ctx.lineTo(W, H);
+        ctx.moveTo(-W, H * 0.4);
+        ctx.quadraticCurveTo(-W * 0.45, -H * 1.2, 0, apexY);
         ctx.stroke();
+        // Right wing — mirror
+        ctx.beginPath();
+        ctx.moveTo(0, apexY);
+        ctx.quadraticCurveTo(W * 0.45, -H * 1.2, W, H * 0.4);
+        ctx.stroke();
+
+        // Tiny body oval at the apex
+        const bodyAlpha = isDark ? 0.95 * a : 0.88 * a;
+        ctx.fillStyle = getInkColor(bodyAlpha);
+        ctx.beginPath();
+        ctx.ellipse(0, apexY, 1.6 * c.size, 1.0 * c.size, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Rim highlight on body
         const hlAlpha = isDark ? 0.55 * a : 0.4 * a;
         const hlColor = isDark ? `rgba(245, 239, 227, ${hlAlpha})` : `rgba(255, 255, 255, ${hlAlpha})`;
         ctx.fillStyle = hlColor;
         ctx.beginPath();
-        ctx.arc(0, -H * 0.4, 1.2 * c.size, 0, Math.PI * 2);
+        ctx.arc(-0.4 * c.size, apexY - 0.2 * c.size, 0.6 * c.size, 0, Math.PI * 2);
         ctx.fill();
       } else {
         ctx.rotate(-angle);
-        const outerR = 4.2 * c.size;
-        const innerR = 1.8 * c.size;
+        // Star — 5-point rounded, refined colors, gentle glow.
+        // Per-creature brightness variance based on phase (some stars brighter).
+        const brightness = 0.75 + Math.sin(c.phase * 0.7) * 0.25; // 0.5..1.0
+
+        const outerR = 4.4 * c.size * brightness;
+        const innerR = 1.9 * c.size * brightness;
+
         if (isDark) {
-          ctx.fillStyle = `rgba(245, 239, 227, ${0.18 * a})`;
+          // Outer halo — soft atmospheric glow
+          const haloGrad = ctx.createRadialGradient(0, 0, outerR * 0.5, 0, 0, outerR * 2.2);
+          haloGrad.addColorStop(0, `rgba(245, 239, 227, ${0.28 * a * brightness})`);
+          haloGrad.addColorStop(1, `rgba(245, 239, 227, 0)`);
+          ctx.fillStyle = haloGrad;
           ctx.beginPath();
-          ctx.arc(0, 0, 5 * c.size, 0, Math.PI * 2);
+          ctx.arc(0, 0, outerR * 2.2, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = `rgba(245, 239, 227, ${0.92 * a})`;
+          // Star body — warm cream
+          ctx.fillStyle = `rgba(248, 240, 220, ${0.95 * a})`;
           drawStar(0, 0, outerR, innerR);
           ctx.fill();
-          ctx.fillStyle = `rgba(255, 255, 255, ${0.55 * a})`;
+          // Small central glow highlight
+          const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, outerR * 0.8);
+          coreGrad.addColorStop(0, `rgba(255, 255, 255, ${0.6 * a})`);
+          coreGrad.addColorStop(1, `rgba(255, 255, 255, 0)`);
+          ctx.fillStyle = coreGrad;
           ctx.beginPath();
-          ctx.arc(-outerR * 0.3, -outerR * 0.3, outerR * 0.22, 0, Math.PI * 2);
+          ctx.arc(0, 0, outerR * 0.8, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillStyle = `rgba(234, 208, 140, ${0.14 * a})`;
+          // Light mode — cleaner filled star, no outline. Warmer amber.
+          // Soft amber halo beneath
+          const haloGrad = ctx.createRadialGradient(0, 0, outerR * 0.4, 0, 0, outerR * 1.8);
+          haloGrad.addColorStop(0, `rgba(214, 180, 110, ${0.18 * a})`);
+          haloGrad.addColorStop(1, `rgba(214, 180, 110, 0)`);
+          ctx.fillStyle = haloGrad;
           ctx.beginPath();
-          ctx.arc(0, 0, 5 * c.size, 0, Math.PI * 2);
+          ctx.arc(0, 0, outerR * 1.8, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = `rgba(180, 150, 92, ${0.78 * a})`;
+          // Star fill — warm amber, no outline
+          ctx.fillStyle = `rgba(196, 162, 101, ${0.85 * a})`;
           drawStar(0, 0, outerR, innerR);
           ctx.fill();
-          ctx.strokeStyle = `rgba(100, 78, 40, ${0.35 * a})`;
-          ctx.lineWidth = 0.6;
-          ctx.lineJoin = "round";
-          drawStar(0, 0, outerR, innerR);
-          ctx.stroke();
-          ctx.fillStyle = `rgba(255, 255, 255, ${0.48 * a})`;
+          // Tiny bright core
+          ctx.fillStyle = `rgba(255, 242, 210, ${0.65 * a})`;
           ctx.beginPath();
-          ctx.arc(-outerR * 0.3, -outerR * 0.3, outerR * 0.2, 0, Math.PI * 2);
+          ctx.arc(0, 0, outerR * 0.22, 0, Math.PI * 2);
           ctx.fill();
         }
       }
