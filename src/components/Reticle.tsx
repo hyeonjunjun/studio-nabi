@@ -38,6 +38,7 @@ export default function Reticle() {
   useEffect(() => {
     if (!enabled) return;
     if (typeof document === "undefined") return;
+    if (pathname === "/" || pathname === "/writing") return;
 
     const onMove = (e: MouseEvent) => {
       posRef.current = { x: e.clientX, y: e.clientY };
@@ -124,7 +125,7 @@ export default function Reticle() {
       document.body.classList.remove("cursor-reveal");
       document.body.classList.remove("reticle-active");
     };
-  }, [enabled, visible, reduced]);
+  }, [enabled, visible, reduced, pathname]);
 
   if (!enabled) return null;
   if (pathname === "/" || pathname === "/writing") return null;
