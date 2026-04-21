@@ -14,18 +14,60 @@ The site is more TouchDesigner than camera. More scientific-plot than product pa
 
 ## 2. Taste lineage
 
+> The site's committed direction as of 2026-04-21 is **Minimalism + natural-grounded + mathematically structured + wabi-sabi** — a quiet editorial register, "observation log" voice. The viewfinder / live-telemetry / blob-tracking era (see §9) is retired. Sections 3–8 below are being revised to match.
+
+### Primary lineage (2026-04 reset)
+
 | Reference | What it contributes |
 |---|---|
-| **TouchDesigner / creative coding** | Live-sampled data, feedback overlays, vector-field ornament, chromatic events as signature moments |
-| **Teenage Engineering** | Technical instrumentation, specification labels, dense mono typography |
-| **Nothing** | Dot-matrix restraint, monochrome discipline punctuated by a single accent |
-| **Refik Anadol / Field.io / Universal Everything** | Real media treated as data to be visualized; mathematical aesthetic |
-| **Wabi-sabi / Japanese design** | Hanada sky blue (縹色), imperfection, asymmetric restraint |
-| **Camera / plotter aesthetics** | Blob-tracking boxes with live RGB readouts; mathematically derived coordinates |
-| **Editorial annotation (magazine spec sheets)** | Thin-line callouts on product media with bold labels |
-| **Diaristic handwritten annotation (Instagram ski photos)** | Caveat-script callouts on personal media for emotional context |
+| **Kenya Hara** — *Designing Design*, Muji art direction | The page as emptiness with a single precise element; "emptiness as a vessel for meaning"; the observation stance (what is looked at more than what is said) |
+| **Massimo Vignelli** — Unigrid, NY Subway, American Airlines | Strict grid discipline; Helvetica + serif duet; color as punctuation, never decoration |
+| **Dieter Rams** / Braun | Physical-switch restraint; honest material; "less, but better"; the good design ten theses |
+| **Teenage Engineering** — OP-1, Pocket Operator | Dense mono specification labels; numbered entries; manual-style typography; utilitarian panel layout |
+| **Flora Guo** — floguo.com | Dictionary-entry framing; prose-as-portfolio; work surfaced inline as body-text references, not UI cards |
+| **Craig Mod** — craigmod.com | Essay-publication cadence; dated reverse-chronological ledgers; scholarly-journal density |
 
-*Deprioritized:* explicit game references (Zelda Sheikah slate / WuWa character screen) — the site draws atmospheric mood from games but doesn't mimic their UI.
+### Designers referenced in Hara's *Designing Design*
+
+Borrow from specifically when asked. Hara's book is the spiritual center of this reset.
+
+| Designer | Discipline | Contribution |
+|---|---|---|
+| **Ikko Tanaka** | Graphic design | Hara's mentor; Nihon Buyo poster; compositional calm, Japanese modernism |
+| **Naoto Fukasawa** | Product (Muji, Super Normal) | "Without thought" design; objects that disappear into use |
+| **Jasper Morrison** | Product (Super Normal) | Quiet functionality; un-designed objects as the hardest thing |
+| **Masahiko Sato** | Information / pedagogical design | Systematic visual language, Pythagora Switch |
+| **Masaaki Hiromura** | Graphic / signage | Typographic rhythm; wayfinding as composition |
+| **Taku Satoh** | Graphic design | Identity systems; sugar-packet scale discipline |
+| **Issey Miyake** | Fashion | A-POC; fabric as process; geometry in cloth |
+| **Rei Kawakubo** / Comme des Garçons | Fashion | Conceptual severity; negative construction |
+| **Yohji Yamamoto** | Fashion | Black as total language; drape as statement |
+| **Shiro Kuramata** | Furniture / interior | Transparent materials; light as substance |
+| **Sori Yanagi** | Industrial design | Butterfly Stool; quiet craft; pre-war Japanese modernism |
+| **Tadao Ando** | Architecture | Concrete, light, and silence |
+| **Kazuyo Sejima** / SANAA | Architecture | Transparency; thin membrane; weightless form |
+| **Toyo Ito** | Architecture | Permeable structure; fluid geometry |
+| **Shigeru Ban** | Architecture | Paper architecture; humanitarian material |
+| **Kengo Kuma** | Architecture | Natural materials, grain, stratification |
+| **Shunmyo Masuno** | Zen garden design | Empty composition; negative space as subject |
+| **Hiroshi Sugimoto** | Photography | Seascapes; long-exposure horizon as line drawing |
+| **Daido Moriyama** | Photography | Grain, imperfection, wabi-sabi texture |
+| **Shigeo Fukuda** | Graphic design | Visual wit by minimal means |
+| **Yusaku Kamekura** | Graphic design | 1964 Tokyo Olympics posters; clarity |
+| **Kazuko Koike** | Writer / curator | Muji's founding intellect; the brand as idea |
+| **Tokujin Yoshioka** | Installation / industrial | Materiality through light + transparency |
+
+### Adjacent references
+
+| Reference | What it contributes |
+|---|---|
+| **Swiss typography** — Müller-Brockmann, Hofmann | Grid as invisible scaffolding; mathematical type |
+| **Nothing** (Carl Pei) | Dot-matrix restraint; monochrome with single accent |
+| **Rauno Freiberg** — rauno.me | Interactive micro-flourish ("Copied" toast, sound) as the engineer tell |
+| **Emil Kowalski** — emilkowal.ski | Portfolio = shipped libraries; substance over packaging |
+| **Robin Rendle** — robinrendle.com | Dated 900-note ledger as the homepage itself; magnitude as signal |
+
+*Deprioritized / retired:* TouchDesigner data-viz, Refik Anadol decorative data, Zelda Sheikah slate, WuWa character screens, Universal Everything. See §9.
 
 ## 3. Architecture
 

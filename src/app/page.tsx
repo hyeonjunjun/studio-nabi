@@ -32,7 +32,7 @@ export default function Home() {
 
         {/* ── Masthead ────────────────────────────────── */}
         <div className="cover__mast">
-          <h1 className="cover__name">Hyeonjoon Jun</h1>
+          <h1 className="cover__name">An observation log.</h1>
           <div className="cover__mast-rule" aria-hidden>
             <span className="cover__rule" />
             <span className="cover__mast-dot">●</span>
