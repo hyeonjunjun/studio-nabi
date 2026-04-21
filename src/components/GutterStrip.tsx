@@ -2,113 +2,197 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { Piece } from "@/constants/pieces";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-type Props = { pieces: Piece[] };
+type Props = {
+  pieces: Piece[];
+  /** Called with the logical 0-based project index whenever the active project changes. */
+  onActiveChange?: (activeIdx: number) => void;
+};
 
 /**
- * GutterStrip — a looping vertical carousel of project media.
+ * GutterStrip — a wheel-driven snap carousel of project media.
  *
- * The pieces list is tripled so the strip can wrap seamlessly: on
- * mount we seek to the middle copy, and any time the user scrolls
- * past the first or third copy boundary we silently jump back by
- * exactly one set's height. scroll-behavior is `auto` inside the
- * strip so the teleport is invisible.
+ * One wheel tick = one project. Each transition animates for ~900ms
+ * with a cubic ease-in-out (the "heavy" feel). Parallax is applied
+ * per-frame during animation. Content is tripled so the active
+ * project is always sourced from the middle set; after each
+ * transition settles, we teleport the scroll position back to the
+ * middle-set equivalent so the loop is infinite and seamless.
  *
- * Each frame uses the project's own `coverAspect` — portraits and
- * landscapes and squares stacked into an organic magazine column,
- * the way Cathy Dolle's Slider stack reads.
- *
- * Media inside each frame is oversized (130% height, -15% top) and
- * receives a transform on scroll proportional to that frame's
- * distance from the strip's viewport center. Slight parallax — the
- * media appears to hold its depth while the frame scrolls past.
- * Reduced-motion clients get static framing and no loop teleport.
+ * Reduced-motion clients see static framing, no parallax, no snap.
  */
-export default function GutterStrip({ pieces }: Props) {
+const SNAP_DURATION = 920;
+const PARALLAX = 0.14;
+const WHEEL_LOCK_MS = 280;
+
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+export default function GutterStrip({ pieces, onActiveChange }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-
   const tripled = useMemo(() => [...pieces, ...pieces, ...pieces], [pieces]);
 
+  const pieceCount = pieces.length;
+
+  // DOM index within the tripled list; start at first item of middle set
+  const domIdxRef = useRef(pieceCount);
+  const animIdRef = useRef<number | null>(null);
+  const isAnimatingRef = useRef(false);
+  const wheelLockRef = useRef(false);
+
+  const getItems = useCallback(() => {
+    const strip = rootRef.current;
+    if (!strip) return [] as HTMLElement[];
+    return Array.from(strip.querySelectorAll<HTMLElement>(".strip__item"));
+  }, []);
+
+  const scrollTopForDomIdx = useCallback(
+    (domIdx: number) => {
+      const strip = rootRef.current;
+      if (!strip) return 0;
+      const items = getItems();
+      const target = items[domIdx];
+      if (!target) return 0;
+      return (
+        target.offsetTop + target.offsetHeight / 2 - strip.clientHeight / 2
+      );
+    },
+    [getItems]
+  );
+
+  const applyParallax = useCallback(() => {
+    const strip = rootRef.current;
+    if (!strip || reduced) return;
+    const stripRect = strip.getBoundingClientRect();
+    const stripCenter = stripRect.top + stripRect.height / 2;
+    getItems().forEach((item) => {
+      const media = item.querySelector<HTMLElement>(".strip__media-wrap");
+      if (!media) return;
+      const rect = item.getBoundingClientRect();
+      const itemCenter = rect.top + rect.height / 2;
+      const distance = itemCenter - stripCenter;
+      const offset = distance * PARALLAX;
+      media.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+    });
+  }, [getItems, reduced]);
+
+  const teleportIfNeeded = useCallback(() => {
+    const strip = rootRef.current;
+    if (!strip) return;
+    const domIdx = domIdxRef.current;
+    if (domIdx < pieceCount) {
+      domIdxRef.current = domIdx + pieceCount;
+      strip.scrollTop = scrollTopForDomIdx(domIdxRef.current);
+      applyParallax();
+    } else if (domIdx >= pieceCount * 2) {
+      domIdxRef.current = domIdx - pieceCount;
+      strip.scrollTop = scrollTopForDomIdx(domIdxRef.current);
+      applyParallax();
+    }
+  }, [applyParallax, pieceCount, scrollTopForDomIdx]);
+
+  const animateTo = useCallback(
+    (newDomIdx: number) => {
+      const strip = rootRef.current;
+      if (!strip) return;
+
+      if (animIdRef.current !== null) {
+        cancelAnimationFrame(animIdRef.current);
+      }
+
+      const startTop = strip.scrollTop;
+      const targetTop = scrollTopForDomIdx(newDomIdx);
+      const delta = targetTop - startTop;
+      const startTime = performance.now();
+
+      isAnimatingRef.current = true;
+
+      const frame = (now: number) => {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / SNAP_DURATION, 1);
+        const eased = easeInOutCubic(t);
+        strip.scrollTop = startTop + delta * eased;
+        applyParallax();
+
+        if (t < 1) {
+          animIdRef.current = requestAnimationFrame(frame);
+        } else {
+          animIdRef.current = null;
+          isAnimatingRef.current = false;
+          domIdxRef.current = newDomIdx;
+          teleportIfNeeded();
+        }
+      };
+      animIdRef.current = requestAnimationFrame(frame);
+    },
+    [applyParallax, scrollTopForDomIdx, teleportIfNeeded]
+  );
+
+  // Initial seek to middle set + initial active announce
   useEffect(() => {
     const strip = rootRef.current;
     if (!strip) return;
 
-    const setCount = pieces.length;
-    const items = Array.from(
-      strip.querySelectorAll<HTMLElement>(".strip__item")
-    );
-    if (items.length === 0) return;
-
-    // Seek to the top of the middle copy so the user has buffer on both sides.
-    const seekToMiddle = () => {
-      const singleSetHeight = strip.scrollHeight / 3;
-      strip.scrollTop = singleSetHeight;
+    const init = () => {
+      domIdxRef.current = pieceCount;
+      strip.scrollTop = scrollTopForDomIdx(pieceCount);
+      applyParallax();
+      onActiveChange?.(0);
     };
 
-    if (!reduced) {
-      // Double rAF so layout settles before we seek.
-      requestAnimationFrame(() => requestAnimationFrame(seekToMiddle));
-    }
+    requestAnimationFrame(() => requestAnimationFrame(init));
 
-    let rafPending = false;
-    const update = () => {
-      rafPending = false;
-      const stripRect = strip.getBoundingClientRect();
-      const stripCenter = stripRect.top + stripRect.height / 2;
-
-      items.forEach((item) => {
-        const media = item.querySelector<HTMLElement>(".strip__media-wrap");
-        if (!media) return;
-        const itemRect = item.getBoundingClientRect();
-        const itemCenter = itemRect.top + itemRect.height / 2;
-        const distance = itemCenter - stripCenter;
-        const offset = distance * 0.14; // slight parallax
-        media.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
-      });
-
-      // Teleport loop: if we're in the first or third set, jump back to middle.
-      if (!reduced) {
-        const singleSetHeight = strip.scrollHeight / 3;
-        const s = strip.scrollTop;
-        if (s < singleSetHeight * 0.5) {
-          strip.scrollTop = s + singleSetHeight;
-        } else if (s > singleSetHeight * 2.5) {
-          strip.scrollTop = s - singleSetHeight;
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (rafPending) return;
-      rafPending = true;
-      requestAnimationFrame(update);
-    };
-
-    strip.addEventListener("scroll", handleScroll, { passive: true });
-
-    // Resize observer to re-seek + re-parallax on layout changes.
     const ro = new ResizeObserver(() => {
-      if (!reduced) seekToMiddle();
-      update();
+      if (!isAnimatingRef.current) {
+        strip.scrollTop = scrollTopForDomIdx(domIdxRef.current);
+        applyParallax();
+      }
     });
     ro.observe(strip);
 
     return () => {
-      strip.removeEventListener("scroll", handleScroll);
       ro.disconnect();
+      if (animIdRef.current !== null) cancelAnimationFrame(animIdRef.current);
     };
-  }, [pieces.length, reduced]);
+  }, [pieceCount, scrollTopForDomIdx, applyParallax, onActiveChange]);
+
+  // Wheel interception — one tick, one project
+  useEffect(() => {
+    const strip = rootRef.current;
+    if (!strip) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (reduced) return;
+      if (isAnimatingRef.current || wheelLockRef.current) return;
+
+      const direction = e.deltaY > 0 ? 1 : -1;
+
+      wheelLockRef.current = true;
+      window.setTimeout(() => {
+        wheelLockRef.current = false;
+      }, WHEEL_LOCK_MS);
+
+      const newDomIdx = domIdxRef.current + direction;
+      const activeIdx =
+        ((newDomIdx - pieceCount) % pieceCount + pieceCount) % pieceCount;
+      onActiveChange?.(activeIdx);
+      animateTo(newDomIdx);
+    };
+
+    strip.addEventListener("wheel", handleWheel, { passive: false });
+    return () => strip.removeEventListener("wheel", handleWheel);
+  }, [animateTo, onActiveChange, pieceCount, reduced]);
 
   return (
     <div
       ref={rootRef}
       className="strip"
-      aria-label="Project media, scrollable"
-      data-reduced={reduced ? "" : undefined}
+      aria-label="Project media, wheel-to-advance"
       data-lenis-prevent
     >
       <ol className="strip__list">
@@ -118,8 +202,8 @@ export default function GutterStrip({ pieces }: Props) {
               href={`/work/${p.slug}`}
               className="strip__link"
               data-cursor-label="OPEN PROJECT"
-              aria-hidden={i >= pieces.length ? "true" : undefined}
-              tabIndex={i >= pieces.length ? -1 : undefined}
+              aria-hidden={i < pieceCount || i >= pieceCount * 2 ? "true" : undefined}
+              tabIndex={i < pieceCount || i >= pieceCount * 2 ? -1 : undefined}
             >
               <div
                 className="strip__plate"
@@ -143,7 +227,7 @@ export default function GutterStrip({ pieces }: Props) {
                       src={p.cover.src}
                       alt={p.title}
                       fill
-                      sizes="(max-width: 900px) 100vw, 420px"
+                      sizes="(max-width: 900px) 100vw, 720px"
                       className="strip__media"
                       data-fit={p.coverFit ?? "cover"}
                     />
@@ -162,11 +246,10 @@ export default function GutterStrip({ pieces }: Props) {
       <style>{`
         .strip {
           height: 100%;
-          overflow-y: auto;
+          overflow-y: hidden;
           overflow-x: hidden;
           scrollbar-width: none;
           -ms-overflow-style: none;
-          scroll-behavior: auto;
           /* Soft vertical fade so scroll-hidden edges don't feel cut */
           -webkit-mask-image: linear-gradient(
             to bottom,
@@ -201,10 +284,8 @@ export default function GutterStrip({ pieces }: Props) {
           width: 100%;
           background: color-mix(in oklab, var(--paper) 94%, var(--ink) 6%);
           overflow: hidden;
-          will-change: contents;
         }
 
-        /* Oversized wrap: parallax transforms apply here, never showing bg */
         .strip__media-wrap {
           position: absolute;
           top: -15%;
