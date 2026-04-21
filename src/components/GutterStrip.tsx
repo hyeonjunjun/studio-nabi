@@ -292,12 +292,14 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           overflow: hidden;
         }
 
+        /* Oversized so parallax at its extreme brings the media's natural
+           top/bottom edge exactly to the frame border — no leak, no waste. */
         .strip__media-wrap {
           position: absolute;
-          top: -15%;
+          top: -25%;
           left: 0;
           width: 100%;
-          height: 130%;
+          height: 150%;
           will-change: transform;
         }
 
