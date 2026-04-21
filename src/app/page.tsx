@@ -122,7 +122,7 @@ export default function Home() {
         /* ── Stage: 3 columns (text · strip · text) ───── */
         .cd__stage {
           display: grid;
-          grid-template-columns: minmax(140px, 1fr) minmax(500px, 58vw) minmax(140px, 1fr);
+          grid-template-columns: minmax(180px, 1fr) minmax(280px, 34vw) minmax(180px, 1fr);
           gap: clamp(16px, 2.5vw, 40px);
           align-items: stretch;
           min-height: 0;

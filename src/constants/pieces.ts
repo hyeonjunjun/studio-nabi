@@ -22,6 +22,8 @@ export interface Piece {
   coverFit?: "cover" | "center";
   /** Aspect ratio string for the home strip frame (e.g. "16 / 9", "4 / 5", "1 / 1"). */
   coverAspect?: string;
+  /** Width as a percentage of the strip column (0–100). Defaults to 100. */
+  coverWidth?: number;
   tags: string[];
 }
 
@@ -38,6 +40,7 @@ export const PIECES: Piece[] = [
     year: 2026,
     cover: { kind: "video", src: "/assets/cloudsatsea.mp4" },
     coverAspect: "16 / 9",
+    coverWidth: 100,
     tags: ["webgl", "generative"],
   },
   {
@@ -56,7 +59,8 @@ export const PIECES: Piece[] = [
       src: "/assets/gyeol-broll-combined.mp4",
       poster: "/images/gyeol-spring.webp",
     },
-    coverAspect: "4 / 5",
+    coverAspect: "3 / 4",
+    coverWidth: 68,
     tags: ["brand", "ecommerce", "3d"],
   },
   {
@@ -70,7 +74,8 @@ export const PIECES: Piece[] = [
       "A Jarvis-like ambient dashboard — contextual telemetry, focused attention, quiet systems.",
     status: "wip",
     year: 2026,
-    coverAspect: "4 / 3",
+    coverAspect: "16 / 10",
+    coverWidth: 86,
     tags: ["dashboard", "ambient", "ai"],
   },
   {
@@ -87,6 +92,7 @@ export const PIECES: Piece[] = [
     cover: { kind: "image", src: "/images/sift-v2.webp" },
     coverFit: "center",
     coverAspect: "9 / 16",
+    coverWidth: 54,
     tags: ["mobile", "ai", "product"],
   },
   {
@@ -101,6 +107,7 @@ export const PIECES: Piece[] = [
     status: "wip",
     year: 2026,
     coverAspect: "1 / 1",
+    coverWidth: 64,
     tags: ["brand", "packaging", "concept"],
   },
   {
@@ -114,7 +121,8 @@ export const PIECES: Piece[] = [
       "Micro-publication and reading society — a quiet typographic brand for slow thought.",
     status: "wip",
     year: 2026,
-    coverAspect: "3 / 4",
+    coverAspect: "2 / 3",
+    coverWidth: 72,
     tags: ["brand", "editorial", "concept"],
   },
   {
@@ -128,7 +136,8 @@ export const PIECES: Piece[] = [
       "Objects and scent — sculptural bottle system, minimal ingredient-led identity.",
     status: "wip",
     year: 2026,
-    coverAspect: "2 / 3",
+    coverAspect: "3 / 2",
+    coverWidth: 92,
     tags: ["brand", "fragrance", "concept"],
   },
   {
@@ -142,7 +151,8 @@ export const PIECES: Piece[] = [
       "Tea house identity and menu system — Hallasan heritage, ceramic-forward.",
     status: "wip",
     year: 2026,
-    coverAspect: "5 / 4",
+    coverAspect: "4 / 5",
+    coverWidth: 58,
     tags: ["brand", "hospitality", "concept"],
   },
 ];

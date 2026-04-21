@@ -197,7 +197,11 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
     >
       <ol className="strip__list">
         {tripled.map((p, i) => (
-          <li key={`${p.slug}-${i}`} className="strip__item">
+          <li
+            key={`${p.slug}-${i}`}
+            className="strip__item"
+            style={{ width: `${p.coverWidth ?? 100}%` }}
+          >
             <Link
               href={`/work/${p.slug}`}
               className="strip__link"
@@ -272,10 +276,12 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           list-style: none;
           margin: 0;
           padding: 0;
-          display: grid;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           gap: 0;
         }
-        .strip__item { margin: 0; }
+        .strip__item { margin: 0; flex: 0 0 auto; }
 
         .strip__link { display: block; color: var(--ink); }
 
