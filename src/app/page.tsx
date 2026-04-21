@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import DifferenceCursor from "@/components/DifferenceCursor";
 import GutterStrip from "@/components/GutterStrip";
+import AmbientAscii from "@/components/AmbientAscii";
 import { PIECES } from "@/constants/pieces";
 
 const EMAIL = "rykjun@gmail.com";
@@ -29,6 +30,7 @@ export default function Home() {
   return (
     <main id="main" className="home">
       <div className="home__grain" aria-hidden />
+      <AmbientAscii />
       <DifferenceCursor />
 
       <section className="cd" aria-label="Selected work, 2025–2026">

@@ -25,7 +25,7 @@ type Props = {
  * Reduced-motion clients see static framing, no parallax, no snap.
  */
 const SNAP_DURATION = 920;
-const PARALLAX = 0.14;
+const PARALLAX = 0.08;
 const WHEEL_LOCK_MS = 280;
 
 const easeInOutCubic = (t: number) =>
@@ -293,13 +293,14 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
         }
 
         /* Oversized so parallax at its extreme brings the media's natural
-           top/bottom edge exactly to the frame border — no leak, no waste. */
+           top/bottom edge exactly to the frame border — no leak, no waste.
+           Matched to parallax factor 0.08: ~18% headroom each side. */
         .strip__media-wrap {
           position: absolute;
-          top: -25%;
+          top: -18%;
           left: 0;
           width: 100%;
-          height: 150%;
+          height: 136%;
           will-change: transform;
         }
 
