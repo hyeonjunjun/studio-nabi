@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type NavItem = { href: string; label: string; key: string };
+type NavItem = { href: string; label: string; kind?: "mailto" };
+
+const EMAIL = "rykjun@gmail.com";
 
 const ITEMS: NavItem[] = [
-  { href: "/work",  label: "Work",  key: "01" },
-  { href: "/about", label: "About", key: "02" },
-  { href: "/shelf", label: "Shelf", key: "03" },
+  { href: "/about", label: "about" },
+  { href: "/shelf", label: "shelf" },
+  { href: `mailto:${EMAIL}`, label: "contact", kind: "mailto" },
 ];
 
 export default function NavCoordinates() {
@@ -17,31 +19,35 @@ export default function NavCoordinates() {
   return (
     <nav aria-label="Primary" className="nav">
       <Link href="/" className="nav__mark" aria-label="Hyeonjoon Jun — home">
-        Hyeonjoon Jun
+        hyeonjoon jun
       </Link>
 
       <ol className="nav__list">
         {ITEMS.map((item) => {
-          const active = pathname?.startsWith(item.href) ?? false;
+          const isInternal = item.kind !== "mailto";
+          const active =
+            isInternal && (pathname?.startsWith(item.href) ?? false);
+
+          const className = `nav__link${active ? " is-active" : ""}`;
+
           return (
             <li key={item.href} className="nav__item">
-              <Link
-                href={item.href}
-                className={`nav__link${active ? " is-active" : ""}`}
-                aria-current={active ? "page" : undefined}
-              >
-                <span className="nav__key">{item.key}</span>
-                <span className="nav__label">{item.label}</span>
-              </Link>
+              {isInternal ? (
+                <Link
+                  href={item.href}
+                  className={className}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a href={item.href} className={className}>
+                  {item.label}
+                </a>
+              )}
             </li>
           );
         })}
-        <li className="nav__item">
-          <a className="nav__link" href="mailto:hyeonjunjun07@gmail.com">
-            <span className="nav__key">04</span>
-            <span className="nav__label">Contact</span>
-          </a>
-        </li>
       </ol>
 
       <style>{`
@@ -59,10 +65,10 @@ export default function NavCoordinates() {
 
         .nav__mark {
           pointer-events: auto;
-          font-family: var(--font-stack-serif);
-          font-weight: 400;
-          font-size: 14px;
-          letter-spacing: 0.005em;
+          font-family: var(--font-stack-mono);
+          font-size: 10px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
           color: var(--ink);
           transition: opacity 180ms var(--ease);
         }
@@ -76,25 +82,22 @@ export default function NavCoordinates() {
           align-items: baseline;
           font-family: var(--font-stack-mono);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.22em;
           text-transform: uppercase;
+          margin: 0;
+          padding: 0;
         }
         .nav__link {
-          display: inline-flex;
-          gap: 6px;
-          align-items: baseline;
           color: var(--ink-3);
           transition: color 180ms var(--ease);
         }
         .nav__link:hover { color: var(--ink); }
         .nav__link.is-active { color: var(--ink); }
-        .nav__key { color: var(--ink-4); font-variant-numeric: tabular-nums; }
 
         @media (max-width: 640px) {
           .nav { top: 14px; left: 16px; right: 16px; }
-          .nav__mark { font-size: 12px; }
-          .nav__list { gap: 14px; font-size: 9px; }
-          .nav__key { display: none; }
+          .nav__mark { font-size: 9px; letter-spacing: 0.18em; }
+          .nav__list { gap: 14px; font-size: 9px; letter-spacing: 0.18em; }
         }
       `}</style>
     </nav>

@@ -33,10 +33,9 @@
   --measure-narrow:  48ch;
   --measure-body:    62ch;
 
-  --font-stack-sans:      var(--font-sans, "Helvetica Neue"), system-ui, sans-serif;
-  --font-stack-editorial: var(--font-sans-editorial, "Inter"), system-ui, sans-serif;
-  --font-stack-serif:     var(--font-serif, "Iowan Old Style"), Georgia, "Times New Roman", serif;
-  --font-stack-mono:      var(--font-mono, "SF Mono"), "Consolas", monospace;
+  --font-stack-sans:  var(--font-sans, "Helvetica Neue"), system-ui, sans-serif;
+  --font-stack-serif: var(--font-serif, "Iowan Old Style"), Georgia, "Times New Roman", serif;
+  --font-stack-mono:  var(--font-mono, "SF Mono"), "Consolas", monospace;
 
   --ease: cubic-bezier(.4, 0, .2, 1);
 }
@@ -77,10 +76,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ─── Font utilities ─────────────────────────────────────────────────────── */
-.font-sans      { font-family: var(--font-stack-sans); }
-.font-editorial { font-family: var(--font-stack-editorial); }
-.font-serif     { font-family: var(--font-stack-serif); }
-.font-mono      { font-family: var(--font-stack-mono); }
+.font-sans  { font-family: var(--font-stack-sans); }
+.font-serif { font-family: var(--font-stack-serif); }
+.font-mono  { font-family: var(--font-stack-mono); }
 
 /* ─── Skip link (a11y) ───────────────────────────────────────────────────── */
 .skip-to-content {

@@ -1,5 +1,8 @@
 export type PieceType = "project" | "experiment";
-export type WaveMode = "sine" | "noise";
+
+export type CatalogCover =
+  | { kind: "video"; src: string; poster?: string }
+  | { kind: "image"; src: string };
 
 export interface Piece {
   slug: string;
@@ -9,57 +12,48 @@ export interface Piece {
   number: string;
   sector: string;
   description: string;
-  accent: string;
-  frequency: number;
-  amplitude: number;
-  waveMode: WaveMode;
   status: "shipped" | "wip";
   year: number;
+  /** Hero asset for the /work/[slug] CaseStudy page. */
   image?: string;
-  coverArt?: string;
-  video?: string;
-  /** Full-viewport atmospheric environment image — art-directed per project.
-   *  When present, used as the homepage background instead of `image`. */
-  atmosphere?: string;
+  /** Home catalog frame media. Leave undefined for the typographic placeholder. */
+  cover?: CatalogCover;
+  /** "cover" fills the 16:9 frame; "center" lets portrait assets breathe on a paper field. */
+  coverFit?: "cover" | "center";
   tags: string[];
 }
 
 export const PIECES: Piece[] = [
   {
+    slug: "clouds-at-sea",
+    title: "Clouds at Sea",
+    type: "experiment",
+    order: 1,
+    number: "01",
+    sector: "WebGL / Generative",
+    description: "Somewhere between water and sky, the horizon dissolves.",
+    status: "shipped",
+    year: 2026,
+    cover: { kind: "video", src: "/assets/cloudsatsea.mp4" },
+    tags: ["webgl", "generative"],
+  },
+  {
     slug: "gyeol",
     title: "Gyeol: \uACB0",
     type: "project",
-    order: 1,
-    number: "01",
+    order: 2,
+    number: "02",
     sector: "Material Science",
     description: "Conceptual fragrance and e-commerce brand rooted in Korean craft traditions.",
-    accent: "#8B7355",
-    frequency: 0.004,
-    amplitude: 6,
-    waveMode: "sine",
     status: "shipped",
     year: 2026,
     image: "/images/gyeol-display-hanji.webp",
-    coverArt: "/images/gyeol-spring.webp",
-    video: "/assets/gyeol-broll-combined.mp4",
+    cover: {
+      kind: "video",
+      src: "/assets/gyeol-broll-combined.mp4",
+      poster: "/images/gyeol-spring.webp",
+    },
     tags: ["brand", "ecommerce", "3d"],
-  },
-  {
-    slug: "sift",
-    title: "Sift",
-    type: "project",
-    order: 2,
-    number: "02",
-    sector: "Mobile / AI",
-    description: "AI-powered tool for finding what matters in your camera roll.",
-    accent: "#CF957B",
-    frequency: 0.006,
-    amplitude: 3,
-    waveMode: "sine",
-    status: "shipped",
-    year: 2025,
-    image: "/images/sift-v2.webp",
-    tags: ["mobile", "ai", "product"],
   },
   {
     slug: "pane",
@@ -68,30 +62,25 @@ export const PIECES: Piece[] = [
     order: 3,
     number: "03",
     sector: "Ambient Computing",
-    description: "A Jarvis-like ambient dashboard — contextual telemetry, focused attention, quiet systems.",
-    accent: "",
-    frequency: 0,
-    amplitude: 4,
-    waveMode: "noise",
+    description:
+      "A Jarvis-like ambient dashboard — contextual telemetry, focused attention, quiet systems.",
     status: "wip",
     year: 2026,
     tags: ["dashboard", "ambient", "ai"],
   },
   {
-    slug: "clouds-at-sea",
-    title: "Clouds at Sea",
-    type: "experiment",
+    slug: "sift",
+    title: "Sift",
+    type: "project",
     order: 4,
     number: "04",
-    sector: "WebGL / Generative",
-    description: "Somewhere between water and sky, the horizon dissolves.",
-    accent: "#8BA4B8",
-    frequency: 0.002,
-    amplitude: 10,
-    waveMode: "sine",
+    sector: "Mobile / AI",
+    description: "AI-powered tool for finding what matters in your camera roll.",
     status: "shipped",
-    year: 2026,
-    video: "/assets/cloudsatsea.mp4",
-    tags: ["webgl", "generative"],
+    year: 2025,
+    image: "/images/sift-v2.webp",
+    cover: { kind: "image", src: "/images/sift-v2.webp" },
+    coverFit: "center",
+    tags: ["mobile", "ai", "product"],
   },
 ];
