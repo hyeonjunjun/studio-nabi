@@ -1,324 +1,150 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type ShelfItem = {
-  id: string;
-  kind: string;
-  title: string;
-  subtitle: string;
-  year: string;
-  body: string;
-  tags: string[];
-};
-
-const SHELF: ShelfItem[] = [
-  {
-    id: "01",
-    kind: "MIXTAPE",
-    title: "WALKS BETWEEN MEETINGS",
-    subtitle: "VOL. 01 · FIELD RECORDINGS",
-    year: "2026",
-    body: "Six ambient tracks cut between Brooklyn and the East River. For the moment before a hard problem.",
-    tags: ["AMBIENT", "NYC", "FOCUS"],
-  },
-  {
-    id: "02",
-    kind: "BOOK",
-    title: "THE NATURE OF ORDER",
-    subtitle: "CHRISTOPHER ALEXANDER",
-    year: "2003",
-    body: "Still the clearest argument I know for why some interfaces feel alive and others don't.",
-    tags: ["CRAFT", "SYSTEMS", "SLOW"],
-  },
-  {
-    id: "03",
-    kind: "ZINE",
-    title: "NOTES ON A QUIET TOOL",
-    subtitle: "FIELD NOTE · SPRING 2026",
-    year: "2026",
-    body: "A short zine about designing Pane — what ambient software should feel like when it's actually quiet.",
-    tags: ["PRACTICE", "DRAFT"],
-  },
-  {
-    id: "04",
-    kind: "RECORD",
-    title: "TWILIGHT INDEX",
-    subtitle: "A COLLECTION OF SKY COLORS",
-    year: "ONGOING",
-    body: "I photograph the sky every day at the Hanada hour. The index is slowly becoming a book.",
-    tags: ["SKY", "PHOTOGRAPHY"],
-  },
-];
-
-function pad(n: number, len = 2) {
-  return String(Math.max(0, Math.floor(n))).padStart(len, "0");
-}
-
-function formatStamp(d: Date) {
-  const y = d.getFullYear();
-  const m = pad(d.getMonth() + 1);
-  const day = pad(d.getDate());
-  const h = pad(d.getHours());
-  const min = pad(d.getMinutes());
-  const s = pad(d.getSeconds());
-  return `${y}.${m}.${day} · ${h}:${min}:${s}`;
-}
+import { SHELF } from "@/constants/shelf";
 
 export default function ShelfPage() {
-  const [stamp, setStamp] = useState<string>("————.——.—— · ——:——:——");
-
-  useEffect(() => {
-    const tick = () => setStamp(formatStamp(new Date()));
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
   return (
-    <main id="main" className="shelf-main">
-      <div className="shelf-wrap">
-        <header className="shelf-head">
-          <span className="shelf-head__left">THE SHELF</span>
-          <span className="shelf-head__rule" aria-hidden="true" />
-          <span className="shelf-head__right">HYEONJOON JUN · 2026</span>
+    <main id="main" className="shelf">
+      <article className="shelf__inner">
+        <header className="shelf__head">
+          <p className="eyebrow">
+            <span>Shelf</span>
+            <span className="eyebrow__sep">·</span>
+            <span>New York</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">2026</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">{String(SHELF.length).padStart(2, "0")} Objects</span>
+          </p>
+          <h1 className="shelf__title">Objects I keep near while I work.</h1>
+          <p className="shelf__lede">
+            Books, tapes, zines, field notes. Each one changes the work in a
+            small way.
+          </p>
         </header>
 
-        <p className="shelf-intro">
-          Objects I keep near while I work — books, tapes, zines, field notes. Each one changes the work in a small way.
-        </p>
-
-        <hr className="shelf-divider" aria-hidden="true" />
-
-        <section className="shelf-grid" aria-label="Shelf items">
+        <ol className="shelf__list">
           {SHELF.map((item) => (
-            <article
-              key={item.id}
-              className="shelf-item"
-              data-reticle-lock
-              data-reticle-label={`${item.kind} / ${item.title}`}
-            >
-              <div className="shelf-item__card">
-                <div className="shelf-item__label">
-                  <span className="shelf-item__kind">[ {item.kind} ]</span>
-                  <span className="shelf-item__number">№ {item.id}</span>
-                </div>
-                <div className="shelf-item__body">
-                  <h3 className="shelf-item__title">{item.title}</h3>
-                  <div className="shelf-item__subtitle">{item.subtitle}</div>
-                  <p className="shelf-item__copy">{item.body}</p>
-                </div>
-                <div className="shelf-item__footer">
-                  <div className="shelf-item__tags">
-                    {item.tags.map((t) => (
-                      <span key={t} className="shelf-item__tag">☐ {t}</span>
-                    ))}
-                  </div>
-                  <div className="shelf-item__year">{item.year}</div>
-                </div>
+            <li key={item.id} className="shelf-plate">
+              <div className="shelf-plate__top">
+                <span className="plate-mark">
+                  № {item.id} · {item.kind}
+                </span>
+                <span className="plate-mark tabular">{item.year}</span>
               </div>
-            </article>
+              <h3 className="shelf-plate__title">{item.title}</h3>
+              <p className="shelf-plate__subtitle">{item.subtitle}</p>
+              <p className="shelf-plate__body">{item.body}</p>
+              <p className="shelf-plate__tags">
+                {item.tags.map((t, i) => (
+                  <span key={t}>
+                    {i > 0 && <span className="shelf-plate__tag-sep"> · </span>}
+                    <span>{t}</span>
+                  </span>
+                ))}
+              </p>
+            </li>
           ))}
-        </section>
+        </ol>
 
-        <footer className="shelf-foot">
-          <span className="shelf-foot__line">VOL. 01 · MORE TO COME · {stamp}</span>
+        <footer className="shelf__foot">
+          <span className="plate-mark">Vol. 01 — more to come</span>
         </footer>
-      </div>
+      </article>
 
       <style>{`
-        .shelf-main {
-          position: relative;
-          z-index: 1;
-          min-height: 100vh;
-        }
-        .shelf-wrap {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: clamp(96px, 14vh, 160px) clamp(96px, 14vh, 160px);
+        .shelf {
+          min-height: 100svh;
+          padding: clamp(96px, 14vh, 160px) clamp(24px, 6vw, 72px) clamp(64px, 10vh, 120px);
           display: flex;
-          flex-direction: column;
-          gap: clamp(28px, 4vw, 44px);
+          justify-content: center;
         }
-
-        .shelf-head {
-          display: grid;
-          grid-template-columns: auto 1fr auto;
-          align-items: center;
-          gap: 20px;
-          font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-        }
-        .shelf-divider {
-          border: 0;
-          height: 1px;
-          background: var(--ink-ghost);
-          margin: 8px 0 20px;
-        }
-        .shelf-head__left { color: var(--ink); }
-        .shelf-head__right { color: var(--ink-muted); text-align: right; }
-        .shelf-head__rule {
-          display: block;
-          height: 1px;
+        .shelf__inner {
           width: 100%;
-          background: var(--ink-ghost);
-        }
-
-        .shelf-intro {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: clamp(22px, 2.6vw, 32px);
-          line-height: 1.35;
-          max-width: 48ch;
-          color: var(--ink);
-          letter-spacing: -0.015em;
-        }
-
-        .shelf-grid {
+          max-width: 760px;
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: clamp(32px, 5vw, 64px);
-          margin-top: clamp(16px, 3vw, 32px);
+          gap: clamp(56px, 8vh, 96px);
         }
 
-        .shelf-item {
-          display: block;
-        }
-        .shelf-item__card {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          min-height: 340px;
-          padding: 32px;
-          background-color: #EFEDE4;
-          background-image:
-            radial-gradient(circle at 20% 30%, rgba(28,28,26,0.02) 1px, transparent 1px),
-            radial-gradient(circle at 70% 65%, rgba(28,28,26,0.018) 1px, transparent 1px);
-          background-size: 4px 4px, 6px 6px;
-          border: 1px solid rgba(28,28,26,0.12);
-          box-shadow:
-            0 1px 0 rgba(28,28,26,0.04),
-            0 8px 16px -12px rgba(28,28,26,0.08);
-          transition:
-            transform 240ms var(--ease),
-            box-shadow 240ms var(--ease);
-          height: 100%;
-        }
-        .shelf-item:hover .shelf-item__card {
-          transform: translateY(-2px);
-          box-shadow:
-            0 2px 0 rgba(28,28,26,0.04),
-            0 12px 24px -12px rgba(28,28,26,0.12);
-        }
-
-        .shelf-item__label {
-          display: flex;
-          justify-content: space-between;
-          align-items: baseline;
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: var(--ink-muted);
-          margin-bottom: 20px;
-        }
-        .shelf-item__kind { color: var(--ink-muted); }
-        .shelf-item__number {
-          color: var(--ink-faint);
-          letter-spacing: 0.1em;
-          text-align: right;
-        }
-
-        .shelf-item__body {
-          display: flex;
-          flex-direction: column;
-        }
-        .shelf-item__title {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: 22px;
-          line-height: 1.2;
-          letter-spacing: -0.015em;
+        .shelf__head { display: grid; gap: 20px; }
+        .shelf__title {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: clamp(28px, 3.2vw, 38px);
+          line-height: 1.25;
+          letter-spacing: -0.005em;
           color: var(--ink);
-          margin: 0 0 4px 0;
+          margin: 0;
+          max-width: 22ch;
         }
-        .shelf-item__subtitle {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--ink-faint);
-          margin-bottom: 20px;
-        }
-        .shelf-item__copy {
-          font-family: var(--font-stack-sans);
-          font-size: 14px;
-          line-height: 1.55;
-          color: var(--ink-muted);
-          max-width: 32ch;
+        .shelf__lede {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 15px;
+          line-height: 1.7;
+          color: var(--ink-2);
+          max-width: 52ch;
           margin: 0;
         }
 
-        .shelf-item__footer {
+        .shelf__list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: clamp(40px, 5vh, 56px);
+        }
+
+        .shelf-plate {
+          display: grid;
+          gap: 10px;
+          padding: 28px 0 0;
+          border-top: 1px solid var(--ink-hair);
+        }
+        .shelf-plate__top {
           display: flex;
           justify-content: space-between;
-          align-items: flex-end;
-          margin-top: auto;
-          padding-top: 24px;
-          gap: 16px;
+          gap: 12px;
         }
-        .shelf-item__tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          font-family: var(--font-stack-mono);
-          font-size: 9px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--ink-muted);
+        .shelf-plate__title {
+          font-family: var(--font-stack-serif);
+          font-weight: 400;
+          font-size: 22px;
+          line-height: 1.25;
+          letter-spacing: -0.003em;
+          color: var(--ink);
+          margin: 6px 0 0;
         }
-        .shelf-item__tag {
-          white-space: nowrap;
-        }
-        .shelf-item__year {
+        .shelf-plate__subtitle {
           font-family: var(--font-stack-mono);
           font-size: 10px;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--ink-faint);
-          text-align: right;
-          white-space: nowrap;
+          color: var(--ink-3);
+          margin: 0;
         }
-
-        .shelf-foot {
-          display: flex;
-          justify-content: flex-end;
-          margin-top: clamp(16px, 3vw, 32px);
+        .shelf-plate__body {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 14px;
+          line-height: 1.75;
+          color: var(--ink-2);
+          max-width: 56ch;
+          margin: 8px 0 0;
         }
-        .shelf-foot__line {
+        .shelf-plate__tags {
           font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.12em;
+          font-size: 9px;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--ink-muted);
+          color: var(--ink-3);
+          margin: 6px 0 0;
         }
+        .shelf-plate__tag-sep { color: var(--ink-4); }
 
-        @media (max-width: 720px) {
-          .shelf-wrap {
-            padding: clamp(72px, 12vh, 120px) clamp(24px, 6vw, 48px);
-          }
-          .shelf-head {
-            grid-template-columns: auto 1fr;
-          }
-          .shelf-head__right {
-            grid-column: 1 / span 2;
-            text-align: left;
-          }
-          .shelf-head__rule {
-            display: none;
-          }
+        .shelf__foot {
+          padding-top: 24px;
+          border-top: 1px solid var(--ink-hair);
         }
       `}</style>
     </main>

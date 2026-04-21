@@ -1,312 +1,210 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
 import { SOCIALS, CONTACT_EMAIL } from "@/constants/contact";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { DUR } from "@/lib/motion";
 
-const EXPERIENCE: Array<[string, string]> = [
-  ["2024 — Present", "Independent, Design Engineering"],
-  ["2023 — 2024", "Design Technologist"],
-  ["2021 — 2023", "Frontend Developer"],
+const EXPERIENCE: Array<{ period: string; role: string; org: string }> = [
+  { period: "2024 — Present", role: "Independent",       org: "Design Engineering" },
+  { period: "2023 — 2024",    role: "Design Technologist", org: "" },
+  { period: "2021 — 2023",    role: "Frontend Developer",  org: "" },
 ];
 
 export default function AboutPage() {
-  const containerRef = useRef<HTMLElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const els = containerRef.current.querySelectorAll("[data-reveal]");
-
-    if (reducedMotion) {
-      gsap.set(els, { opacity: 1, y: 0 });
-      return;
-    }
-
-    gsap.fromTo(
-      els,
-      { opacity: 0, y: 16 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: DUR.reveal ?? 0.8,
-        stagger: 0.08,
-        ease: "power2.out",
-        delay: 0.2,
-      }
-    );
-  }, [reducedMotion]);
-
   return (
-    <main
-      id="main"
-      ref={containerRef}
-      style={{ position: "relative", zIndex: 1 }}
-    >
-      <div className="about-grid">
-        <figure className="about-portrait" data-reveal style={{ opacity: 0 }}>
-          <div className="about-portrait__frame" aria-hidden>
-            <div className="about-portrait__placeholder" />
-          </div>
-          <figcaption className="about-portrait__caption">
-            <span>FIG. 00 — OBSERVER</span>
-            <span>NEW YORK / EST. 2021</span>
-          </figcaption>
-        </figure>
+    <main id="main" className="about">
+      <article className="about__inner">
+        <header className="about__head">
+          <p className="eyebrow">
+            <span>About</span>
+            <span className="eyebrow__sep">·</span>
+            <span>New York</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">2026</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">№002</span>
+          </p>
+          <h1 className="about__title">
+            A design engineering practice concerned with the invisible craft
+            that makes software feel intentional.
+          </h1>
+        </header>
 
-        <div className="about-philosophy" data-reveal style={{ opacity: 0 }}>
-          <div className="about-kicker">ABOUT · HYEONJOON · 2026</div>
-          <p className="about-statement">
-            I&apos;m a design engineer working at the intersection of craft
-            and systems thinking.
+        <section className="about__prose">
+          <p>
+            Hyeonjoon Jun — Ryan — is a design engineer based in New York. He
+            works at the intersection of craft and systems thinking, caring
+            about typography, motion, and the small details that make digital
+            products feel considered. He treats AI as a collaborator — a force
+            multiplier, not a shortcut — and builds brands, interfaces, and
+            atmospheres for people who take care of the work.
           </p>
-          <p className="about-body">
-            I care about type, motion, and the invisible details that make
-            digital products feel considered. I treat AI as a collaborator —
-            a force multiplier, not a shortcut — and I build brands,
-            interfaces, and atmospheres for people who take care of the work.
+          <p>
+            He is available for full-time design engineering roles and
+            selected consulting through 2026.
           </p>
-          <p className="about-body">
-            Based in New York. Available for full-time design engineering
-            roles and selected consulting through 2026.
-          </p>
-        </div>
+        </section>
 
-        <div className="about-experience" data-reveal style={{ opacity: 0 }}>
-          <div className="about-section-label">
-            {"\u25B8 EXPERIENCE \u00B7 03 ENTRIES \u00B7 2021\u20132026"}
-          </div>
-          <div className="about-experience__inner">
-            {EXPERIENCE.map(([period, role], i) => (
-              <div
-                key={period}
-                className="about-experience__row"
-                style={{
-                  borderTop: i === 0 ? "1px solid var(--ink-ghost)" : "none",
-                  borderBottom: "1px solid var(--ink-ghost)",
-                }}
-              >
-                <span className="about-experience__period">{period}</span>
-                <span className="about-experience__role">{role}</span>
+        <section className="about__section">
+          <p className="eyebrow">
+            <span>Experience</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">03 Entries</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">2021—2026</span>
+          </p>
+          <dl className="about__timeline">
+            {EXPERIENCE.map((e) => (
+              <div key={e.period} className="about__timeline-row">
+                <dt className="about__timeline-period tabular">{e.period}</dt>
+                <dd className="about__timeline-role">
+                  <span>{e.role}</span>
+                  {e.org ? <span className="about__timeline-org">, {e.org}</span> : null}
+                </dd>
               </div>
             ))}
-          </div>
-        </div>
+          </dl>
+        </section>
 
-        <div className="about-contact" data-reveal style={{ opacity: 0 }}>
-          <div className="about-section-label">
-            {"\u25B8 CONTACT \u00B7 AVAILABLE 2026 \u00B7 NEW YORK"}
-          </div>
-          <div className="about-contact__inner">
-            <p className="about-contact__lede">
-              For work inquiries, freelance, or a quick hello — reach me at{" "}
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="about-contact__mail"
-              >
-                {CONTACT_EMAIL}
-              </a>
-              .
-            </p>
-            <div className="about-contact__socials">
-              {SOCIALS.map((s) => (
+        <section className="about__section">
+          <p className="eyebrow">
+            <span>Contact</span>
+            <span className="eyebrow__sep">·</span>
+            <span>Available 2026</span>
+          </p>
+          <p className="about__contact-lede">
+            For work inquiries, freelance, or a quiet hello — reach me at{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="about__mail">
+              {CONTACT_EMAIL}
+            </a>
+            .
+          </p>
+          <ul className="about__socials">
+            {SOCIALS.map((s) => (
+              <li key={s.label}>
                 <a
-                  key={s.label}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="about-contact__social"
+                  className="about__social"
                 >
                   {s.label}
                 </a>
-              ))}
-            </div>
-          </div>
-        </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        <footer className="about-signoff" data-reveal style={{ opacity: 0 }}>
-          <div className="about-signoff__name">Hyeonjoon</div>
-          <div className="about-signoff__role">
-            — DESIGN ENGINEER · NEW YORK · AVAILABLE 2026
-          </div>
+        <footer className="about__signoff">
+          <span className="plate-mark">— Hyeonjoon Jun, New York, 2026</span>
         </footer>
-      </div>
+      </article>
 
       <style>{`
-        .about-grid {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          gap: clamp(16px, 2vw, 32px);
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: clamp(72px, 10vh, 120px) clamp(24px, 4vw, 64px) clamp(48px, 8vh, 96px);
-        }
-        .about-portrait { grid-column: 1 / span 5; }
-        .about-philosophy { grid-column: 7 / span 6; }
-        .about-experience {
-          grid-column: 1 / span 12;
-          margin-top: clamp(64px, 10vh, 120px);
-        }
-        .about-contact {
-          grid-column: 7 / span 6;
-          margin-top: clamp(48px, 6vh, 72px);
-        }
-        .about-signoff {
-          grid-column: 1 / span 12;
-          text-align: right;
-          margin-top: clamp(80px, 12vh, 140px);
-          margin-bottom: clamp(48px, 8vh, 96px);
-        }
-        .about-portrait__frame {
-          width: 100%;
-          aspect-ratio: 4 / 5;
-          border: 1px solid var(--ink-ghost);
-          background: var(--paper-2);
+        .about {
+          min-height: 100svh;
+          padding: clamp(96px, 14vh, 160px) clamp(24px, 6vw, 72px) clamp(64px, 10vh, 120px);
           display: flex;
-          align-items: center;
           justify-content: center;
-          overflow: hidden;
         }
-        .about-portrait__placeholder {
-          width: 64%;
-          height: 76%;
-          background:
-            linear-gradient(180deg, #E8E8E4 0%, #C8C8C2 50%, #A8A8A2 100%);
-          border-radius: 2px;
+        .about__inner {
+          width: 100%;
+          max-width: 640px;
+          display: grid;
+          gap: clamp(56px, 8vh, 88px);
         }
-        .about-portrait__caption {
-          margin-top: 12px;
-          display: flex;
-          justify-content: space-between;
-          font-family: var(--font-mono);
+
+        .about__head { display: grid; gap: 20px; }
+        .about__title {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: clamp(24px, 2.8vw, 32px);
+          line-height: 1.35;
+          letter-spacing: -0.003em;
+          color: var(--ink);
+          margin: 0;
+          max-width: 28ch;
+        }
+
+        .about__prose {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 15px;
+          line-height: 1.8;
+          color: var(--ink-2);
+          max-width: 52ch;
+        }
+        .about__prose p + p { margin-top: 1em; }
+
+        .about__section { display: grid; gap: 20px; }
+
+        .about__timeline {
+          border-top: 1px solid var(--ink-hair);
+          margin: 0;
+        }
+        .about__timeline-row {
+          display: grid;
+          grid-template-columns: 200px 1fr;
+          gap: 24px;
+          padding: 16px 0;
+          border-bottom: 1px solid var(--ink-hair);
+        }
+        .about__timeline-period {
+          font-family: var(--font-stack-mono);
           font-size: 10px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--ink-3);
-          font-variant-numeric: tabular-nums;
+          align-self: baseline;
         }
-        .about-kicker {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink-faint);
-          margin-bottom: 32px;
-        }
-        .about-statement {
-          font-family: var(--font-sans);
-          font-weight: 500;
-          font-size: clamp(26px, 3vw, 38px);
-          line-height: 1.25;
-          letter-spacing: -0.015em;
+        .about__timeline-role {
+          font-family: var(--font-stack-serif);
+          font-weight: 400;
+          font-size: 15px;
           color: var(--ink);
-          max-width: 28ch;
-          margin: 0 0 32px 0;
+          margin: 0;
         }
-        .about-statement__em {
-          font-family: var(--font-sans);
-          font-weight: 600;
+        .about__timeline-org { color: var(--ink-3); }
+
+        .about__contact-lede {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 15px;
+          line-height: 1.8;
+          color: var(--ink-2);
+          max-width: 52ch;
         }
-        .about-body {
-          font-family: var(--font-sans);
-          font-size: 16px;
-          line-height: 1.7;
-          color: var(--ink-muted);
-          max-width: 54ch;
-          margin: 0 0 20px 0;
+        .about__mail {
+          color: var(--ink);
+          border-bottom: 1px solid var(--ink-hair);
         }
-        .about-section-label {
-          font-family: var(--font-mono);
+        .about__mail:hover { border-bottom-color: var(--ink); }
+
+        .about__socials {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          gap: 22px;
+          flex-wrap: wrap;
+        }
+        .about__social {
+          font-family: var(--font-stack-mono);
           font-size: 10px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--ink-faint);
-          margin-bottom: 24px;
+          color: var(--ink-3);
+          transition: color 180ms var(--ease);
         }
-        .about-experience__inner {
-          padding: 0;
+        .about__social:hover { color: var(--ink); }
+
+        .about__signoff {
+          padding-top: 24px;
+          border-top: 1px solid var(--ink-hair);
         }
-        .about-experience__row {
-          display: flex;
-          gap: 32px;
-          padding: 18px 0;
-        }
-        .about-experience__period {
-          font-family: var(--font-mono);
-          font-size: 12px;
-          letter-spacing: 0.04em;
-          font-variant-numeric: tabular-nums;
-          color: var(--ink-faint);
-          width: 180px;
-          flex-shrink: 0;
-          text-transform: uppercase;
-        }
-        .about-experience__role {
-          font-family: var(--font-sans);
-          font-size: 15px;
-          color: var(--ink);
-        }
-        .about-contact__inner {
-          padding: 0;
-        }
-        .about-contact__lede {
-          font-family: var(--font-sans);
-          font-size: 15px;
-          line-height: 1.7;
-          color: var(--ink-muted);
-          margin: 0 0 24px 0;
-          max-width: 48ch;
-        }
-        .about-contact__mail {
-          color: var(--ink);
-          text-decoration: underline;
-          text-decoration-thickness: 1px;
-          text-underline-offset: 3px;
-        }
-        .about-contact__socials {
-          display: flex;
-          gap: 24px;
-          flex-wrap: wrap;
-        }
-        .about-contact__social {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: var(--ink-muted);
-          transition: color 0.3s var(--ease);
-        }
-        .about-contact__social:hover {
-          color: var(--ink);
-        }
-        .about-signoff__name {
-          font-family: var(--font-sans);
-          font-weight: 500;
-          font-size: clamp(40px, 5vw, 72px);
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-          color: var(--ink);
-        }
-        .about-signoff__role {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--ink-muted);
-          margin-top: 16px;
-        }
-        @media (max-width: 767px) {
-          .about-portrait,
-          .about-philosophy,
-          .about-experience,
-          .about-contact,
-          .about-signoff {
-            grid-column: 1 / -1;
-          }
-          .about-signoff {
-            text-align: left;
+
+        @media (max-width: 640px) {
+          .about__timeline-row {
+            grid-template-columns: 1fr;
+            gap: 4px;
           }
         }
       `}</style>

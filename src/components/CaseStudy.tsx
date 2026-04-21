@@ -1,470 +1,505 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import { useMemo } from "react";
 import { PIECES, type Piece } from "@/constants/pieces";
 import { CASE_STUDIES } from "@/constants/case-studies";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { DUR } from "@/lib/motion";
-gsap.registerPlugin(ScrollTrigger);
 
-const allPieces = [...PIECES].sort((a, b) => a.order - b.order);
+type Props = { piece: Piece };
 
-interface CaseStudyProps {
-  piece: Piece;
-}
+export default function CaseStudy({ piece }: Props) {
+  const data = CASE_STUDIES[piece.slug];
 
-function Section({ index, label, children }: { index: string; label: string; children: React.ReactNode }) {
-  return (
-    <div className="cs-col" data-reveal>
-      <div className="cs-section-label">
-        <span className="cs-section-label__key">{index}</span>
-        <span>{label}</span>
-      </div>
-      <div className="cs-section-body">{children}</div>
-    </div>
-  );
-}
-
-export default function CaseStudy({ piece }: CaseStudyProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const cs = CASE_STUDIES[piece.slug];
-  const reducedMotion = useReducedMotion();
-
-  const currentIdx = allPieces.findIndex((p) => p.slug === piece.slug);
-  const nextPiece = allPieces[(currentIdx + 1) % allPieces.length];
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const fixedEls = containerRef.current.querySelectorAll("[data-entrance]");
-    const blocks = containerRef.current.querySelectorAll("[data-reveal]");
-
-    if (reducedMotion) {
-      gsap.set(fixedEls, { opacity: 1, y: 0 });
-      if (heroRef.current) gsap.set(heroRef.current, { opacity: 1, y: 0 });
-      gsap.set(blocks, { opacity: 1, y: 0 });
-      return;
-    }
-
-    gsap.fromTo(
-      fixedEls,
-      { opacity: 0, y: 18 },
-      { opacity: 1, y: 0, duration: DUR.reveal, stagger: 0.05, ease: "power3.out", delay: 0.08 }
-    );
-    if (heroRef.current) {
-      gsap.fromTo(
-        heroRef.current,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: DUR.reveal, ease: "power3.out",
-          scrollTrigger: { trigger: heroRef.current, start: "top 85%", once: true } }
-      );
-    }
-    blocks.forEach((block) => {
-      gsap.fromTo(
-        block,
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: DUR.reveal, ease: "power3.out",
-          scrollTrigger: { trigger: block, start: "top 85%", once: true } }
-      );
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, [piece.slug, reducedMotion]);
-
-  const sectionIndex = (n: number) => String(n).padStart(2, "0");
-
-  let secNo = 0;
-  const next = () => { secNo += 1; return sectionIndex(secNo); };
+  const next = useMemo(() => {
+    const sorted = [...PIECES].sort((a, b) => a.order - b.order);
+    const idx = sorted.findIndex((p) => p.slug === piece.slug);
+    return sorted[(idx + 1) % sorted.length];
+  }, [piece.slug]);
 
   return (
-    <div ref={containerRef} className="cs-outer">
-      <style>{`
-        .cs-outer {
-          --col-max: 720px;
-          --col-offset: clamp(24px, 8vw, 128px);
-          padding-bottom: 0;
-        }
-        .cs-col {
-          max-width: var(--col-max);
-          margin-left: var(--col-offset);
-          margin-right: 0;
-          margin-bottom: clamp(72px, 11vh, 128px);
-        }
-        .cs-bleed {
-          margin-left: var(--col-offset);
-          margin-right: clamp(24px, 4vw, 64px);
-        }
-        .cs-hero {
-          min-height: 92vh;
-          display: grid;
-          grid-template-rows: auto 1fr auto;
-          padding: clamp(112px, 18vh, 192px) clamp(24px, 5vw, 64px) clamp(56px, 8vh, 96px) var(--col-offset);
-          max-width: 960px;
-        }
-        .cs-ledger {
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: clamp(24px, 4vw, 64px);
-          max-width: 640px;
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-        }
-        .cs-ledger__key { display: block; color: var(--ink-4); margin-bottom: 6px; }
-        .cs-ledger__val { display: block; color: var(--ink-primary); font-variant-numeric: tabular-nums; }
+    <article className="case">
+      <header className="case__head">
+        <p className="eyebrow">
+          <span>Work</span>
+          <span className="eyebrow__sep">·</span>
+          <span>New York</span>
+          <span className="eyebrow__sep">·</span>
+          <span className="tabular">{piece.year}</span>
+          <span className="eyebrow__sep">·</span>
+          <span className="tabular">№{String(piece.order).padStart(3, "0")}</span>
+        </p>
+        <h1 className="case__title">{piece.title}</h1>
+        <p className="case__sub">{piece.description}</p>
 
-        .cs-title {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: clamp(32px, 4.4vw, 56px);
-          line-height: 1.12;
-          letter-spacing: -0.02em;
-          color: var(--ink-primary);
-          max-width: 22ch;
-          align-self: center;
-          margin: 64px 0;
-        }
-        .cs-stakes {
-          font-size: 15px;
-          line-height: 1.65;
-          color: var(--ink-secondary);
-          max-width: 56ch;
-          padding-top: 24px;
-          border-top: 1px solid var(--ink-ghost);
-        }
-
-        .cs-section-label {
-          display: flex;
-          gap: 16px;
-          align-items: baseline;
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          margin-bottom: 24px;
-          padding-bottom: 12px;
-          border-bottom: 1px solid var(--ink-ghost);
-        }
-        .cs-section-label__key {
-          color: var(--ink-4);
-          font-variant-numeric: tabular-nums;
-        }
-        .cs-section-body p {
-          font-size: 15px;
-          line-height: 1.7;
-          color: var(--ink-secondary);
-          max-width: 56ch;
-        }
-        .cs-section-body p + p { margin-top: 18px; }
-
-        .cs-steps { display: grid; gap: 36px; }
-        .cs-step { display: grid; grid-template-columns: 36px 1fr; gap: 20px; align-items: baseline; }
-        .cs-step__num {
-          font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.08em;
-          color: var(--ink-4);
-          font-variant-numeric: tabular-nums;
-        }
-        .cs-step__title {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: 17px;
-          color: var(--ink-primary);
-          margin-bottom: 8px;
-          letter-spacing: -0.005em;
-        }
-
-        .cs-highlights { display: grid; gap: 40px; }
-        .cs-highlight__title {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: 18px;
-          color: var(--ink-primary);
-          margin-bottom: 8px;
-          letter-spacing: -0.005em;
-        }
-        .cs-highlight__caption {
-          font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          margin-top: 10px;
-        }
-
-        .cs-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: clamp(32px, 5vw, 56px);
-        }
-        .cs-stat__label {
-          display: block;
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink-4);
-          margin-bottom: 12px;
-        }
-        .cs-stat__value {
-          display: block;
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: clamp(36px, 4.5vw, 56px);
-          line-height: 1;
-          color: var(--accent);
-          font-variant-numeric: tabular-nums;
-          letter-spacing: -0.03em;
-        }
-
-        .cs-signals { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-        .cs-signals span {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          padding: 4px 10px;
-          border: 1px solid var(--ink-ghost);
-          border-radius: 999px;
-        }
-
-        .cs-media {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 12px;
-        }
-        .cs-media figure { margin: 0; }
-        .cs-media figcaption {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          margin-top: 8px;
-        }
-
-        .cs-hero-image {
-          margin-top: 64px;
-          margin-bottom: 96px;
-        }
-        .cs-hero-image figure { margin: 0; }
-        .cs-hero-image img {
-          display: block;
-          width: 100%;
-          height: auto;
-        }
-        .cs-hero-image figcaption {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          margin-top: 12px;
-          display: flex;
-          justify-content: space-between;
-          max-width: var(--col-max);
-        }
-
-        .cs-next {
-          padding: 32px var(--col-offset) 96px;
-          max-width: var(--col-max);
-          margin-left: 0;
-        }
-        .cs-next a {
-          display: block;
-          border-top: 1px solid var(--ink-ghost);
-          padding-top: 28px;
-        }
-        .cs-next__key {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink-3);
-          display: block;
-          margin-bottom: 14px;
-        }
-        .cs-next__title {
-          font-family: var(--font-stack-sans);
-          font-weight: 500;
-          font-size: clamp(28px, 3.2vw, 40px);
-          line-height: 1.15;
-          letter-spacing: -0.015em;
-          color: var(--ink-primary);
-          display: block;
-          margin-bottom: 10px;
-        }
-        .cs-next__meta {
-          font-family: var(--font-stack-mono);
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink-4);
-          display: block;
-        }
-
-        @media (max-width: 767px) {
-          .cs-outer { --col-offset: 24px; }
-          .cs-hero { max-width: none; padding-top: 88px; padding-right: 24px; }
-          .cs-title { margin: 48px 0; font-size: clamp(28px, 7vw, 40px); }
-          .cs-ledger { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-          .cs-next { padding-left: 24px; padding-right: 24px; }
-        }
-      `}</style>
-
-      <header className="cs-hero">
-        <div data-entrance className="cs-ledger" style={{ opacity: 0 }}>
-          <div>
-            <span className="cs-ledger__key">ENTRY</span>
-            <span className="cs-ledger__val">{piece.number}</span>
+        <dl className="case__ledger">
+          <div className="case__ledger-row">
+            <dt>Sector</dt>
+            <dd>{piece.sector}</dd>
           </div>
-          <div>
-            <span className="cs-ledger__key">SECTOR</span>
-            <span className="cs-ledger__val">{piece.sector.toUpperCase()}</span>
+          {data?.role && (
+            <div className="case__ledger-row">
+              <dt>Role</dt>
+              <dd>{data.role}</dd>
+            </div>
+          )}
+          <div className="case__ledger-row">
+            <dt>Year</dt>
+            <dd className="tabular">{piece.year}</dd>
           </div>
-          <div>
-            <span className="cs-ledger__key">YEAR</span>
-            <span className="cs-ledger__val">{piece.year}</span>
+          <div className="case__ledger-row">
+            <dt>Status</dt>
+            <dd>{piece.status === "wip" ? "In progress" : "Shipped"}</dd>
           </div>
-          <div>
-            <span className="cs-ledger__key">STATUS</span>
-            <span className="cs-ledger__val">{piece.status === "wip" ? "IN PROGRESS" : "SHIPPED"}</span>
-          </div>
-        </div>
-
-        <h1 className="cs-title" data-entrance style={{ opacity: 0 }}>
-          {cs?.paradox ?? piece.title}
-        </h1>
-
-        {cs?.stakes && (
-          <p className="cs-stakes" data-entrance style={{ opacity: 0 }}>
-            {cs.stakes}
-          </p>
-        )}
+          {data?.tags && data.tags.length > 0 && (
+            <div className="case__ledger-row">
+              <dt>Tags</dt>
+              <dd>{data.tags.join(" · ")}</dd>
+            </div>
+          )}
+        </dl>
       </header>
 
       {piece.image && (
-        <div ref={heroRef} className="cs-hero-image cs-bleed" style={{ opacity: 0 }}>
-          <figure>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={piece.image} alt={piece.title} />
-            <figcaption>
-              <span>FIG. 01 — {piece.title}</span>
-              <span>{piece.sector.toUpperCase()} / {piece.year}</span>
-            </figcaption>
-          </figure>
-        </div>
-      )}
-
-      {cs?.editorial && (
-        <Section index={next()} label={cs.editorial.heading}>
-          <p>{cs.editorial.copy}</p>
-        </Section>
-      )}
-
-      {cs?.process && (
-        <Section index={next()} label={cs.process.title}>
-          <p>{cs.process.copy}</p>
-        </Section>
-      )}
-
-      {cs?.processSteps && cs.processSteps.length > 0 && (
-        <Section index={next()} label="Process">
-          <div className="cs-steps">
-            {cs.processSteps.map((step, i) => (
-              <div key={i} className="cs-step">
-                <span className="cs-step__num">{String(i + 1).padStart(2, "0")}</span>
-                <div>
-                  <h4 className="cs-step__title">{step.title}</h4>
-                  <p>{step.copy}</p>
-                </div>
-              </div>
-            ))}
+        <figure className="case__plate">
+          <div className="case__plate-frame">
+            <Image
+              src={piece.image}
+              alt={`${piece.title} — cover plate`}
+              fill
+              sizes="(max-width: 760px) 100vw, 760px"
+              style={{ objectFit: "cover" }}
+              priority
+            />
+            <div className="case__plate-marks" aria-hidden>
+              <span className="plate-mark case__plate-mark--tl">
+                HKJ / PL. №{String(piece.order).padStart(3, "0")}
+              </span>
+              <span className="plate-mark case__plate-mark--br tabular">
+                {piece.year}
+              </span>
+            </div>
           </div>
-        </Section>
+          <figcaption className="case__plate-caption">
+            <span className="plate-mark">Fig. 01</span>
+            <span className="case__plate-caption-text">
+              {data?.editorial?.subhead ?? piece.sector}
+            </span>
+          </figcaption>
+        </figure>
       )}
 
-      {cs?.highlights && cs.highlights.length > 0 && (
-        <Section index={next()} label="Key details">
-          <div className="cs-highlights">
-            {cs.highlights.map((h) => (
-              <div key={h.id}>
-                <h4 className="cs-highlight__title">{h.title}</h4>
-                <p>{h.description}</p>
-                <p className="cs-highlight__caption">{h.challenge}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
+      {data?.stakes && (
+        <section className="case__section">
+          <p className="case__prose case__prose--lead">{data.stakes}</p>
+        </section>
       )}
 
-      {cs?.engineering && (
-        <Section index={next()} label={cs.engineering.title}>
-          <p>{cs.engineering.copy}</p>
-          <div className="cs-signals">
-            {cs.engineering.signals.map((s) => (
-              <span key={s}>{s}</span>
-            ))}
-          </div>
-        </Section>
+      {data?.paradox && (
+        <section className="case__section">
+          <p className="eyebrow"><span>The Question</span></p>
+          <p className="case__prose case__prose--question">{data.paradox}</p>
+        </section>
       )}
 
-      {cs?.statistics && cs.statistics.length > 0 && (
-        <Section index={next()} label="Numbers">
-          <div className="cs-stats">
-            {cs.statistics.map((stat, i) => (
-              <div key={stat.label}>
-                <span className="cs-stat__label">
-                  {String(i + 1).padStart(2, "0")} / {stat.label}
+      {data?.editorial && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§01</span>
+            <span className="eyebrow__sep">·</span>
+            <span>{data.editorial.heading}</span>
+          </p>
+          <p className="case__prose">{data.editorial.copy}</p>
+        </section>
+      )}
+
+      {data?.process && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§02</span>
+            <span className="eyebrow__sep">·</span>
+            <span>{data.process.title}</span>
+          </p>
+          <p className="case__prose">{data.process.copy}</p>
+        </section>
+      )}
+
+      {data?.processSteps && data.processSteps.length > 0 && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§03</span>
+            <span className="eyebrow__sep">·</span>
+            <span>Steps</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">
+              {String(data.processSteps.length).padStart(2, "0")}
+            </span>
+          </p>
+          <ol className="case__steps">
+            {data.processSteps.map((step, i) => (
+              <li key={step.title} className="case__step">
+                <span className="case__step-num tabular">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="cs-stat__value">{stat.value}</span>
+                <div className="case__step-body">
+                  <h4 className="case__step-title">{step.title}</h4>
+                  <p className="case__prose case__prose--step">{step.copy}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {data?.highlights && data.highlights.length > 0 && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§04</span>
+            <span className="eyebrow__sep">·</span>
+            <span>Highlights</span>
+          </p>
+          <div className="case__highlights">
+            {data.highlights.map((h) => (
+              <div key={h.id} className="case__highlight">
+                <h4 className="case__highlight-title">{h.title}</h4>
+                <p className="case__prose case__prose--step">{h.description}</p>
+                {h.challenge && (
+                  <p className="case__highlight-challenge">
+                    <span className="plate-mark">Challenge</span> {h.challenge}
+                  </p>
+                )}
+                {h.recipe && (
+                  <p className="case__highlight-recipe plate-mark">{h.recipe}</p>
+                )}
               </div>
             ))}
           </div>
-        </Section>
+        </section>
       )}
 
-      {cs?.videos && cs.videos.length > 0 && (
-        <Section index={next()} label="Media">
-          <div className="cs-media">
-            {cs.videos.map((v, i) => (
-              <figure key={i}>
-                <video
-                  src={v.src}
-                  poster={v.poster}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  style={{ display: "block", width: "100%", aspectRatio: v.aspect || "16/9", objectFit: "cover" }}
-                />
-                <figcaption>
-                  FIG. {String(i + 2).padStart(2, "0")} — {v.caption ?? "Video loop"}
-                </figcaption>
+      {data?.engineering && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§05</span>
+            <span className="eyebrow__sep">·</span>
+            <span>{data.engineering.title}</span>
+          </p>
+          <p className="case__prose">{data.engineering.copy}</p>
+          {data.engineering.signals.length > 0 && (
+            <p className="case__signals">
+              {data.engineering.signals.map((s, i) => (
+                <span key={s}>
+                  {i > 0 && <span className="case__signal-sep"> · </span>}
+                  <span>{s}</span>
+                </span>
+              ))}
+            </p>
+          )}
+        </section>
+      )}
+
+      {data?.statistics && data.statistics.length > 0 && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§06</span>
+            <span className="eyebrow__sep">·</span>
+            <span>Numbers</span>
+          </p>
+          <dl className="case__stats">
+            {data.statistics.map((s) => (
+              <div key={s.label} className="case__stat">
+                <dt className="plate-mark">{s.label}</dt>
+                <dd className="case__stat-val">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {data?.videos && data.videos.length > 0 && (
+        <section className="case__section">
+          <p className="eyebrow">
+            <span>§07</span>
+            <span className="eyebrow__sep">·</span>
+            <span>Plates</span>
+            <span className="eyebrow__sep">·</span>
+            <span className="tabular">
+              {String(data.videos.length).padStart(2, "0")}
+            </span>
+          </p>
+          <div className="case__plates">
+            {data.videos.map((v, i) => (
+              <figure key={v.src} className="case__video-plate">
+                <div
+                  className="case__video-frame"
+                  style={{ aspectRatio: v.aspect ?? "16 / 9" }}
+                >
+                  <video
+                    src={v.src}
+                    poster={v.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                  <span className="plate-mark case__video-mark">
+                    Fig. {String(i + 2).padStart(2, "0")}
+                  </span>
+                </div>
+                {v.caption && (
+                  <figcaption className="case__video-caption">
+                    {v.caption}
+                  </figcaption>
+                )}
               </figure>
             ))}
           </div>
-        </Section>
+        </section>
       )}
 
-      {nextPiece && (
-        <div className="cs-next" data-reveal style={{ opacity: 0 }}>
-          <Link href={`/work/${nextPiece.slug}`}>
-            <span className="cs-next__key">NEXT ENTRY →</span>
-            <span className="cs-next__title">{nextPiece.title}</span>
-            <span className="cs-next__meta">{nextPiece.sector} / {nextPiece.year}</span>
-          </Link>
-        </div>
-      )}
-    </div>
+      <footer className="case__foot">
+        <Link href={`/work/${next.slug}`} className="case__next">
+          <span className="plate-mark">Next entry</span>
+          <span className="case__next-title">{next.title}</span>
+          <span className="case__next-arrow" aria-hidden>→</span>
+        </Link>
+      </footer>
+
+      <style>{`
+        .case {
+          width: 100%;
+          max-width: 760px;
+          margin: 0 auto;
+          padding: clamp(96px, 14vh, 160px) clamp(24px, 6vw, 72px) clamp(64px, 10vh, 120px);
+          display: grid;
+          gap: clamp(56px, 8vh, 88px);
+        }
+
+        .case__head { display: grid; gap: 20px; }
+        .case__title {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: clamp(32px, 4.2vw, 52px);
+          line-height: 1.1;
+          letter-spacing: -0.012em;
+          color: var(--ink);
+          margin: 0;
+        }
+        .case__sub {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 17px;
+          line-height: 1.6;
+          color: var(--ink-2);
+          max-width: 48ch;
+          margin: 4px 0 0;
+        }
+
+        .case__ledger {
+          margin: 20px 0 0;
+          border-top: 1px solid var(--ink-hair);
+        }
+        .case__ledger-row {
+          display: grid;
+          grid-template-columns: 120px 1fr;
+          gap: 20px;
+          padding: 10px 0;
+          border-bottom: 1px solid var(--ink-hair);
+          font-family: var(--font-stack-mono);
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--ink-2);
+        }
+        .case__ledger-row dt { color: var(--ink-4); }
+        .case__ledger-row dd { margin: 0; color: var(--ink-2); }
+
+        .case__plate { margin: 0; display: grid; gap: 10px; }
+        .case__plate-frame {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 4 / 5;
+          background: var(--paper-2);
+          overflow: hidden;
+          box-shadow: inset 0 0 0 1px var(--ink-hair);
+        }
+        .case__plate-marks { position: absolute; inset: 0; pointer-events: none; }
+        .case__plate-mark--tl { position: absolute; top: 12px; left: 14px; color: rgba(17,17,16,0.55); mix-blend-mode: multiply; }
+        .case__plate-mark--br { position: absolute; bottom: 12px; right: 14px; color: rgba(17,17,16,0.55); mix-blend-mode: multiply; }
+        .case__plate-caption { display: flex; align-items: baseline; gap: 14px; }
+        .case__plate-caption-text {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 13px;
+          color: var(--ink-2);
+        }
+
+        .case__section { display: grid; gap: 16px; }
+
+        .case__prose {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 15px;
+          line-height: 1.8;
+          color: var(--ink-2);
+          max-width: 56ch;
+          margin: 0;
+        }
+        .case__prose--lead {
+          font-size: 18px;
+          line-height: 1.65;
+          color: var(--ink);
+          max-width: 52ch;
+        }
+        .case__prose--question {
+          font-weight: 400;
+          font-size: 22px;
+          line-height: 1.45;
+          letter-spacing: -0.005em;
+          color: var(--ink);
+          max-width: 32ch;
+        }
+        .case__prose--step { font-size: 14px; max-width: 52ch; }
+
+        .case__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+        .case__step {
+          display: grid;
+          grid-template-columns: 44px 1fr;
+          gap: 16px;
+          padding: 16px 0 0;
+          border-top: 1px solid var(--ink-hair);
+        }
+        .case__step-num {
+          font-family: var(--font-stack-mono);
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          color: var(--ink-4);
+        }
+        .case__step-title {
+          font-family: var(--font-stack-serif);
+          font-weight: 400;
+          font-size: 17px;
+          line-height: 1.3;
+          color: var(--ink);
+          margin: 0 0 6px;
+        }
+
+        .case__highlights { display: grid; gap: 32px; }
+        .case__highlight {
+          display: grid;
+          gap: 8px;
+          padding: 20px 0 0;
+          border-top: 1px solid var(--ink-hair);
+        }
+        .case__highlight-title {
+          font-family: var(--font-stack-serif);
+          font-weight: 400;
+          font-size: 19px;
+          line-height: 1.3;
+          color: var(--ink);
+          margin: 0;
+        }
+        .case__highlight-challenge {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 13px;
+          line-height: 1.7;
+          color: var(--ink-3);
+          max-width: 52ch;
+          margin: 6px 0 0;
+        }
+        .case__highlight-recipe { color: var(--ink-3); margin: 2px 0 0; }
+
+        .case__signals {
+          font-family: var(--font-stack-mono);
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--ink-3);
+          margin: 4px 0 0;
+        }
+        .case__signal-sep { color: var(--ink-4); }
+
+        .case__stats {
+          margin: 0;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 28px 32px;
+          border-top: 1px solid var(--ink-hair);
+          padding-top: 20px;
+        }
+        .case__stat { display: grid; gap: 6px; }
+        .case__stat-val {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 28px;
+          line-height: 1;
+          color: var(--ink);
+          margin: 0;
+        }
+
+        .case__plates { display: grid; gap: 32px; }
+        .case__video-plate { margin: 0; display: grid; gap: 8px; }
+        .case__video-frame {
+          position: relative;
+          width: 100%;
+          background: var(--paper-2);
+          overflow: hidden;
+          box-shadow: inset 0 0 0 1px var(--ink-hair);
+        }
+        .case__video-frame video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .case__video-mark {
+          position: absolute;
+          top: 12px;
+          left: 14px;
+          color: rgba(17,17,16,0.55);
+          mix-blend-mode: multiply;
+        }
+        .case__video-caption {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 13px;
+          color: var(--ink-3);
+        }
+
+        .case__foot {
+          padding-top: 24px;
+          border-top: 1px solid var(--ink-hair);
+        }
+        .case__next {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: baseline;
+          gap: 16px;
+          padding: 16px 0;
+          transition: opacity 180ms var(--ease);
+        }
+        .case__next:hover { opacity: 0.6; }
+        .case__next-title {
+          font-family: var(--font-stack-serif);
+          font-weight: 400;
+          font-size: 20px;
+          color: var(--ink);
+        }
+        .case__next-arrow {
+          font-family: var(--font-stack-mono);
+          font-size: 16px;
+          color: var(--ink-3);
+          transition: transform 220ms var(--ease);
+        }
+        .case__next:hover .case__next-arrow { transform: translateX(4px); color: var(--ink); }
+
+        @media (max-width: 640px) {
+          .case__ledger-row { grid-template-columns: 100px 1fr; gap: 12px; }
+          .case__step { grid-template-columns: 32px 1fr; gap: 10px; }
+          .case__stats { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        }
+      `}</style>
+    </article>
   );
 }

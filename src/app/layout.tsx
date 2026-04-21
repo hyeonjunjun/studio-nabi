@@ -13,6 +13,22 @@ const generalSans = localFont({
   preload: true,
 });
 
+const switzer = localFont({
+  src: "../fonts/switzer/Switzer-Variable.woff2",
+  variable: "--font-sans-editorial",
+  weight: "100 900",
+  display: "swap",
+  preload: true,
+});
+
+const gambetta = localFont({
+  src: "../fonts/gambetta/Gambetta-Variable.woff2",
+  variable: "--font-serif",
+  weight: "300 800",
+  display: "swap",
+  preload: true,
+});
+
 const fragmentMono = localFont({
   src: "../fonts/fragment-mono/FragmentMono-Regular.woff2",
   variable: "--font-mono",
@@ -47,7 +63,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${generalSans.variable} ${fragmentMono.variable}`}>
+      <body className={`${generalSans.variable} ${switzer.variable} ${gambetta.variable} ${fragmentMono.variable}`}>
         <RouteAnnouncer />
         <SmoothScroll />
         <NavCoordinates />

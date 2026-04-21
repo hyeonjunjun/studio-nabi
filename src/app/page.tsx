@@ -2,121 +2,142 @@
 
 import dynamic from "next/dynamic";
 
-// Dynamic import keeps the WebGL stack out of the server bundle.
-const ProtostellarScene = dynamic(() => import("@/components/ProtostellarScene"), {
+const AsciiField = dynamic(() => import("@/components/AsciiField"), {
   ssr: false,
-  loading: () => <div className="home-hero__placeholder" aria-hidden />,
+  loading: () => <div className="poster__plate-placeholder" aria-hidden />,
 });
-
-const ENTRY = {
-  id: "HH-001",
-  object: "Protostellar Jet / Herbig-Haro",
-  ra: "05h 39m 44s",
-  dec: "−02° 33′ 16″",
-  date: "2026-04-24",
-  filter: "F814W",
-  exposure: "1200s",
-};
 
 export default function Home() {
   return (
-    <main id="main" className="home" data-theme-lock="dark">
-      <section className="home-hero" aria-label="Hyeonjoon Jun — design engineer, New York">
-        <ProtostellarScene />
+    <main id="main" className="home">
+      <article className="poster" aria-label="Hyeonjoon Jun — design engineer, New York">
+        <p className="eyebrow">
+          <span>Observation Log</span>
+          <span className="eyebrow__sep">·</span>
+          <span>New York</span>
+          <span className="eyebrow__sep">·</span>
+          <span className="tabular">2026</span>
+          <span className="eyebrow__sep">·</span>
+          <span className="tabular">№001</span>
+        </p>
 
-        <header className="home-hero__ledger" aria-hidden>
-          <div className="home-hero__ledger-row">
-            <span className="meta-key">ENTRY</span>
-            <span className="meta-val tabular">{ENTRY.id}</span>
+        <div className="poster__plate">
+          <AsciiField />
+          <div className="poster__marks" aria-hidden>
+            <span className="poster__mark poster__mark--tl">HKJ / PLATE №001</span>
+            <span className="poster__mark poster__mark--tr tabular">2026·04·20</span>
+            <span className="poster__mark poster__mark--bl tabular">40°43′N 73°59′W</span>
+            <span className="poster__mark poster__mark--br">ASCII / FIELD</span>
           </div>
-          <div className="home-hero__ledger-row">
-            <span className="meta-key">OBJECT</span>
-            <span className="meta-val">{ENTRY.object}</span>
-          </div>
-          <div className="home-hero__ledger-row">
-            <span className="meta-key">RA / DEC</span>
-            <span className="meta-val tabular">{ENTRY.ra} &nbsp; {ENTRY.dec}</span>
-          </div>
-          <div className="home-hero__ledger-row">
-            <span className="meta-key">FILTER</span>
-            <span className="meta-val">{ENTRY.filter}</span>
-            <span className="meta-key" style={{ marginLeft: 18 }}>EXP</span>
-            <span className="meta-val tabular">{ENTRY.exposure}</span>
-          </div>
-        </header>
+        </div>
 
-        <footer className="home-hero__byline" aria-hidden>
-          <span className="home-hero__name">HYEONJOON JUN</span>
-          <span className="home-hero__sep">·</span>
-          <span className="home-hero__role">Design Engineer, New York</span>
-        </footer>
-      </section>
+        <figcaption className="poster__caption">
+          <span className="poster__name">Hyeonjoon Jun</span>
+          <span className="poster__caption-sep">—</span>
+          <span className="poster__role">design engineer, New York</span>
+        </figcaption>
+
+        <p className="poster__body">
+          A practice concerned with the invisible craft that makes software
+          feel intentional. Typography, motion, material — the warmth of
+          physical objects in digital form.
+        </p>
+      </article>
 
       <style>{`
         .home {
-          height: 100vh;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          background: #030408;
-        }
-        .home-hero {
-          position: relative;
-          flex: 1;
-          overflow: hidden;
-        }
-        .home-hero__placeholder {
-          position: absolute;
-          inset: 0;
-          background: #030408;
+          min-height: 100svh;
+          display: grid;
+          place-items: center;
+          padding: clamp(32px, 6vh, 96px) clamp(24px, 4vw, 72px);
+          background: var(--paper);
+          color: var(--ink);
         }
 
-        .home-hero__ledger {
-          position: absolute;
-          top: clamp(64px, 8vh, 108px);
-          left: clamp(24px, 4vw, 64px);
-          z-index: 3;
+        .poster {
+          width: min(520px, 100%);
           display: grid;
-          gap: 4px;
+          gap: clamp(22px, 3vh, 34px);
+        }
+
+        /* The "plate" — the ASCII field with whispered corner marks */
+        .poster__plate {
+          position: relative;
+          aspect-ratio: 4 / 5;
+          background: color-mix(in oklab, var(--paper) 98%, var(--ink) 2%);
+          overflow: hidden;
+          box-shadow: inset 0 0 0 1px rgba(17, 17, 16, 0.06);
+        }
+        .poster__plate-placeholder {
+          position: absolute;
+          inset: 0;
+          background: color-mix(in oklab, var(--paper) 98%, var(--ink) 2%);
+        }
+
+        /* Corner microtypography — archival plate marks, almost invisible */
+        .poster__marks {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        .poster__mark {
+          position: absolute;
+          font-family: var(--font-stack-mono);
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(17, 17, 16, 0.38);
+          mix-blend-mode: multiply;
+        }
+        .poster__mark--tl { top: 12px; left: 14px; }
+        .poster__mark--tr { top: 12px; right: 14px; }
+        .poster__mark--bl { bottom: 12px; left: 14px; }
+        .poster__mark--br { bottom: 12px; right: 14px; }
+
+        /* Caption — name + role below the plate, quiet */
+        .poster__caption {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 8px;
+          margin: 0;
+        }
+        .poster__name {
+          font-family: var(--font-stack-serif);
+          font-weight: 380;
+          font-size: 15px;
+          letter-spacing: 0.005em;
+          color: var(--ink);
+        }
+        .poster__caption-sep {
+          color: var(--ink-4);
+          font-size: 12px;
+        }
+        .poster__role {
           font-family: var(--font-stack-mono);
           font-size: 10px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          pointer-events: none;
-          user-select: none;
-        }
-        .home-hero__ledger-row { display: flex; align-items: baseline; }
-        .home-hero__ledger .meta-key {
-          color: rgba(241, 236, 224, 0.36);
-          width: 68px;
-          flex: 0 0 auto;
-        }
-        .home-hero__ledger .meta-val {
-          color: rgba(241, 236, 224, 0.82);
+          color: var(--ink-3);
         }
 
-        .home-hero__byline {
-          position: absolute;
-          left: clamp(24px, 4vw, 64px);
-          bottom: clamp(28px, 4vh, 48px);
-          z-index: 3;
-          display: inline-flex;
-          align-items: baseline;
-          gap: 10px;
-          pointer-events: none;
-          user-select: none;
-          font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
+        .poster__body {
+          font-family: var(--font-stack-serif);
+          font-weight: 360;
+          font-size: 13px;
+          line-height: 1.7;
+          color: var(--ink-2);
+          max-width: 420px;
+          text-align: justify;
+          text-justify: inter-word;
+          word-spacing: 0.04em;
+          hyphens: auto;
         }
-        .home-hero__name { color: rgba(241, 236, 224, 0.95); }
-        .home-hero__sep  { color: rgba(241, 236, 224, 0.4); }
-        .home-hero__role { color: rgba(241, 236, 224, 0.7); letter-spacing: 0.18em; }
 
         @media (max-width: 640px) {
-          .home-hero__ledger { top: 60px; font-size: 9px; }
-          .home-hero__byline { font-size: 10px; flex-wrap: wrap; }
+          .poster__mark { font-size: 8px; letter-spacing: 0.12em; }
+          .poster__mark--tl, .poster__mark--tr { top: 10px; }
+          .poster__mark--bl, .poster__mark--br { bottom: 10px; }
         }
       `}</style>
     </main>
