@@ -262,13 +262,14 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
                     )}
                   </div>
 
-                  {/* Open-project label — small square glyph + mono
-                      caption, centered. Uses mix-blend-difference so
-                      it stays legible over any media without needing
-                      a backdrop. Fades in on hover/focus. */}
+                  {/* View-project label — arrow glyph + mono caption.
+                      On hover: arrow appears first, rotates 360° while
+                      the caption reveals with a short delay. Uses
+                      mix-blend-difference so it stays legible over any
+                      media without a backdrop. */}
                   <div className="strip__overlay" aria-hidden>
-                    <span className="strip__overlay-icon" />
-                    <span className="strip__overlay-text">Open project</span>
+                    <span className="strip__overlay-icon">→</span>
+                    <span className="strip__overlay-text">View project</span>
                   </div>
                 </div>
               </Link>
@@ -322,10 +323,11 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           overflow: hidden;
         }
 
-        /* ── Open-project overlay ─────────────────────────────
-           No backdrop — mix-blend-difference handles legibility
-           against any media. A tiny 10px square outline sits to the
-           left of a mono caption; both fade in together on hover. */
+        /* ── View-project overlay ─────────────────────────────
+           No backdrop. mix-blend-difference inverts the glyph +
+           caption against any media behind. Arrow appears first on
+           hover and rotates 360° while the caption reveals after a
+           short delay — the rotation carries the A→B transition. */
         .strip__overlay {
           position: absolute;
           inset: 0;
@@ -337,7 +339,7 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           pointer-events: none;
 
           opacity: 0;
-          transition: opacity 200ms var(--ease);
+          transition: opacity 180ms var(--ease);
 
           mix-blend-mode: difference;
           color: #ffffff;
@@ -352,16 +354,42 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           opacity: 1;
         }
 
+        /* Arrow glyph — visible with the overlay; rotates 360° on
+           hover, lands back where it started. */
         .strip__overlay-icon {
           display: inline-block;
-          width: 10px;
-          height: 10px;
-          border: 1px solid currentColor;
-          flex: 0 0 auto;
+          font-size: 13px;
+          line-height: 1;
+          transform: rotate(0deg);
+          transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .strip__link:hover .strip__overlay-icon,
+        .strip__link:focus-visible .strip__overlay-icon {
+          transform: rotate(360deg);
+        }
+
+        /* Caption — delayed reveal so the arrow registers alone for
+           the first ~200ms, then text slides in from the left. */
+        .strip__overlay-text {
+          opacity: 0;
+          transform: translateX(-6px);
+          transition:
+            opacity 220ms var(--ease) 220ms,
+            transform 340ms cubic-bezier(0.22, 1, 0.36, 1) 220ms;
+        }
+        .strip__link:hover .strip__overlay-text,
+        .strip__link:focus-visible .strip__overlay-text {
+          opacity: 1;
+          transform: translateX(0);
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .strip__overlay { transition: none; }
+          .strip__overlay,
+          .strip__overlay-icon,
+          .strip__overlay-text {
+            transition: none;
+            transform: none;
+          }
         }
 
         /* Matched to parallax factor 0.08 — no leak, no waste */

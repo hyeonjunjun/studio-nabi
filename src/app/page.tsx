@@ -125,15 +125,15 @@ export default function Home() {
         .cd__link {
           display: inline-flex;
           align-items: baseline;
-          gap: 12px;
+          gap: 10px;
           font-family: var(--font-stack-mono);
-          font-size: clamp(10px, 0.85vw, 12px);
+          font-size: 10px;
           letter-spacing: 0.22em;
           text-transform: uppercase;
           color: var(--ink);
           opacity: 0.3;
           transition: opacity 360ms cubic-bezier(0.4, 0, 0.2, 1);
-          padding: 8px 0;
+          padding: 6px 0;
         }
         .cd__link--r { flex-direction: row-reverse; }
         .cd__link.is-active { opacity: 1; }
