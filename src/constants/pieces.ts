@@ -16,7 +16,7 @@ export interface Piece {
   year: number;
   /** Hero asset for the /work/[slug] CaseStudy page. */
   image?: string;
-  /** Home catalog frame media. Leave undefined for the typographic placeholder. */
+  /** Home catalog frame media. Leave undefined for the typographic fallback. */
   cover?: CatalogCover;
   /** "cover" fills the frame; "center" lets portrait assets breathe on a paper field. */
   coverFit?: "cover" | "center";
@@ -24,8 +24,6 @@ export interface Piece {
   coverAspect?: string;
   /** Width as a percentage of the strip column (0–100). Defaults to 100. */
   coverWidth?: number;
-  /** Hand-composed ASCII to render inside the frame when no cover exists. */
-  placeholderAscii?: string;
   tags: string[];
 }
 
@@ -78,13 +76,6 @@ export const PIECES: Piece[] = [
     year: 2026,
     coverAspect: "16 / 10",
     coverWidth: 86,
-    placeholderAscii: `  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·
-───────────          ─────
-  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·
-      ╎╎╎╎╎               ╎╎╎╎
-  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·
-──────          ───────          ───
-  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·`,
     tags: ["dashboard", "ambient", "ai"],
   },
   {
@@ -103,103 +94,5 @@ export const PIECES: Piece[] = [
     coverAspect: "9 / 16",
     coverWidth: 54,
     tags: ["mobile", "ai", "product"],
-  },
-  {
-    slug: "ondo",
-    title: "Ondo",
-    type: "project",
-    order: 5,
-    number: "05",
-    sector: "Brand Identity",
-    description:
-      "Seasonal apothecary concept — tactile packaging, Korean materia medica, a ritual brand.",
-    status: "wip",
-    year: 2026,
-    coverAspect: "1 / 1",
-    coverWidth: 64,
-    placeholderAscii: `     ┌─┐
-     │ │
-    ╭┴─┴╮
-    │   │
-    │ · │
-    │   │
-    ╰───╯`,
-    tags: ["brand", "packaging", "concept"],
-  },
-  {
-    slug: "moa",
-    title: "Moa",
-    type: "project",
-    order: 6,
-    number: "06",
-    sector: "Editorial Identity",
-    description:
-      "Micro-publication and reading society — a quiet typographic brand for slow thought.",
-    status: "wip",
-    year: 2026,
-    coverAspect: "2 / 3",
-    coverWidth: 72,
-    placeholderAscii: `│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-───────────────
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-───────────────
-│ │ │ │ │ │ │ │
-│ │ │ │ │ │ │ │
-───────────────`,
-    tags: ["brand", "editorial", "concept"],
-  },
-  {
-    slug: "yeo",
-    title: "Yeo",
-    type: "project",
-    order: 7,
-    number: "07",
-    sector: "Fragrance Atelier",
-    description:
-      "Objects and scent — sculptural bottle system, minimal ingredient-led identity.",
-    status: "wip",
-    year: 2026,
-    coverAspect: "3 / 2",
-    coverWidth: 92,
-    placeholderAscii: `    ·         ·         ·
-           ┌───┐
-   ┌─┐   ╭─┴───┴─╮   ┌─┐
-  ╭┴─┴╮  │   ·   │  ╭┴─┴╮
-  │ · │  │       │  │   │
-  │   │  │   ·   │  │ · │
-  ╰───╯  ╰───────╯  ╰───╯`,
-    tags: ["brand", "fragrance", "concept"],
-  },
-  {
-    slug: "halla",
-    title: "Halla",
-    type: "project",
-    order: 8,
-    number: "08",
-    sector: "Hospitality",
-    description:
-      "Tea house identity and menu system — Hallasan heritage, ceramic-forward.",
-    status: "wip",
-    year: 2026,
-    coverAspect: "4 / 5",
-    coverWidth: 58,
-    placeholderAscii: `       ·
-      · ·
-     ·   ·
-    ╱     ╲
-   ╱       ╲
-  ╱    ·    ╲
- ╱           ╲
-╱_____________╲
-
-~ ~ ~ ~ ~ ~ ~ ~
-   ~  ~  ~`,
-    tags: ["brand", "hospitality", "concept"],
   },
 ];

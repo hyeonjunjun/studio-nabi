@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { Piece } from "@/constants/pieces";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -13,14 +13,13 @@ type Props = {
 };
 
 /**
- * GutterStrip — a wheel-driven snap carousel of project media.
+ * GutterStrip — wheel-driven snap carousel of project media.
  *
- * One wheel tick = one project. Each transition animates for ~900ms
- * with a cubic ease-in-out (the "heavy" feel). Parallax is applied
- * per-frame during animation. Content is tripled so the active
- * project is always sourced from the middle set; after each
- * transition settles, we teleport the scroll position back to the
- * middle-set equivalent so the loop is infinite and seamless.
+ * One wheel tick = one project. Each transition animates for ~920ms
+ * with a cubic ease-in-out. Parallax is applied per-frame during the
+ * animation at factor 0.08 so the media moves in lockstep with the
+ * scroll snap. Linear, non-looping — the catalog is finite and
+ * honest about its size.
  *
  * Reduced-motion clients see static framing, no parallax, no snap.
  */
@@ -34,12 +33,8 @@ const easeInOutCubic = (t: number) =>
 export default function GutterStrip({ pieces, onActiveChange }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const tripled = useMemo(() => [...pieces, ...pieces, ...pieces], [pieces]);
 
-  const pieceCount = pieces.length;
-
-  // DOM index within the tripled list; start at first item of middle set
-  const domIdxRef = useRef(pieceCount);
+  const domIdxRef = useRef(0);
   const animIdRef = useRef<number | null>(null);
   const isAnimatingRef = useRef(false);
   const wheelLockRef = useRef(false);
@@ -80,35 +75,27 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
     });
   }, [getItems, reduced]);
 
-  const teleportIfNeeded = useCallback(() => {
-    const strip = rootRef.current;
-    if (!strip) return;
-    const domIdx = domIdxRef.current;
-    if (domIdx < pieceCount) {
-      domIdxRef.current = domIdx + pieceCount;
-      strip.scrollTop = scrollTopForDomIdx(domIdxRef.current);
-      applyParallax();
-    } else if (domIdx >= pieceCount * 2) {
-      domIdxRef.current = domIdx - pieceCount;
-      strip.scrollTop = scrollTopForDomIdx(domIdxRef.current);
-      applyParallax();
-    }
-  }, [applyParallax, pieceCount, scrollTopForDomIdx]);
-
   const animateTo = useCallback(
     (newDomIdx: number) => {
       const strip = rootRef.current;
       if (!strip) return;
+
+      const clamped = Math.max(0, Math.min(pieces.length - 1, newDomIdx));
 
       if (animIdRef.current !== null) {
         cancelAnimationFrame(animIdRef.current);
       }
 
       const startTop = strip.scrollTop;
-      const targetTop = scrollTopForDomIdx(newDomIdx);
+      const targetTop = scrollTopForDomIdx(clamped);
       const delta = targetTop - startTop;
-      const startTime = performance.now();
 
+      if (Math.abs(delta) < 0.5) {
+        domIdxRef.current = clamped;
+        return;
+      }
+
+      const startTime = performance.now();
       isAnimatingRef.current = true;
 
       const frame = (now: number) => {
@@ -123,23 +110,22 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
         } else {
           animIdRef.current = null;
           isAnimatingRef.current = false;
-          domIdxRef.current = newDomIdx;
-          teleportIfNeeded();
+          domIdxRef.current = clamped;
         }
       };
       animIdRef.current = requestAnimationFrame(frame);
     },
-    [applyParallax, scrollTopForDomIdx, teleportIfNeeded]
+    [applyParallax, pieces.length, scrollTopForDomIdx]
   );
 
-  // Initial seek to middle set + initial active announce
+  // Initial seek + announce
   useEffect(() => {
     const strip = rootRef.current;
     if (!strip) return;
 
     const init = () => {
-      domIdxRef.current = pieceCount;
-      strip.scrollTop = scrollTopForDomIdx(pieceCount);
+      domIdxRef.current = 0;
+      strip.scrollTop = scrollTopForDomIdx(0);
       applyParallax();
       onActiveChange?.(0);
     };
@@ -158,9 +144,9 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
       ro.disconnect();
       if (animIdRef.current !== null) cancelAnimationFrame(animIdRef.current);
     };
-  }, [pieceCount, scrollTopForDomIdx, applyParallax, onActiveChange]);
+  }, [scrollTopForDomIdx, applyParallax, onActiveChange]);
 
-  // Wheel interception — one tick, one project
+  // Wheel → snap
   useEffect(() => {
     const strip = rootRef.current;
     if (!strip) return;
@@ -171,22 +157,23 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
       if (isAnimatingRef.current || wheelLockRef.current) return;
 
       const direction = e.deltaY > 0 ? 1 : -1;
+      const next = domIdxRef.current + direction;
+
+      // Don't bounce at boundaries — just hold position.
+      if (next < 0 || next >= pieces.length) return;
 
       wheelLockRef.current = true;
       window.setTimeout(() => {
         wheelLockRef.current = false;
       }, WHEEL_LOCK_MS);
 
-      const newDomIdx = domIdxRef.current + direction;
-      const activeIdx =
-        ((newDomIdx - pieceCount) % pieceCount + pieceCount) % pieceCount;
-      onActiveChange?.(activeIdx);
-      animateTo(newDomIdx);
+      onActiveChange?.(next);
+      animateTo(next);
     };
 
     strip.addEventListener("wheel", handleWheel, { passive: false });
     return () => strip.removeEventListener("wheel", handleWheel);
-  }, [animateTo, onActiveChange, pieceCount, reduced]);
+  }, [animateTo, onActiveChange, pieces.length, reduced]);
 
   return (
     <div
@@ -196,19 +183,13 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
       data-lenis-prevent
     >
       <ol className="strip__list">
-        {tripled.map((p, i) => (
+        {pieces.map((p) => (
           <li
-            key={`${p.slug}-${i}`}
+            key={p.slug}
             className="strip__item"
             style={{ width: `${p.coverWidth ?? 100}%` }}
           >
-            <Link
-              href={`/work/${p.slug}`}
-              className="strip__link"
-              data-cursor-label="OPEN PROJECT"
-              aria-hidden={i < pieceCount || i >= pieceCount * 2 ? "true" : undefined}
-              tabIndex={i < pieceCount || i >= pieceCount * 2 ? -1 : undefined}
-            >
+            <Link href={`/work/${p.slug}`} className="strip__link">
               <div
                 className="strip__plate"
                 style={{ aspectRatio: p.coverAspect ?? "16 / 9" }}
@@ -235,10 +216,6 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
                       className="strip__media"
                       data-fit={p.coverFit ?? "cover"}
                     />
-                  ) : p.placeholderAscii ? (
-                    <pre className="strip__ascii" aria-hidden>
-                      {p.placeholderAscii}
-                    </pre>
                   ) : (
                     <span className="strip__placeholder">
                       In development &nbsp;—&nbsp; {p.year}
@@ -258,7 +235,6 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           overflow-x: hidden;
           scrollbar-width: none;
           -ms-overflow-style: none;
-          /* Soft vertical fade so scroll-hidden edges don't feel cut */
           -webkit-mask-image: linear-gradient(
             to bottom,
             transparent 0,
@@ -296,9 +272,7 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           overflow: hidden;
         }
 
-        /* Oversized so parallax at its extreme brings the media's natural
-           top/bottom edge exactly to the frame border — no leak, no waste.
-           Matched to parallax factor 0.08: ~18% headroom each side. */
+        /* Matched to parallax factor 0.08 — no leak, no waste */
         .strip__media-wrap {
           position: absolute;
           top: -18%;
@@ -334,23 +308,6 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           text-transform: uppercase;
           color: var(--ink-4);
           white-space: nowrap;
-        }
-
-        .strip__ascii {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          font-family: var(--font-stack-mono);
-          font-size: clamp(8px, 0.9vw, 12px);
-          line-height: 1.15;
-          letter-spacing: 0;
-          color: var(--ink-2);
-          opacity: 0.78;
-          margin: 0;
-          padding: 8%;
-          white-space: pre;
-          text-align: center;
         }
 
         @media (prefers-reduced-motion: reduce) {

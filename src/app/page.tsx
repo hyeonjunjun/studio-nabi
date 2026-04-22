@@ -2,27 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import DifferenceCursor from "@/components/DifferenceCursor";
 import GutterStrip from "@/components/GutterStrip";
-import AmbientAscii from "@/components/AmbientAscii";
 import { PIECES } from "@/constants/pieces";
 
 const EMAIL = "rykjun@gmail.com";
 
 /**
- * Home — Cathy Dolle sequential index with an active-indexed gutter strip.
+ * Home — 4 project index with a central media strip. Cathydolle-derived
+ * mirror-gutter composition; left column 01–02 reads to the left edge,
+ * right column 03–04 reads to the right edge. The strip in the middle
+ * carries the vertical axis.
  *
- * The GutterStrip is wheel-driven: one wheel tick advances to the next
- * project with a heavy ease-in-out over ~920ms. As the active project
- * changes, the left or right text column highlights the corresponding
- * row and dims the rest. Hovering any row overrides the active-based
- * highlight for that moment.
+ * Foundation-committed: only real work ships to this catalog. No
+ * placeholders, no decorative layers, no custom cursor. Wheel-snap +
+ * parallax is the single signature interaction.
  */
 export default function Home() {
   const [activeIdx, setActiveIdx] = useState(0);
 
-  const left = PIECES.slice(0, 4);
-  const right = PIECES.slice(4, 8);
+  const left = PIECES.slice(0, 2);
+  const right = PIECES.slice(2, 4);
 
   const displayTitle = (t: string) =>
     t.replace(/:\s*[\u4E00-\u9FFF\uAC00-\uD7AF]+/, "").toLowerCase();
@@ -30,12 +29,10 @@ export default function Home() {
   return (
     <main id="main" className="home">
       <div className="home__grain" aria-hidden />
-      <AmbientAscii />
-      <DifferenceCursor />
 
       <section className="cd" aria-label="Selected work, 2025–2026">
         <div className="cd__stage">
-          <ol className="cd__col cd__col--l" aria-label="Entries 1 to 4">
+          <ol className="cd__col cd__col--l" aria-label="Entries 1 to 2">
             {left.map((p, i) => {
               const active = i === activeIdx;
               return (
@@ -43,7 +40,6 @@ export default function Home() {
                   <Link
                     href={`/work/${p.slug}`}
                     className={`cd__link${active ? " is-active" : ""}`}
-                    data-cursor-label="OPEN PROJECT"
                   >
                     <span className="cd__num tabular">
                       {String(i + 1).padStart(2, "0")}
@@ -60,16 +56,15 @@ export default function Home() {
             <GutterStrip pieces={PIECES} onActiveChange={setActiveIdx} />
           </div>
 
-          <ol className="cd__col cd__col--r" aria-label="Entries 5 to 8">
+          <ol className="cd__col cd__col--r" aria-label="Entries 3 to 4">
             {right.map((p, i) => {
-              const globalIdx = i + 4;
+              const globalIdx = i + 2;
               const active = globalIdx === activeIdx;
               return (
                 <li key={p.slug} className="cd__row">
                   <Link
                     href={`/work/${p.slug}`}
                     className={`cd__link cd__link--r${active ? " is-active" : ""}`}
-                    data-cursor-label="OPEN PROJECT"
                   >
                     <span className="cd__num tabular">
                       {String(globalIdx + 1).padStart(2, "0")}
@@ -84,7 +79,7 @@ export default function Home() {
         </div>
 
         <footer className="cd__foot">
-          <a href={`mailto:${EMAIL}`} className="cd__mail" data-cursor-label="WRITE">
+          <a href={`mailto:${EMAIL}`} className="cd__mail">
             {EMAIL}
           </a>
           <span className="cd__foot-spacer" aria-hidden />
@@ -93,7 +88,6 @@ export default function Home() {
       </section>
 
       <style>{`
-        /* ── Frame ────────────────────────────────────── */
         .home {
           height: 100svh;
           background: var(--paper);
@@ -121,7 +115,6 @@ export default function Home() {
           gap: clamp(20px, 3vh, 32px);
         }
 
-        /* ── Stage: 3 columns (text · strip · text) ───── */
         .cd__stage {
           display: grid;
           grid-template-columns: minmax(180px, 1fr) minmax(280px, 34vw) minmax(180px, 1fr);
@@ -130,7 +123,6 @@ export default function Home() {
           min-height: 0;
         }
 
-        /* ── Columns ──────────────────────────────────── */
         .cd__col {
           list-style: none;
           margin: 0;
@@ -156,20 +148,16 @@ export default function Home() {
           opacity: 0.3;
           transition: opacity 360ms cubic-bezier(0.4, 0, 0.2, 1);
           padding: 8px 0;
-          cursor: pointer;
         }
         .cd__link--r { flex-direction: row-reverse; }
         .cd__link.is-active { opacity: 1; }
         .cd__link:hover { opacity: 1; }
-
-        /* When any row is hovered, other rows dim (including the active row) */
         .cd__stage:has(.cd__link:hover) .cd__link:not(:hover) { opacity: 0.3; }
 
         .cd__num { color: var(--ink-3); }
         .cd__slash { color: var(--ink-4); }
         .cd__name { color: var(--ink); }
 
-        /* ── Gutter (the strip container) ─────────────── */
         .cd__gutter {
           position: relative;
           min-height: 0;
@@ -178,7 +166,6 @@ export default function Home() {
           overflow: hidden;
         }
 
-        /* ── Foot ─────────────────────────────────────── */
         .cd__foot {
           display: flex;
           align-items: baseline;
@@ -199,7 +186,6 @@ export default function Home() {
         .cd__mail:hover { border-bottom-color: var(--ink); }
         .cd__loc { color: var(--ink-3); }
 
-        /* ── Responsive ──────────────────────────────── */
         @media (max-width: 960px) {
           .cd__stage {
             grid-template-columns: 1fr;
