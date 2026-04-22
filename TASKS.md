@@ -1,0 +1,130 @@
+# Portfolio — Tasks & Updates
+
+Working document. Captures the current design direction, what's shipped,
+and what's next. Updated 2026-04-22.
+
+## Direction
+
+**Studio catalog, not observation log.** The portfolio presents made
+objects as plates — each piece given documentary equality. Voice is
+neutral and past-tense, not field-notes. Tactility lives in static
+paper grain + micro-typography, not in ambient motion.
+
+**Reference lineage** (from [/shelf](src/app/shelf/page.tsx)):
+
+- Kenya Hara — *Designing Design* — emptiness as active material
+- Morrison & Fukasawa — *Super Normal* — documentary equality
+- Dieter Rams / Vitsœ — restraint as the hardest design move
+- Rauno Freiberg — craft in 40×40px details
+- Emil Kowalski — shipped components over packaging
+- Cathy Dolle — mirrored numbered index (the home mechanic)
+- Muji / Teenage Engineering — manual-design discipline
+- Craig Mod — scholarly-journal cadence on a personal site
+
+**Principle**: every animation is triggered by a user action or a
+first-paint event, never on idle. 120–400ms windows. Respect
+`prefers-reduced-motion`.
+
+---
+
+## Shipped — 2026-04-22 session
+
+### Direction shift
+- Metadata descriptions and OG card register swapped from
+  "Observation log" → "Work from the studio" in
+  [layout.tsx](src/app/layout.tsx) and
+  [opengraph-image.tsx](src/app/opengraph-image.tsx).
+
+### Paper and motion
+- Deleted `AmbientAscii.tsx` (full-viewport flow field) and
+  `CornerStamp.tsx` (reticle). No ambient motion anywhere.
+- Deleted `AmbientGarden.tsx` (five box-drawing pictograms).
+- Added [PaperGrain.tsx](src/components/PaperGrain.tsx) — single static
+  SVG turbulence filter, 0.055 opacity, mix-blend-multiply. Mounted
+  globally. Zero rAF cost.
+
+### Microinteractions
+- Added [CopyEmailLink.tsx](src/components/CopyEmailLink.tsx) — click
+  to copy, 1.2s "copied" micro-state, falls back to mailto on
+  unsupported browsers. Wired into homepage foot and contact card.
+- Plate press on `GutterStrip` — `scale(0.988)` over 240ms on hover,
+  honors reduced-motion. [GutterStrip.tsx:294-306](src/components/GutterStrip.tsx#L294-L306).
+
+### Cleanup
+- Homepage footer reworked from `flex` + spacer to
+  `grid-template-columns: 1fr auto 1fr` with a centered
+  `design engineer` tagline between email and location.
+- `AmbientGarden` homepage-only scoping became moot after deletion.
+- Dead `SOCIALS` alias removed from [contact.ts](src/constants/contact.ts).
+- `EXPERIENCE` moved out of [about/page.tsx](src/app/about/page.tsx) into
+  [constants/experience.ts](src/constants/experience.ts). Unattributed
+  roles drop the `org` field entirely rather than carrying empty strings.
+- Softened cathydolle note on [shelf.ts](src/constants/shelf.ts) from
+  "the mechanic this site borrows" to a less self-footnoting line.
+
+---
+
+## Backlog
+
+### Microinteractions (proposed, not yet shipped)
+
+- [ ] **Hairline underline slide** on external links (shelf page
+  especially) — width 0 → 100% width transition at 160ms on hover.
+  Rauno/Emil register.
+- [ ] **First-paint title reveal** — eyebrow + h1 on each page fade in
+  with 8–12px upward slide over 400ms. Triggers once on mount, not on
+  scroll.
+- [ ] **View transitions on route change** — 180–240ms fade between
+  routes. Consider Next.js View Transitions API or CSS-only fade.
+- [ ] **Case study section reveal** — each `§` section fades+slides
+  in as it enters viewport, once only, 400ms.
+- [ ] **Plate press on static figures** — case study plates get the
+  same 0.988 scale treatment on hover, matching GutterStrip.
+
+### Static editorial marginalia
+
+- [ ] **Running head** — top-right on each page, e.g.
+  `H.J. · №004 · 2026`. Hard-coded per route for editorial control.
+- [ ] **Folio** — bottom-center page number or date-coded tick.
+- [ ] **Section marks** — `§`, `№`, or `·` used intentionally once
+  per page as a plate label.
+
+### Content
+
+- [ ] Fill or remove `pane` in [case-studies.ts](src/constants/case-studies.ts)
+  (currently intentional but flagged for future decision).
+- [ ] Fill or remove `clouds-at-sea` in [case-studies.ts](src/constants/case-studies.ts).
+- [ ] Sift in [case-studies.ts](src/constants/case-studies.ts) is
+  partially populated — bring to Gyeol parity or trim.
+- [ ] Homepage body prose — currently absent by design. Decide if any
+  copy belongs here or keep skeletal.
+- [ ] About page body — review three short paragraphs for final voice.
+
+### Open questions
+
+- **Grain weight** — is 0.055 opacity too heavy, too flat, or right?
+  One-line tune in [PaperGrain.tsx:24](src/components/PaperGrain.tsx#L24).
+- **Korean strip on homepage index** — current pattern strips `결` from
+  `gyeol: 결` on the home list, shows full bilingual form on detail
+  plate. Intentional asymmetry or unify?
+- **`/work` vs `/` redundancy** — both list the same four pieces.
+  Intentional as "browse vs. index", but worth revisiting if content
+  grows past four pieces.
+- **GutterStrip wheel-only input** — no touch handler; mobile visitors
+  see entry #1 only. Intentional per prior call, but a swipe handler
+  would unlock mobile without affecting desktop behavior.
+
+---
+
+## Principles to hold against
+
+1. **No ambient motion.** Anything that moves on idle gets cut.
+2. **Mono-first.** Gambetta reserved for case-study prose only;
+   everything else is Fragment Mono.
+3. **Documentary equality.** Every piece treated with the same editorial
+   weight — no hero project, no demoted projects.
+4. **Tactility through paper, hairlines, and microtype** — not through
+   decoration or generated effects.
+5. **Trust the type system.** `.eyebrow`, `.plate-mark`, `.prose`, and
+   `.meta` primitives in [globals.css](src/app/globals.css) do the
+   compositional work; new pages should compose from these, not invent.

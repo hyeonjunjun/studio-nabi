@@ -43,7 +43,7 @@ export default async function Image() {
             width: "100%",
           }}
         >
-          <span>Observation Log</span>
+          <span>Work from the studio</span>
           <span>New York · 2026</span>
         </div>
 

@@ -296,6 +296,13 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           width: 100%;
           background: color-mix(in oklab, var(--paper) 94%, var(--ink) 6%);
           overflow: hidden;
+          transition: transform 240ms var(--ease);
+        }
+        .strip__link:hover .strip__plate { transform: scale(0.988); }
+
+        @media (prefers-reduced-motion: reduce) {
+          .strip__plate { transition: none; }
+          .strip__link:hover .strip__plate { transform: none; }
         }
 
         /* Matched to parallax factor 0.08 — no leak, no waste */

@@ -1,12 +1,7 @@
 "use client";
 
 import { CONTACT_EMAIL } from "@/constants/contact";
-
-const EXPERIENCE: Array<{ period: string; role: string; org: string }> = [
-  { period: "2024 — Present", role: "Independent",            org: "Design engineering" },
-  { period: "2023 — 2024",    role: "Design technologist",    org: "" },
-  { period: "2021 — 2023",    role: "Frontend developer",     org: "" },
-];
+import { EXPERIENCE } from "@/constants/experience";
 
 export default function AboutPage() {
   return (

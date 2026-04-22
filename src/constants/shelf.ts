@@ -76,7 +76,7 @@ export const SHELF: ShelfItem[] = [
     title: "Cathy Dolle",
     attribution: "cathydolle.com",
     href: "https://cathydolle.com",
-    note: "Mirrored numbered index with mix-blend-difference cursor. The mechanic this site borrows.",
+    note: "Mirrored numbered index, mix-blend-difference cursor. Proof a catalog can be the whole hero.",
   },
   {
     id: "p04",

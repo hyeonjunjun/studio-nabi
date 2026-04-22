@@ -3,10 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import GutterStrip from "@/components/GutterStrip";
-import CornerStamp from "@/components/CornerStamp";
+import CopyEmailLink from "@/components/CopyEmailLink";
 import { PIECES } from "@/constants/pieces";
-
-const EMAIL = "rykjun@gmail.com";
 
 /**
  * Home — 4 project index with a central media strip. Cathydolle-derived
@@ -29,10 +27,6 @@ export default function Home() {
 
   return (
     <main id="main" className="home">
-      <div className="home__stamp">
-        <CornerStamp />
-      </div>
-
       <section className="cd" aria-label="Selected work, 2025–2026">
         <div className="cd__stage">
           <ol className="cd__col cd__col--l" aria-label="Entries 1 to 2">
@@ -82,10 +76,8 @@ export default function Home() {
         </div>
 
         <footer className="cd__foot">
-          <a href={`mailto:${EMAIL}`} className="cd__mail">
-            {EMAIL}
-          </a>
-          <span className="cd__foot-spacer" aria-hidden />
+          <CopyEmailLink className="cd__mail" />
+          <span className="cd__foot-role">design engineer</span>
           <span className="cd__loc tabular">2026, new york</span>
         </footer>
       </section>
@@ -97,16 +89,6 @@ export default function Home() {
           color: var(--ink);
           position: relative;
           overflow: hidden;
-        }
-        .home__stamp {
-          position: absolute;
-          top: clamp(64px, 9vh, 88px);
-          right: clamp(20px, 3vw, 48px);
-          z-index: 2;
-          pointer-events: none;
-        }
-        @media (max-width: 640px) {
-          .home__stamp { display: none; }
         }
 
         .cd {
@@ -171,7 +153,8 @@ export default function Home() {
         }
 
         .cd__foot {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
           align-items: baseline;
           gap: 16px;
           padding: clamp(16px, 2.5vh, 24px) clamp(12px, 2vw, 32px) 0;
@@ -181,14 +164,30 @@ export default function Home() {
           letter-spacing: 0.18em;
           text-transform: uppercase;
         }
-        .cd__foot-spacer { flex: 1; }
         .cd__mail {
+          justify-self: start;
           color: var(--ink);
           border-bottom: 1px solid var(--ink-hair);
-          transition: border-color 180ms var(--ease);
+          transition: border-color 180ms var(--ease), color 180ms var(--ease);
         }
         .cd__mail:hover { border-bottom-color: var(--ink); }
-        .cd__loc { color: var(--ink-3); }
+        .cd__mail[data-copied] {
+          color: var(--ink-3);
+          border-bottom-color: var(--ink);
+        }
+        .cd__foot-role {
+          justify-self: center;
+          color: var(--ink-3);
+        }
+        .cd__loc { justify-self: end; color: var(--ink-3); }
+
+        @media (max-width: 640px) {
+          .cd__foot {
+            grid-template-columns: 1fr 1fr;
+            row-gap: 10px;
+          }
+          .cd__foot-role { grid-column: 1 / -1; justify-self: start; }
+        }
 
         @media (max-width: 960px) {
           .cd__stage {

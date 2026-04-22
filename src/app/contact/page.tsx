@@ -1,6 +1,7 @@
 "use client";
 
-import { CONTACT_EMAIL, NETWORKS } from "@/constants/contact";
+import { NETWORKS } from "@/constants/contact";
+import CopyEmailLink from "@/components/CopyEmailLink";
 
 /**
  * Contact — business card as composition. Microtypography clusters in
@@ -33,12 +34,7 @@ export default function ContactPage() {
         <footer className="card__row card__row--bot">
           <div className="card__cluster">
             <span className="card__key">Electronic</span>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="card__handle"
-            >
-              {CONTACT_EMAIL}
-            </a>
+            <CopyEmailLink className="card__handle" />
           </div>
 
           <div className="card__cluster card__cluster--right">

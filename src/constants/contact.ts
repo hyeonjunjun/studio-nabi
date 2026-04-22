@@ -26,6 +26,3 @@ export const NETWORKS: Network[] = [
     href: "https://linkedin.com/in/hyeonjunjun",
   },
 ];
-
-// Back-compat alias — /about page imports SOCIALS.
-export const SOCIALS = NETWORKS;
