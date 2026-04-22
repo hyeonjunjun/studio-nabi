@@ -4,23 +4,28 @@ import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 /**
- * AmbientAscii — the site's wallpaper. A sparse canvas of tiny dot
- * glyphs drifting very slowly across the whole viewport, mounted
- * site-wide as a fixed background layer.
+ * AmbientAscii — atmospheric ASCII landscape rendered by mapping a
+ * density field to a character ramp. Not a scatter of dots — a real
+ * image-to-ASCII style composition where darker regions take denser
+ * glyphs (`@ 0 U Y L r l i ; : , . space`) and lighter regions fade
+ * into whitespace.
  *
- * Replaces the prior SVG paper-grain. One texture register, not two.
- * At ~11% opacity + mix-blend-multiply, reads as typographic grain
- * rather than decoration.
+ * The field is zoned vertically to evoke a landscape: a sparse sky
+ * band, a soft horizon, a denser foreground-foliage band. Multiple
+ * sine harmonics per zone produce organic clustering rather than
+ * grid artifacts. Slow drift per second — the scene evolves like
+ * clouds passing, not like an animation.
  *
  * Reduced-motion clients get a single paint, no rAF loop.
  */
 
-const GLYPHS = "·⋅∙∶∷∴"; // tiny, off-center dot characters only — never letters
+// Density ramp: sparsest on the left, densest on the right. The space
+// at position 0 means cells below a low value render nothing.
+const RAMP = " .,:;!lrLYU0@";
 const CELL_FONT_PX = 11;
-const CELL_W = 17;
-const CELL_H = 22;
-const DENSITY_THRESHOLD = 0.78; // sparse — paper grain under the garden, not a field of its own
-const SPEED = 0.05;             // very slow drift; garden carries the motion now
+const CELL_W = 9;
+const CELL_H = 14;
+const SPEED = 0.06;
 
 export default function AmbientAscii() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -58,10 +63,45 @@ export default function AmbientAscii() {
     measure();
     window.addEventListener("resize", measure);
 
+    /** Zoned landscape density. Returns 0..~1 where higher = denser glyph. */
     const field = (c: number, r: number, t: number) => {
-      const a = Math.sin(c * 0.23 + t * 0.14) * Math.cos(r * 0.19 - t * 0.11);
-      const b = Math.sin((c - r) * 0.17 + t * 0.09) * 0.6;
-      return (a + b) * 0.32 + 0.5;
+      const yNorm = r / Math.max(1, rows); // 0 at top, 1 at bottom
+
+      // Multi-octave noise shared across zones
+      const n1 =
+        Math.sin(c * 0.078 + t * 0.11) *
+        Math.cos(r * 0.095 - t * 0.07);
+      const n2 =
+        Math.sin((c - r) * 0.14 + t * 0.05) * 0.62;
+      const n3 =
+        Math.sin(c * 0.22 + r * 0.19 + t * 0.03) * 0.32;
+      const base = (n1 + n2 + n3 + 1.94) / 3.88; // rough 0..1
+
+      // ── Zone 1 — sky (top 32%) — very sparse, quiet cloud traces
+      if (yNorm < 0.32) {
+        const skyCurve = yNorm / 0.32; // 0 top → 1 at horizon
+        // Only high values render; rest collapses to 0
+        return base > 0.72 ? (base - 0.72) * (0.3 + skyCurve * 0.5) : 0;
+      }
+
+      // ── Zone 2 — horizon band (32%–52%) — soft clouds, moderate density
+      if (yNorm < 0.52) {
+        const cloudBand = Math.sin((yNorm - 0.32) / 0.20 * Math.PI); // 0→1→0
+        return base * cloudBand * 0.55;
+      }
+
+      // ── Zone 3 — middle (52%–72%) — quiet, sparse
+      if (yNorm < 0.72) {
+        return base > 0.68 ? (base - 0.68) * 0.4 : 0;
+      }
+
+      // ── Zone 4 — foreground (72%–100%) — denser, foliage-like
+      const fgLocal = (yNorm - 0.72) / 0.28; // 0 → 1 at bottom
+      const foliage =
+        Math.sin(c * 0.16 - t * 0.05) *
+        Math.cos(r * 0.24 + t * 0.02) *
+        0.5 + 0.5;
+      return (base * 0.5 + foliage * 0.5) * (0.35 + fgLocal * 0.75);
     };
 
     const render = (now: number) => {
@@ -75,11 +115,17 @@ export default function AmbientAscii() {
         const y = r * CELL_H;
         for (let c = 0; c < cols; c++) {
           const v = field(c, r, t);
-          if (v < DENSITY_THRESHOLD) continue;
+          if (v <= 0.04) continue;
 
-          const glyphIdx = Math.floor((v + c * 0.31 + r * 0.19) * GLYPHS.length);
-          const ch = GLYPHS[glyphIdx % GLYPHS.length];
-          const alpha = ((v - DENSITY_THRESHOLD) / (1 - DENSITY_THRESHOLD)) * 0.55 + 0.25;
+          const idx = Math.min(
+            RAMP.length - 1,
+            Math.max(0, Math.floor(v * RAMP.length * 1.05))
+          );
+          const ch = RAMP[idx];
+          if (ch === " ") continue;
+
+          // Per-cell alpha: lighter glyphs whisper, denser glyphs hold.
+          const alpha = 0.32 + v * 0.55;
           ctx.fillStyle = `rgba(17, 17, 16, ${alpha.toFixed(3)})`;
           ctx.fillText(ch, c * CELL_W, y);
         }
@@ -106,7 +152,7 @@ export default function AmbientAscii() {
         inset: 0,
         pointerEvents: "none",
         zIndex: 0,
-        opacity: 0.10,
+        opacity: 0.16,
         mixBlendMode: "multiply",
       }}
     />

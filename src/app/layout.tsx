@@ -6,7 +6,6 @@ import SmoothScroll from "@/components/SmoothScroll";
 import NavCoordinates from "@/components/NavCoordinates";
 import AmbientAscii from "@/components/AmbientAscii";
 import AmbientGarden from "@/components/AmbientGarden";
-import MarqueeStrip from "@/components/MarqueeStrip";
 
 const fragmentMono = localFont({
   src: "../fonts/fragment-mono/FragmentMono-Regular.woff2",
@@ -62,7 +61,6 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
-        <MarqueeStrip />
       </body>
     </html>
   );
