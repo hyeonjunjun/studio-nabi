@@ -262,12 +262,13 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
                     )}
                   </div>
 
-                  {/* View-project overlay — fades in on hover/focus,
-                      arrow slides in with a short delay after the plate
-                      backdrop settles. */}
+                  {/* Open-project label — small square glyph + mono
+                      caption, centered. Uses mix-blend-difference so
+                      it stays legible over any media without needing
+                      a backdrop. Fades in on hover/focus. */}
                   <div className="strip__overlay" aria-hidden>
-                    <span className="strip__overlay-text">View project</span>
-                    <span className="strip__overlay-arrow">→</span>
+                    <span className="strip__overlay-icon" />
+                    <span className="strip__overlay-text">Open project</span>
                   </div>
                 </div>
               </Link>
@@ -321,70 +322,46 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
           overflow: hidden;
         }
 
-        /* ── View-project overlay ────────────────────────────── */
+        /* ── Open-project overlay ─────────────────────────────
+           No backdrop — mix-blend-difference handles legibility
+           against any media. A tiny 10px square outline sits to the
+           left of a mono caption; both fade in together on hover. */
         .strip__overlay {
           position: absolute;
           inset: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 14px;
+          gap: 10px;
           z-index: 2;
           pointer-events: none;
 
-          /* paper-tone backdrop so the mono text reads over any media */
-          background: color-mix(in oklab, var(--paper) 68%, transparent);
-
           opacity: 0;
-          transition: opacity 240ms var(--ease);
+          transition: opacity 200ms var(--ease);
+
+          mix-blend-mode: difference;
+          color: #ffffff;
 
           font-family: var(--font-stack-mono);
-          font-size: 11px;
-          letter-spacing: 0.26em;
+          font-size: 10.5px;
+          letter-spacing: 0.24em;
           text-transform: uppercase;
-          color: var(--ink);
         }
         .strip__link:hover .strip__overlay,
         .strip__link:focus-visible .strip__overlay {
           opacity: 1;
         }
 
-        .strip__overlay-text {
-          /* text fades in first, slight upward drift */
-          transform: translateY(4px);
-          opacity: 0;
-          transition:
-            transform 280ms cubic-bezier(0.22, 1, 0.36, 1) 40ms,
-            opacity  260ms var(--ease) 40ms;
-        }
-        .strip__link:hover .strip__overlay-text,
-        .strip__link:focus-visible .strip__overlay-text {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        .strip__overlay-arrow {
-          /* arrow slides in a beat after the text */
+        .strip__overlay-icon {
           display: inline-block;
-          transform: translateX(-6px);
-          opacity: 0;
-          transition:
-            transform 340ms cubic-bezier(0.22, 1, 0.36, 1) 120ms,
-            opacity  260ms var(--ease) 120ms;
-        }
-        .strip__link:hover .strip__overlay-arrow,
-        .strip__link:focus-visible .strip__overlay-arrow {
-          transform: translateX(0);
-          opacity: 1;
+          width: 10px;
+          height: 10px;
+          border: 1px solid currentColor;
+          flex: 0 0 auto;
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .strip__overlay,
-          .strip__overlay-text,
-          .strip__overlay-arrow {
-            transition: none;
-            transform: none;
-          }
+          .strip__overlay { transition: none; }
         }
 
         /* Matched to parallax factor 0.08 — no leak, no waste */
