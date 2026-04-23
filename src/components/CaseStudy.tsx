@@ -5,11 +5,13 @@ import Image from "next/image";
 import { useMemo } from "react";
 import { PIECES, type Piece } from "@/constants/pieces";
 import { CASE_STUDIES } from "@/constants/case-studies";
+import { useSectionReveal } from "@/hooks/useSectionReveal";
 
 type Props = { piece: Piece };
 
 export default function CaseStudy({ piece }: Props) {
   const data = CASE_STUDIES[piece.slug];
+  const containerRef = useSectionReveal<HTMLElement>();
 
   const next = useMemo(() => {
     const sorted = [...PIECES].sort((a, b) => a.order - b.order);
@@ -18,7 +20,7 @@ export default function CaseStudy({ piece }: Props) {
   }, [piece.slug]);
 
   return (
-    <article className="case">
+    <article ref={containerRef} className="case">
       <header className="case__head">
         <p className="eyebrow">
           <span>Work</span>
@@ -339,7 +341,32 @@ export default function CaseStudy({ piece }: Props) {
           color: var(--ink-2);
         }
 
-        .case__section { display: grid; gap: 16px; }
+        .case__section {
+          display: grid;
+          gap: 16px;
+          opacity: 0;
+          transform: translateY(8px);
+          transition:
+            opacity 280ms var(--ease),
+            transform 280ms var(--ease);
+        }
+        .case__section[data-revealed] {
+          opacity: 1;
+          transform: none;
+        }
+        .case__section:nth-child(2) { transition-delay: 50ms; }
+        .case__section:nth-child(3) { transition-delay: 100ms; }
+        .case__section:nth-child(4) { transition-delay: 150ms; }
+        .case__section:nth-child(5) { transition-delay: 200ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .case__section,
+          .case__section[data-revealed] {
+            opacity: 1;
+            transform: none;
+            transition: none;
+          }
+        }
 
         /* Body prose on case studies gets Gambetta — mono everywhere
            else stays. Reading faces let long form breathe. */
