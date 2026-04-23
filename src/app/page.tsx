@@ -164,17 +164,8 @@ export default function Home() {
           letter-spacing: 0.18em;
           text-transform: uppercase;
         }
-        .cd__mail {
-          justify-self: start;
-          color: var(--ink);
-          border-bottom: 1px solid var(--ink-hair);
-          transition: border-color 180ms var(--ease), color 180ms var(--ease);
-        }
-        .cd__mail:hover { border-bottom-color: var(--ink); }
-        .cd__mail[data-copied] {
-          color: var(--ink-3);
-          border-bottom-color: var(--ink);
-        }
+        .cd__mail { justify-self: start; }
+        .cd__mail[data-copied] { color: var(--ink-3); }
         .cd__foot-role {
           justify-self: center;
           color: var(--ink-3);

@@ -153,11 +153,6 @@ export default function ContactPage() {
           gap: 8px;
           align-items: baseline;
           padding-bottom: 2px;
-          border-bottom: 1px solid var(--ink-hair);
-          transition: border-color 180ms var(--ease), color 180ms var(--ease);
-        }
-        .card__handle:hover {
-          border-bottom-color: var(--ink);
         }
 
         .card__networks {

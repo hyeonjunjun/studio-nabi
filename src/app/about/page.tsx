@@ -105,12 +105,6 @@ export default function AboutPage() {
           max-width: 54ch;
         }
         .about__prose p { margin: 0; }
-        .about__mail {
-          color: var(--ink);
-          border-bottom: 1px solid var(--ink-hair);
-          transition: border-color 180ms var(--ease);
-        }
-        .about__mail:hover { border-bottom-color: var(--ink); }
 
         /* ── Section ──────────────────────────────────── */
         .about__section { display: grid; gap: 12px; }
