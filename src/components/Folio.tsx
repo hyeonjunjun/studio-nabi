@@ -17,9 +17,9 @@ export default function Folio({ token, month }: FolioProps) {
       <style>{`
         .folio {
           position: fixed;
-          top: 24px;
+          top: 52px;
           right: 24px;
-          z-index: 51;
+          z-index: 49;
           font-family: var(--font-stack-mono);
           font-size: 9px;
           letter-spacing: 0.24em;
@@ -27,7 +27,7 @@ export default function Folio({ token, month }: FolioProps) {
           color: var(--ink-4);
           pointer-events: none;
         }
-        @media (max-width: 640px) {
+        @media (max-width: 960px) {
           .folio { display: none; }
         }
       `}</style>
