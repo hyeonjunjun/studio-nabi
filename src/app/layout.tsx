@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
-import SmoothScroll from "@/components/SmoothScroll";
 import NavCoordinates from "@/components/NavCoordinates";
 import PaperGrain from "@/components/PaperGrain";
 
@@ -53,7 +52,6 @@ export default function RootLayout({
       <body className={`${fragmentMono.variable} ${gambetta.variable}`}>
         <PaperGrain />
         <RouteAnnouncer />
-        <SmoothScroll />
         <NavCoordinates />
         <a href="#main" className="skip-to-content">
           Skip to content

@@ -197,7 +197,6 @@ export default function GutterStrip({ pieces, onActiveChange }: Props) {
       ref={rootRef}
       className="strip"
       aria-label="Project media, wheel-to-advance"
-      data-lenis-prevent
     >
       <ol className="strip__list">
         {tripled.map((p, i) => {
