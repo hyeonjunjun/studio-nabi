@@ -99,7 +99,6 @@ export default function Home() {
           <CopyEmailLink className="cd__mail" />
           <span className="cd__foot-role">design engineer</span>
           <span className="cd__loc tabular">2026, new york</span>
-          <kbd className="cd__kbd" aria-label="Press Command K to open command palette">⌘K</kbd>
         </footer>
       </section>
 
@@ -175,7 +174,7 @@ export default function Home() {
 
         .cd__foot {
           display: grid;
-          grid-template-columns: 1fr auto 1fr auto;
+          grid-template-columns: 1fr auto 1fr;
           align-items: baseline;
           gap: 16px;
           padding: clamp(16px, 2.5vh, 24px) clamp(12px, 2vw, 32px) 0;
@@ -184,17 +183,6 @@ export default function Home() {
           font-size: 10px;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-        }
-        .cd__kbd {
-          font-family: var(--font-stack-mono);
-          font-size: 9px;
-          letter-spacing: 0.24em;
-          color: var(--ink-4);
-          padding: 0;
-          background: transparent;
-          border: none;
-          justify-self: end;
-          grid-column: 4;
         }
         .cd__mail { justify-self: start; }
         .cd__mail[data-copied] { color: var(--ink-3); }
@@ -229,58 +217,8 @@ export default function Home() {
           .cd__col--r { order: 2; }
         }
 
-        /* ─── Stage register: home ───────────────────────────────────────── */
-        html[data-register="stage"] .home { background: var(--stage); color: var(--glow); }
-
-        html[data-register="stage"] .cd__link { color: var(--glow-2); opacity: 0.5; }
-        html[data-register="stage"] .cd__link.is-active { opacity: 1; color: var(--glow); }
-        html[data-register="stage"] .cd__link:hover { opacity: 1; color: var(--glow); }
-        html[data-register="stage"] .cd__stage:has(.cd__link:hover) .cd__link:not(:hover) { opacity: 0.5; }
-
-        html[data-register="stage"] .cd__num { color: var(--glow-hair); }
-        html[data-register="stage"] .cd__slash { color: var(--glow-hair); }
-        html[data-register="stage"] .cd__name { color: var(--glow); }
-
-        html[data-register="stage"] .cd__foot { border-top-color: var(--glow-hair); }
-        html[data-register="stage"] .cd__foot-role { color: var(--glow-2); }
-        html[data-register="stage"] .cd__loc { color: var(--glow-2); }
-        html[data-register="stage"] .cd__kbd { color: var(--glow-hair); }
-
-        html[data-register="stage"] .cd__mail {
-          color: var(--glow);
-          text-decoration-color: transparent;
-        }
-        html[data-register="stage"] .cd__mail:hover { text-decoration-color: var(--glow); }
-        html[data-register="stage"] .cd__mail[data-copied] { color: var(--glow-2); }
-
-        /* Path-blur arrival on title hover — desktop only, blur capped 2px */
-        @media (hover: hover) and (pointer: fine) {
-          html[data-register="stage"] .cd__link .cd__name {
-            transition:
-              filter 280ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
-              color 280ms var(--ease);
-          }
-          html[data-register="stage"] .cd__link:hover .cd__name {
-            animation: cd-name-settle 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-          }
-          @keyframes cd-name-settle {
-            0%   { filter: blur(1.2px); transform: translateX(2px); }
-            100% { filter: blur(0);     transform: translateX(0);   }
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
-          html[data-register="stage"] .cd__link:hover .cd__name {
-            filter: none;
-            transform: none;
-            animation: none;
-          }
-        }
-
-        /* ! moment: active row title sits 1px proud of siblings. Baseline
-           nudge invisible systematically, felt on careful reading. */
-        html[data-register="stage"] .cd__link.is-active .cd__name {
+        /* ! moment: active row title sits 1px proud of siblings */
+        .cd__link.is-active .cd__name {
           transform: translateY(-1px);
         }
       `}</style>

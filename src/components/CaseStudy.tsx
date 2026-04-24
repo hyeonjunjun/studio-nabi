@@ -308,24 +308,6 @@ export default function CaseStudy({ piece }: Props) {
           gap: clamp(56px, 8vh, 88px);
         }
 
-        /* ─── Stage register: local token remap ─────────────────────────
-           Remaps ink/paper tokens inside the .case subtree so every
-           existing rule (prose, ledger, plates, stats, highlights, etc.)
-           shifts to the stage palette without per-selector overrides. */
-        html[data-register="stage"] .case {
-          --ink:       var(--glow);
-          --ink-2:     var(--glow-2);
-          --ink-3:     var(--glow-2);
-          --ink-4:     var(--glow-hair);
-          --ink-hair:  var(--glow-hair);
-          --paper:     var(--stage);
-          --paper-2:   var(--stage-2);
-          --paper-3:   var(--stage-3);
-          --ink-ghost: rgba(248, 245, 236, 0.06);
-          background: var(--stage);
-          color: var(--glow);
-        }
-
         .case__head { display: grid; gap: 20px; }
         .case__title {
           font-family: var(--font-stack-mono);
@@ -336,38 +318,6 @@ export default function CaseStudy({ piece }: Props) {
           color: var(--ink);
           margin: 0;
         }
-        html[data-register="stage"] .case__title {
-          font-family: var(--font-stack-serif);
-          font-weight: 700;
-          letter-spacing: -0.018em;
-        }
-
-        /* Long-exposure smear on the hero plate arrival — stage only,
-           first paint, desktop+ only. The plate drifts in from the right
-           with a soft blur that resolves clean — cinematic arrival. */
-        @media (min-width: 768px) {
-          html[data-register="stage"] .case__plate,
-          html[data-register="stage"] .case__title {
-            animation: case-hero-smear 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
-          }
-          @keyframes case-hero-smear {
-            0%   { filter: blur(2px); transform: translateX(6px); opacity: 0; }
-            30%  {                                                  opacity: 0.5; }
-            100% { filter: blur(0);   transform: translateX(0);    opacity: 1; }
-          }
-          html[data-register="stage"] .case__title { animation-delay: 80ms; }
-        }
-
-        @media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
-          html[data-register="stage"] .case__plate,
-          html[data-register="stage"] .case__title {
-            animation: none;
-            filter: none;
-            transform: none;
-            opacity: 1;
-          }
-        }
-
         /* ! moment for /work/clouds-at-sea */
         .case__coord {
           font-family: var(--font-stack-mono);
@@ -459,26 +409,6 @@ export default function CaseStudy({ piece }: Props) {
         .case__section:nth-child(3) { transition-delay: 100ms; }
         .case__section:nth-child(4) { transition-delay: 150ms; }
         .case__section:nth-child(5) { transition-delay: 200ms; }
-
-        /* Stage: lateral drift alternating by index. Reads as a breathing
-           cadence rather than a uniform stagger — sections arrive from
-           alternating sides of the frame, like scenes entering from wings. */
-        html[data-register="stage"] .case__section {
-          transform: translateX(-4px);
-          transition:
-            opacity 360ms var(--ease),
-            transform 360ms var(--ease);
-        }
-        html[data-register="stage"] .case__section:nth-child(2n) {
-          transform: translateX(4px);
-        }
-        html[data-register="stage"] .case__section[data-revealed] {
-          transform: none;
-        }
-        html[data-register="stage"] .case__section:nth-child(2) { transition-delay: 60ms; }
-        html[data-register="stage"] .case__section:nth-child(3) { transition-delay: 120ms; }
-        html[data-register="stage"] .case__section:nth-child(4) { transition-delay: 180ms; }
-        html[data-register="stage"] .case__section:nth-child(5) { transition-delay: 240ms; }
 
         @media (prefers-reduced-motion: reduce) {
           .case__section,

@@ -128,13 +128,6 @@ export default function NavCoordinates() {
         .nav__link:hover { color: var(--ink); }
         .nav__link.is-active { color: var(--ink); }
 
-        html[data-register="stage"] .nav__mark { color: var(--glow); }
-        html[data-register="stage"] .nav__mark-sep { color: var(--glow-hair); }
-        html[data-register="stage"] .nav__mark-role { color: var(--glow-2); }
-        html[data-register="stage"] .nav__link { color: var(--glow-2); }
-        html[data-register="stage"] .nav__link:hover,
-        html[data-register="stage"] .nav__link.is-active { color: var(--glow); }
-
         @media (max-width: 640px) {
           .nav { top: 14px; left: 16px; right: 16px; }
           .nav__mark { font-size: 9px; letter-spacing: 0.18em; }

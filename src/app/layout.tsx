@@ -4,10 +4,6 @@ import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import NavCoordinates from "@/components/NavCoordinates";
 import PaperGrain from "@/components/PaperGrain";
-import CommandPalette from "@/components/CommandPalette";
-import RegisterController from "@/components/RegisterController";
-import CinematicEntrance from "@/components/CinematicEntrance";
-import EntranceClickGate from "@/components/EntranceClickGate";
 
 const fragmentMono = localFont({
   src: "../fonts/fragment-mono/FragmentMono-Regular.woff2",
@@ -17,8 +13,6 @@ const fragmentMono = localFont({
   preload: true,
 });
 
-/** Gambetta — reserved for long-form case-study body prose only.
- *  Everywhere else is mono. Reading faces need to breathe. */
 const gambetta = localFont({
   src: "../fonts/gambetta/Gambetta-Variable.woff2",
   variable: "--font-serif",
@@ -54,13 +48,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${fragmentMono.variable} ${gambetta.variable}`}>
-        <EntranceClickGate />
-        <CinematicEntrance />
-        <RegisterController />
         <PaperGrain />
         <RouteAnnouncer />
         <NavCoordinates />
-        <CommandPalette />
         <a href="#main" className="skip-to-content">
           Skip to content
         </a>
