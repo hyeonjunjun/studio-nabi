@@ -442,6 +442,26 @@ export default function CaseStudy({ piece }: Props) {
         .case__section:nth-child(4) { transition-delay: 150ms; }
         .case__section:nth-child(5) { transition-delay: 200ms; }
 
+        /* Stage: lateral drift alternating by index. Reads as a breathing
+           cadence rather than a uniform stagger — sections arrive from
+           alternating sides of the frame, like scenes entering from wings. */
+        html[data-register="stage"] .case__section {
+          transform: translateX(-4px);
+          transition:
+            opacity 360ms var(--ease),
+            transform 360ms var(--ease);
+        }
+        html[data-register="stage"] .case__section:nth-child(2n) {
+          transform: translateX(4px);
+        }
+        html[data-register="stage"] .case__section[data-revealed] {
+          transform: none;
+        }
+        html[data-register="stage"] .case__section:nth-child(2) { transition-delay: 60ms; }
+        html[data-register="stage"] .case__section:nth-child(3) { transition-delay: 120ms; }
+        html[data-register="stage"] .case__section:nth-child(4) { transition-delay: 180ms; }
+        html[data-register="stage"] .case__section:nth-child(5) { transition-delay: 240ms; }
+
         @media (prefers-reduced-motion: reduce) {
           .case__section,
           .case__section[data-revealed] {
