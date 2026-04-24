@@ -310,6 +310,11 @@ export default function CaseStudy({ piece }: Props) {
           color: var(--ink);
           margin: 0;
         }
+        html[data-register="stage"] .case__title {
+          font-family: var(--font-stack-serif);
+          font-weight: 700;
+          letter-spacing: -0.018em;
+        }
         .case__sub {
           font-family: var(--font-stack-mono);
           font-weight: 380;
