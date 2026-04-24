@@ -1,13 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
 declare global {
   interface Window {
     __hkjEntranceComplete?: boolean;
   }
 }
-
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
 type Phase = "in" | "settling" | "out" | "done";
 

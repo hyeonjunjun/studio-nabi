@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function EntranceClickGate() {
+  const router = useRouter();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let queuedAnchor: HTMLAnchorElement | null = null;
+    let queuedHref: string | null = null;
 
     const onClick = (e: MouseEvent) => {
       if (window.__hkjEntranceComplete) return;
@@ -21,14 +24,14 @@ export default function EntranceClickGate() {
 
       e.preventDefault();
       e.stopPropagation();
-      queuedAnchor = target;
+      queuedHref = href;
     };
 
     const onEntranceComplete = () => {
-      const a = queuedAnchor;
-      if (!a) return;
-      queuedAnchor = null;
-      window.setTimeout(() => a.click(), 60);
+      const href = queuedHref;
+      if (!href) return;
+      queuedHref = null;
+      window.setTimeout(() => router.push(href), 60);
     };
 
     document.addEventListener("click", onClick, { capture: true });
@@ -38,7 +41,7 @@ export default function EntranceClickGate() {
       document.removeEventListener("click", onClick, { capture: true });
       window.removeEventListener("hkj:entranceComplete", onEntranceComplete);
     };
-  }, []);
+  }, [router]);
 
   return null;
 }

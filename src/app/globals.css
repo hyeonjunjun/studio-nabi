@@ -54,8 +54,8 @@
 
 html[data-register="stage"] {
   --palette-overlay: rgba(248, 245, 236, 0.12);
-}
-html[data-register="stage"] body {
+  /* Covers the viewport beyond any max-width'd Stage page. The .case
+     subtree is 760px max; this prevents paper striping on wide viewports. */
   background: var(--stage);
   color: var(--glow);
 }
@@ -255,18 +255,25 @@ html[data-prev-register]:not([data-prev-register=""]) ::view-transition-new(root
   animation-duration: 420ms;
 }
 
-/* Stage: blur-in-transit on shared title morph. The title softens at
-   midpoint and resolves clean — reads as a camera push, not a crossfade. */
+/* Stage: blur-in-transit on shared title morph. Opacity is composed
+   into the keyframes so old fades out while new fades in — a proper
+   crossfade with midpoint blur, not two overlapping ghosts. */
 @keyframes work-title-blur-out {
-  0%   { filter: blur(0); }
-  50%  { filter: blur(2px); }
-  100% { filter: blur(0); }
+  0%   { filter: blur(0);   opacity: 1; }
+  50%  { filter: blur(2px); opacity: 0.4; }
+  100% { filter: blur(0);   opacity: 0; }
+}
+@keyframes work-title-blur-in {
+  0%   { filter: blur(2px); opacity: 0; }
+  50%  { filter: blur(2px); opacity: 0.4; }
+  100% { filter: blur(0);   opacity: 1; }
 }
 
-html[data-register="stage"] ::view-transition-old(work-title),
+html[data-register="stage"] ::view-transition-old(work-title) {
+  animation: work-title-blur-out 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 html[data-register="stage"] ::view-transition-new(work-title) {
-  animation-duration: 480ms;
-  animation-name: work-title-blur-out;
+  animation: work-title-blur-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
