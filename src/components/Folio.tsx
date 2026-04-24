@@ -27,6 +27,8 @@ export default function Folio({ token, month }: FolioProps) {
           color: var(--ink-4);
           pointer-events: none;
         }
+        html[data-register="stage"] .folio { color: var(--glow-hair); }
+
         @media (max-width: 960px) {
           .folio { display: none; }
         }

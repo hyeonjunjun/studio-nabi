@@ -145,7 +145,7 @@ export default function CommandPalette() {
         .palette__overlay {
           position: absolute;
           inset: 0;
-          background: rgba(17, 17, 16, 0.18);
+          background: var(--palette-overlay);
           animation: palette-overlay-in 150ms var(--ease) both;
         }
 
