@@ -252,6 +252,31 @@ export default function Home() {
         }
         html[data-register="stage"] .cd__mail:hover { text-decoration-color: var(--glow); }
         html[data-register="stage"] .cd__mail[data-copied] { color: var(--glow-2); }
+
+        /* Path-blur arrival on title hover — desktop only, blur capped 2px */
+        @media (hover: hover) and (pointer: fine) {
+          html[data-register="stage"] .cd__link .cd__name {
+            transition:
+              filter 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              color 280ms var(--ease);
+          }
+          html[data-register="stage"] .cd__link:hover .cd__name {
+            animation: cd-name-settle 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          }
+          @keyframes cd-name-settle {
+            0%   { filter: blur(1.2px); transform: translateX(2px); }
+            100% { filter: blur(0);     transform: translateX(0);   }
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+          html[data-register="stage"] .cd__link:hover .cd__name {
+            filter: none;
+            transform: none;
+            animation: none;
+          }
+        }
       `}</style>
     </main>
   );
