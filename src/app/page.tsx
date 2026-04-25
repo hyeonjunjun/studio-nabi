@@ -51,7 +51,7 @@ function Tile({ piece }: { piece: Piece }) {
             src={piece.cover.src}
             alt={`${piece.title} — cover`}
             fill
-            sizes="(max-width: 720px) 100vw, 50vw"
+            sizes="(max-width: 720px) 100vw, 380px"
             className="home__tile-media"
             style={{ objectFit: "cover" }}
           />
@@ -62,49 +62,40 @@ function Tile({ piece }: { piece: Piece }) {
         )}
       </div>
       <div className="home__tile-cap">
-        <span className="home__tile-num tabular">{piece.number}</span>
         <span
           className="home__tile-name"
           style={{ viewTransitionName: `work-title-${piece.slug}` } as React.CSSProperties}
         >
           {displayTitle(piece.title)}
         </span>
-        <span className="home__tile-meta">{piece.sector.toLowerCase()}</span>
+        <span className="home__tile-meta">
+          <span className="home__tile-num tabular">{piece.number}</span>
+          <span className="home__tile-sep" aria-hidden>·</span>
+          <span>{piece.sector.toLowerCase()}</span>
+          <span className="home__tile-sep" aria-hidden>·</span>
+          <span className="tabular">{piece.year}</span>
+        </span>
       </div>
     </Link>
   );
 }
 
 /**
- * Home — studio catalog. A scaling 2-column grid of project plates,
- * each at uniform 4:5 aspect, captioned with number / title / sector.
- * Cover videos play only while in view (IntersectionObserver, 0.35).
- * Each title carries a per-slug view-transition-name so the click into
- * a case study morphs the active title into the case-study h1.
+ * Home — studio catalog. The index *is* the home: no eyebrow, no
+ * masthead, no introduction. Folio + nav carry the studio identity in
+ * the chrome; the catalog opens immediately. Plates are uniform 1:1
+ * squares in a 2-column grid that scales to 2 × n as more pieces ship;
+ * row gap > column gap so each row gets its own breath.
  *
- * Hara-grounded composition: documentary equality across plates, generous
- * margins, no decorative chrome, no carousel mechanic. The grid grows
- * 2 × n as more pieces ship.
+ * Composition lineage: nendo (works index), Daikoku (contained plate
+ * sizing), Wang Zhi-Hong (small plates so caption typography can stand).
  */
 export default function Home() {
   return (
     <main id="main" className="home">
       <Folio token="§01" />
 
-      <header className="home__head">
-        <p className="eyebrow">
-          <span>Selected work</span>
-          <span className="eyebrow__sep">·</span>
-          <span className="tabular">2025 — 2026</span>
-        </p>
-        <h1 className="home__name">
-          <span>Hyeonjoon Jun</span>
-          <span className="home__name-sep" aria-hidden>·</span>
-          <span className="home__name-role">design engineer, new york</span>
-        </h1>
-      </header>
-
-      <section className="home__grid" aria-label="Project catalog">
+      <section className="home__grid" aria-label="Studio catalog">
         {PIECES.map((piece) => (
           <Tile key={piece.slug} piece={piece} />
         ))}
@@ -120,51 +111,31 @@ export default function Home() {
           min-height: 100svh;
           background: var(--paper);
           color: var(--ink);
-          padding: clamp(88px, 12vh, 128px) clamp(20px, 4vw, 56px) clamp(56px, 9vh, 88px);
+          padding: clamp(96px, 14vh, 144px) clamp(20px, 4vw, 48px) clamp(56px, 9vh, 88px);
           display: grid;
-          gap: clamp(48px, 8vh, 88px);
+          gap: clamp(56px, 9vh, 96px);
         }
-
-        .home__head {
-          max-width: 920px;
-          margin-inline: auto;
-          width: 100%;
-          display: grid;
-          gap: 14px;
-        }
-        .home__name {
-          font-family: var(--font-stack-mono);
-          font-weight: 400;
-          font-size: clamp(18px, 1.6vw, 22px);
-          letter-spacing: 0.02em;
-          color: var(--ink);
-          margin: 0;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .home__name-sep { color: var(--ink-4); }
-        .home__name-role { color: var(--ink-3); }
 
         .home__grid {
-          max-width: 920px;
+          max-width: 760px;
           margin-inline: auto;
           width: 100%;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 36px);
+          column-gap: clamp(20px, 3vw, 32px);
+          row-gap: clamp(48px, 7vh, 72px);
         }
 
         .home__tile {
           display: grid;
-          gap: 14px;
+          gap: 16px;
           color: var(--ink);
         }
 
         .home__tile-frame {
           position: relative;
           width: 100%;
-          aspect-ratio: 4 / 5;
+          aspect-ratio: 1 / 1;
           background: var(--paper-2);
           overflow: hidden;
         }
@@ -184,20 +155,31 @@ export default function Home() {
 
         .home__tile-cap {
           display: grid;
-          grid-template-columns: auto 1fr auto;
-          gap: 14px;
-          align-items: baseline;
+          gap: 6px;
+        }
+        .home__tile-name {
           font-family: var(--font-stack-mono);
-          font-size: 10px;
+          font-size: 12px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--ink);
+        }
+        .home__tile-meta {
+          font-family: var(--font-stack-mono);
+          font-size: 9px;
           letter-spacing: 0.22em;
           text-transform: uppercase;
+          color: var(--ink-3);
+          display: inline-flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          align-items: baseline;
         }
         .home__tile-num { color: var(--ink-4); }
-        .home__tile-name { color: var(--ink); letter-spacing: 0.18em; }
-        .home__tile-meta { color: var(--ink-3); text-align: right; }
+        .home__tile-sep { color: var(--ink-4); }
 
         .home__foot {
-          max-width: 920px;
+          max-width: 760px;
           margin-inline: auto;
           width: 100%;
           display: flex;
@@ -214,9 +196,8 @@ export default function Home() {
         .home__mail[data-copied] { color: var(--ink-3); }
         .home__loc { color: var(--ink-3); }
 
-        @media (max-width: 720px) {
+        @media (max-width: 640px) {
           .home__grid { grid-template-columns: 1fr; }
-          .home__head { gap: 12px; }
         }
       `}</style>
     </main>
