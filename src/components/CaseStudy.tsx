@@ -75,20 +75,33 @@ export default function CaseStudy({ piece }: Props) {
         </dl>
       </header>
 
-      {piece.image && (
+      {(piece.cover || piece.image) && (
         <figure className="case__plate">
           <div
             className="case__plate-frame"
             style={{ viewTransitionName: `work-cover-${piece.slug}` } as React.CSSProperties}
           >
-            <Image
-              src={piece.image}
-              alt={`${piece.title} — cover plate`}
-              fill
-              sizes="(max-width: 760px) 100vw, 760px"
-              style={{ objectFit: "cover" }}
-              priority
-            />
+            {piece.cover?.kind === "video" ? (
+              <video
+                className="case__plate-media"
+                src={piece.cover.src}
+                poster={piece.cover.poster}
+                muted
+                loop
+                playsInline
+                autoPlay
+                aria-hidden
+              />
+            ) : (
+              <Image
+                src={piece.cover?.kind === "image" ? piece.cover.src : piece.image!}
+                alt={`${piece.title} — cover plate`}
+                fill
+                sizes="(max-width: 760px) 100vw, 760px"
+                style={{ objectFit: "cover" }}
+                priority
+              />
+            )}
             <div className="case__plate-marks" aria-hidden>
               <span className="plate-mark case__plate-mark--tl">
                 HKJ / PL. №{String(piece.order).padStart(3, "0")}
@@ -350,6 +363,14 @@ export default function CaseStudy({ piece }: Props) {
           background: var(--paper-2);
           overflow: hidden;
           box-shadow: inset 0 0 0 1px var(--ink-hair);
+        }
+        .case__plate-media {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
         }
         .case__plate-marks { position: absolute; inset: 0; pointer-events: none; }
         .case__plate-mark--tl { position: absolute; top: 12px; left: 14px; color: rgba(17,17,16,0.55); mix-blend-mode: multiply; }
