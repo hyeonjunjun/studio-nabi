@@ -1,225 +1,222 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import GutterStrip from "@/components/GutterStrip";
+import Image from "next/image";
+import { useEffect, useRef } from "react";
 import CopyEmailLink from "@/components/CopyEmailLink";
 import Folio from "@/components/Folio";
-import { PIECES } from "@/constants/pieces";
+import { PIECES, type Piece } from "@/constants/pieces";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
+const displayTitle = (t: string) =>
+  t.replace(/:\s*[一-鿿가-힯]+/, "").toLowerCase();
+
+function Tile({ piece }: { piece: Piece }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || reduced) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, [reduced]);
+
+  return (
+    <Link href={`/work/${piece.slug}`} className="home__tile">
+      <div className="home__tile-frame">
+        {piece.cover?.kind === "video" ? (
+          <video
+            ref={videoRef}
+            className="home__tile-media"
+            src={piece.cover.src}
+            poster={piece.cover.poster}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden
+          />
+        ) : piece.cover?.kind === "image" ? (
+          <Image
+            src={piece.cover.src}
+            alt={`${piece.title} — cover`}
+            fill
+            sizes="(max-width: 720px) 100vw, 50vw"
+            className="home__tile-media"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <div className="home__tile-placeholder">
+            <span className="plate-mark">In development · {piece.year}</span>
+          </div>
+        )}
+      </div>
+      <div className="home__tile-cap">
+        <span className="home__tile-num tabular">{piece.number}</span>
+        <span
+          className="home__tile-name"
+          style={{ viewTransitionName: `work-title-${piece.slug}` } as React.CSSProperties}
+        >
+          {displayTitle(piece.title)}
+        </span>
+        <span className="home__tile-meta">{piece.sector.toLowerCase()}</span>
+      </div>
+    </Link>
+  );
+}
 
 /**
- * Home — 4 project index with a central media strip. Cathydolle-derived
- * mirror-gutter composition; left column 01–02 reads to the left edge,
- * right column 03–04 reads to the right edge. The strip in the middle
- * carries the vertical axis.
+ * Home — studio catalog. A scaling 2-column grid of project plates,
+ * each at uniform 4:5 aspect, captioned with number / title / sector.
+ * Cover videos play only while in view (IntersectionObserver, 0.35).
+ * Each title carries a per-slug view-transition-name so the click into
+ * a case study morphs the active title into the case-study h1.
  *
- * Foundation-committed: only real work ships to this catalog. No
- * placeholders, no decorative layers, no custom cursor. Wheel-snap +
- * parallax is the single signature interaction.
+ * Hara-grounded composition: documentary equality across plates, generous
+ * margins, no decorative chrome, no carousel mechanic. The grid grows
+ * 2 × n as more pieces ship.
  */
 export default function Home() {
-  const [activeIdx, setActiveIdx] = useState(0);
-
-  const left = PIECES.slice(0, 2);
-  const right = PIECES.slice(2, 4);
-
-  const displayTitle = (t: string) =>
-    t.replace(/:\s*[\u4E00-\u9FFF\uAC00-\uD7AF]+/, "").toLowerCase();
-
   return (
     <main id="main" className="home">
       <Folio token="§01" />
-      <section className="cd" aria-label="Selected work, 2025–2026">
-        <div className="cd__stage">
-          <ol className="cd__col cd__col--l" aria-label="Entries 1 to 2">
-            {left.map((p, i) => {
-              const active = i === activeIdx;
-              return (
-                <li key={p.slug} className="cd__row">
-                  <Link
-                    href={`/work/${p.slug}`}
-                    className={`cd__link${active ? " is-active" : ""}`}
-                  >
-                    <span className="cd__num tabular">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="cd__slash" aria-hidden>/</span>
-                    <span
-                      className="cd__name"
-                      style={
-                        active
-                          ? ({ viewTransitionName: "work-title" } as React.CSSProperties)
-                          : undefined
-                      }
-                    >
-                      {displayTitle(p.title)}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
 
-          <div className="cd__gutter">
-            <GutterStrip pieces={PIECES} onActiveChange={setActiveIdx} />
-          </div>
+      <header className="home__head">
+        <p className="eyebrow">
+          <span>Selected work</span>
+          <span className="eyebrow__sep">·</span>
+          <span className="tabular">2025 — 2026</span>
+        </p>
+        <h1 className="home__name">
+          <span>Hyeonjoon Jun</span>
+          <span className="home__name-sep" aria-hidden>·</span>
+          <span className="home__name-role">design engineer, new york</span>
+        </h1>
+      </header>
 
-          <ol className="cd__col cd__col--r" aria-label="Entries 3 to 4">
-            {right.map((p, i) => {
-              const globalIdx = i + 2;
-              const active = globalIdx === activeIdx;
-              return (
-                <li key={p.slug} className="cd__row">
-                  <Link
-                    href={`/work/${p.slug}`}
-                    className={`cd__link cd__link--r${active ? " is-active" : ""}`}
-                  >
-                    <span className="cd__num tabular">
-                      {String(globalIdx + 1).padStart(2, "0")}
-                    </span>
-                    <span className="cd__slash" aria-hidden>/</span>
-                    <span
-                      className="cd__name"
-                      style={
-                        active
-                          ? ({ viewTransitionName: "work-title" } as React.CSSProperties)
-                          : undefined
-                      }
-                    >
-                      {displayTitle(p.title)}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-
-        <footer className="cd__foot">
-          <CopyEmailLink className="cd__mail" />
-          <span className="cd__foot-role">design engineer</span>
-          <span className="cd__loc tabular">2026, new york</span>
-        </footer>
+      <section className="home__grid" aria-label="Project catalog">
+        {PIECES.map((piece) => (
+          <Tile key={piece.slug} piece={piece} />
+        ))}
       </section>
+
+      <footer className="home__foot">
+        <CopyEmailLink className="home__mail" />
+        <span className="home__loc tabular">2026 · new york</span>
+      </footer>
 
       <style>{`
         .home {
-          height: 100svh;
+          min-height: 100svh;
           background: var(--paper);
           color: var(--ink);
+          padding: clamp(88px, 12vh, 128px) clamp(20px, 4vw, 56px) clamp(56px, 9vh, 88px);
+          display: grid;
+          gap: clamp(48px, 8vh, 88px);
+        }
+
+        .home__head {
+          max-width: 920px;
+          margin-inline: auto;
+          width: 100%;
+          display: grid;
+          gap: 14px;
+        }
+        .home__name {
+          font-family: var(--font-stack-mono);
+          font-weight: 400;
+          font-size: clamp(18px, 1.6vw, 22px);
+          letter-spacing: 0.02em;
+          color: var(--ink);
+          margin: 0;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .home__name-sep { color: var(--ink-4); }
+        .home__name-role { color: var(--ink-3); }
+
+        .home__grid {
+          max-width: 920px;
+          margin-inline: auto;
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 36px);
+        }
+
+        .home__tile {
+          display: grid;
+          gap: 14px;
+          color: var(--ink);
+        }
+
+        .home__tile-frame {
           position: relative;
+          width: 100%;
+          aspect-ratio: 4 / 5;
+          background: var(--paper-2);
           overflow: hidden;
         }
-
-        .cd {
-          position: relative;
-          z-index: 2;
-          height: 100svh;
-          padding: clamp(72px, 10vh, 104px) clamp(16px, 2.5vw, 40px) clamp(24px, 4vh, 44px);
+        .home__tile-media {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .home__tile-placeholder {
+          position: absolute;
+          inset: 0;
           display: grid;
-          grid-template-rows: 1fr auto;
-          gap: clamp(20px, 3vh, 32px);
+          place-items: center;
+          padding: 24px;
         }
 
-        .cd__stage {
+        .home__tile-cap {
           display: grid;
-          grid-template-columns: minmax(180px, 1fr) minmax(280px, 34vw) minmax(180px, 1fr);
-          gap: clamp(16px, 2.5vw, 40px);
-          align-items: stretch;
-          min-height: 0;
-        }
-
-        .cd__col {
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-        }
-        .cd__col--l { align-items: flex-start; padding-left: clamp(12px, 2vw, 32px); }
-        .cd__col--r { align-items: flex-end;   padding-right: clamp(12px, 2vw, 32px); }
-
-        .cd__row { margin: 0; }
-
-        .cd__link {
-          display: inline-flex;
+          grid-template-columns: auto 1fr auto;
+          gap: 14px;
           align-items: baseline;
-          gap: 10px;
           font-family: var(--font-stack-mono);
           font-size: 10px;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: var(--ink);
-          opacity: 0.3;
-          transition: opacity 360ms var(--ease);
-          padding: 6px 0;
         }
-        .cd__link--r { flex-direction: row-reverse; }
-        .cd__link.is-active { opacity: 1; }
-        .cd__link:hover { opacity: 1; }
-        .cd__stage:has(.cd__link:hover) .cd__link:not(:hover) { opacity: 0.3; }
+        .home__tile-num { color: var(--ink-4); }
+        .home__tile-name { color: var(--ink); letter-spacing: 0.18em; }
+        .home__tile-meta { color: var(--ink-3); text-align: right; }
 
-        .cd__num { color: var(--ink-3); }
-        .cd__slash { color: var(--ink-4); }
-        .cd__name { color: var(--ink); }
-
-        .cd__gutter {
-          position: relative;
-          min-height: 0;
+        .home__foot {
+          max-width: 920px;
+          margin-inline: auto;
+          width: 100%;
           display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-
-        .cd__foot {
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
+          justify-content: space-between;
           align-items: baseline;
-          gap: 16px;
-          padding: clamp(16px, 2.5vh, 24px) clamp(12px, 2vw, 32px) 0;
+          padding-top: clamp(16px, 2.5vh, 24px);
           border-top: 1px solid var(--ink-hair);
           font-family: var(--font-stack-mono);
           font-size: 10px;
           letter-spacing: 0.18em;
           text-transform: uppercase;
         }
-        .cd__mail { justify-self: start; }
-        .cd__mail[data-copied] { color: var(--ink-3); }
-        .cd__foot-role {
-          justify-self: center;
-          color: var(--ink-3);
-        }
-        .cd__loc { justify-self: end; color: var(--ink-3); }
+        .home__mail { color: var(--ink); }
+        .home__mail[data-copied] { color: var(--ink-3); }
+        .home__loc { color: var(--ink-3); }
 
-        @media (max-width: 640px) {
-          .cd__foot {
-            grid-template-columns: 1fr 1fr;
-            row-gap: 10px;
-          }
-          .cd__foot-role { grid-column: 1 / -1; justify-self: start; }
-          .cd__kbd { display: none; }
-        }
-
-        @media (max-width: 960px) {
-          .cd__stage {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr auto;
-            gap: 24px;
-          }
-          .cd__col--l, .cd__col--r {
-            align-items: flex-start;
-            padding: 0;
-          }
-          .cd__col--r .cd__link--r { flex-direction: row; }
-          .cd__gutter { order: 3; max-height: 60svh; }
-          .cd__col--l { order: 1; }
-          .cd__col--r { order: 2; }
-        }
-
-        /* ! moment: active row title sits 1px proud of siblings */
-        .cd__link.is-active .cd__name {
-          transform: translateY(-1px);
+        @media (max-width: 720px) {
+          .home__grid { grid-template-columns: 1fr; }
+          .home__head { gap: 12px; }
         }
       `}</style>
     </main>

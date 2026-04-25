@@ -41,7 +41,7 @@ export default function CaseStudy({ piece }: Props) {
         )}
         <h1
           className="case__title"
-          style={{ viewTransitionName: "work-title" } as React.CSSProperties}
+          style={{ viewTransitionName: `work-title-${piece.slug}` } as React.CSSProperties}
         >
           {piece.title}
         </h1>
@@ -77,24 +77,6 @@ export default function CaseStudy({ piece }: Props) {
 
       {piece.image && (
         <figure className="case__plate">
-          <p className="case__annot" aria-hidden>
-            <span className="case__annot-key">FIELD</span>
-            <span className="case__annot-val">{piece.sector.toUpperCase()}</span>
-            <span className="case__annot-sep">·</span>
-            <span className="case__annot-key">MEDIA</span>
-            <span className="case__annot-val">
-              {piece.cover?.kind?.toUpperCase() ?? "IMAGE"}
-            </span>
-            {piece.coverAspect && (
-              <>
-                <span className="case__annot-sep">·</span>
-                <span className="case__annot-key">RATIO</span>
-                <span className="case__annot-val tabular">
-                  {piece.coverAspect.replace(/\s/g, "")}
-                </span>
-              </>
-            )}
-          </p>
           <div className="case__plate-frame">
             <Image
               src={piece.image}
@@ -328,21 +310,6 @@ export default function CaseStudy({ piece }: Props) {
           margin: -4px 0 0;
         }
 
-        /* Data-annotation grammar above the plate — real metadata only */
-        .case__annot {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px 14px;
-          margin: 0 0 16px;
-          font-family: var(--font-stack-mono);
-          font-size: 9px;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: var(--ink-4);
-        }
-        .case__annot-key { color: var(--ink-4); }
-        .case__annot-val { color: var(--ink-3); }
-        .case__annot-sep { color: var(--ink-4); }
         .case__sub {
           font-family: var(--font-stack-mono);
           font-weight: 380;
