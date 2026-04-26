@@ -176,7 +176,7 @@ a { color: inherit; text-decoration: none; }
    hover signal is a ghost background, and underlining its text children
    would stack an unintended line across the title column. */
 a.link, .prose a,
-.about__mail, .card__handle, .home__mail {
+.studio__mail, .studio__handle, .home__mail {
   color: var(--ink);
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -186,7 +186,7 @@ a.link, .prose a,
   transition: text-decoration-color 180ms var(--ease);
 }
 a.link:hover, .prose a:hover,
-.about__mail:hover, .card__handle:hover, .home__mail:hover {
+.studio__mail:hover, .studio__handle:hover, .home__mail:hover {
   text-decoration-color: currentColor;
 }
 

@@ -25,7 +25,7 @@ export default function NotesIndexPage() {
 
   return (
     <main id="main" className="notes">
-      <Folio token="§05" />
+      <Folio token="§04" />
 
       <article className="notes__inner">
         <header className="notes__head">

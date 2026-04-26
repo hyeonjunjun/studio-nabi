@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation";
 type NavItem = { href: string; label: string };
 
 const ITEMS: NavItem[] = [
-  { href: "/about",   label: "about" },
-  { href: "/shelf",   label: "shelf" },
-  { href: "/contact", label: "contact" },
+  { href: "/studio",    label: "studio" },
+  { href: "/bookmarks", label: "bookmarks" },
+  { href: "/notes",     label: "notes" },
 ];
 
 export default function NavCoordinates() {

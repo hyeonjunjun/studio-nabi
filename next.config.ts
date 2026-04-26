@@ -13,8 +13,14 @@ const nextConfig: NextConfig = {
       { source: "/works", destination: "/", permanent: true },
       { source: "/lab", destination: "/", permanent: true },
       { source: "/lab/:slug", destination: "/work/:slug", permanent: true },
-      { source: "/journal", destination: "/about", permanent: true },
-      { source: "/journal/:slug", destination: "/about", permanent: true },
+      // Architecture pass 2026-04-26: about/contact/colophon collapsed
+      // into /studio; shelf renamed to /bookmarks.
+      { source: "/about", destination: "/studio", permanent: true },
+      { source: "/contact", destination: "/studio", permanent: true },
+      { source: "/colophon", destination: "/studio", permanent: true },
+      { source: "/shelf", destination: "/bookmarks", permanent: true },
+      { source: "/journal", destination: "/notes", permanent: true },
+      { source: "/journal/:slug", destination: "/notes/:slug", permanent: true },
     ];
   },
 };
