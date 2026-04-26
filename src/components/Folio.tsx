@@ -20,9 +20,9 @@ export default function Folio({ token, month }: FolioProps) {
           top: 52px;
           right: 24px;
           z-index: 49;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.24em;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
           color: var(--ink-4);
           pointer-events: none;

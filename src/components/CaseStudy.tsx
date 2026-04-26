@@ -308,7 +308,7 @@ export default function CaseStudy({ piece }: Props) {
 
         .case__head { display: grid; gap: 20px; }
         .case__title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 380;
           font-size: clamp(32px, 4.2vw, 52px);
           line-height: 1.1;
@@ -318,16 +318,16 @@ export default function CaseStudy({ piece }: Props) {
         }
         /* ! moment for /work/clouds-at-sea */
         .case__coord {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-4);
           margin: -4px 0 0;
         }
 
         .case__sub {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 380;
           font-size: 17px;
           line-height: 1.6;
@@ -346,9 +346,9 @@ export default function CaseStudy({ piece }: Props) {
           gap: 20px;
           padding: 10px 0;
           border-bottom: 1px solid var(--ink-hair);
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           color: var(--ink-2);
         }
@@ -377,7 +377,7 @@ export default function CaseStudy({ piece }: Props) {
         .case__plate-mark--br { position: absolute; bottom: 12px; right: 14px; color: rgba(17,17,16,0.55); mix-blend-mode: multiply; }
         .case__plate-caption { display: flex; align-items: baseline; gap: 14px; }
         .case__plate-caption-text {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 380;
           font-size: 13px;
           color: var(--ink-2);
@@ -410,8 +410,8 @@ export default function CaseStudy({ piece }: Props) {
           }
         }
 
-        /* Body prose on case studies gets Gambetta — mono everywhere
-           else stays. Reading faces let long form breathe. */
+        /* Body prose on case studies gets Newsreader serif — sans
+           everywhere else stays. Reading faces let long form breathe. */
         .case__prose {
           font-family: var(--font-stack-serif);
           font-weight: 380;
@@ -449,13 +449,13 @@ export default function CaseStudy({ piece }: Props) {
           border-top: 1px solid var(--ink-hair);
         }
         .case__step-num {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.04em;
           color: var(--ink-4);
         }
         .case__step-title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: 17px;
           line-height: 1.3;
@@ -471,7 +471,7 @@ export default function CaseStudy({ piece }: Props) {
           border-top: 1px solid var(--ink-hair);
         }
         .case__highlight-title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: 19px;
           line-height: 1.3;
@@ -490,9 +490,9 @@ export default function CaseStudy({ piece }: Props) {
         .case__highlight-recipe { color: var(--ink-3); margin: 2px 0 0; }
 
         .case__signals {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           color: var(--ink-3);
           margin: 4px 0 0;
@@ -509,7 +509,7 @@ export default function CaseStudy({ piece }: Props) {
         }
         .case__stat { display: grid; gap: 6px; }
         .case__stat-val {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 380;
           font-size: 28px;
           line-height: 1;
@@ -540,7 +540,7 @@ export default function CaseStudy({ piece }: Props) {
           mix-blend-mode: multiply;
         }
         .case__video-caption {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 380;
           font-size: 13px;
           color: var(--ink-3);
@@ -560,13 +560,13 @@ export default function CaseStudy({ piece }: Props) {
         }
         .case__next:hover { opacity: 0.6; }
         .case__next-title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: 20px;
           color: var(--ink);
         }
         .case__next-arrow {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 16px;
           color: var(--ink-3);
           transition: transform 220ms var(--ease);

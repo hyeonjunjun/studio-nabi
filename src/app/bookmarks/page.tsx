@@ -101,7 +101,7 @@ export default function BookmarksPage() {
 
         .bookmarks__head { display: grid; gap: 18px; }
         .bookmarks__title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: clamp(22px, 2.4vw, 30px);
           line-height: 1.35;
@@ -120,16 +120,16 @@ export default function BookmarksPage() {
           border-bottom: 1px solid var(--ink);
         }
         .bookmarks__section-label {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.26em;
+          letter-spacing: 0.10em;
           text-transform: uppercase;
           color: var(--ink);
         }
         .bookmarks__section-count {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
@@ -150,28 +150,28 @@ export default function BookmarksPage() {
         .bookmarks__row-link--static { cursor: default; }
 
         .bookmarks__row-year {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.04em;
           color: var(--ink-4);
         }
         .bookmarks__row-title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 13px;
           letter-spacing: 0;
           color: var(--ink);
         }
         .bookmarks__row-attribution {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
           text-align: right;
         }
         .bookmarks__row-note {
           grid-column: 2 / -1;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 11px;
           line-height: 1.7;
           letter-spacing: 0;
@@ -186,9 +186,9 @@ export default function BookmarksPage() {
           gap: 10px;
           padding-top: 16px;
           border-top: 1px solid var(--ink-hair);
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }

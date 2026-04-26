@@ -33,10 +33,13 @@
   --measure-narrow:  48ch;
   --measure-body:    62ch;
 
-  /* Mono everywhere by default. Gambetta serif reserved for case-study
-     body prose only — reading faces need to breathe. */
-  --font-stack-mono:  var(--font-mono, "SF Mono"), "Consolas", monospace;
-  --font-stack-serif: var(--font-serif, "Iowan Old Style"), Georgia, "Times New Roman", serif;
+  /* Type system. Geist Sans is the chrome face — proportional humanist
+     sans, calibrated for both microtype (9px) and reading (15px). The
+     mono register retired entirely; tabular figures come from Geist's
+     OpenType tnum feature where alignment is needed. Newsreader is the
+     body serif — variable weight + optical-size, screen-optimized. */
+  --font-stack-sans:  var(--font-geist-sans), -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-stack-serif: var(--font-serif), "Iowan Old Style", Georgia, "Times New Roman", serif;
 
   --ease: cubic-bezier(.4, 0, .2, 1);
 }
@@ -51,7 +54,7 @@ html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-stack-mono);
+  font-family: var(--font-stack-sans);
   font-size: var(--t-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -65,7 +68,13 @@ i, em, cite, q, address, var, dfn { font-style: normal; }
 :focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 a { color: inherit; text-decoration: none; }
 
-.tabular { font-variant-numeric: tabular-nums; }
+.tabular,
+.case__ledger-row,
+.case__stat-val,
+.bookmarks__row-year {
+  font-feature-settings: "tnum" on, "lnum" on;
+  font-variant-numeric: tabular-nums lining-nums;
+}
 
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -74,9 +83,6 @@ a { color: inherit; text-decoration: none; }
     transition-duration: 0.01ms !important;
   }
 }
-
-/* ─── Font utility (mono only) ───────────────────────────────────────────── */
-.font-mono { font-family: var(--font-stack-mono); }
 
 /* ─── Skip link (a11y) ───────────────────────────────────────────────────── */
 .skip-to-content {
@@ -95,23 +101,25 @@ a { color: inherit; text-decoration: none; }
   padding: 8px 12px;
   background: var(--ink);
   color: var(--paper);
-  font-family: var(--font-stack-mono);
+  font-family: var(--font-stack-sans);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   z-index: 100;
 }
 
 /* ─── House voice primitives ─────────────────────────────────────────────── */
 
-/* Eyebrow — the section header grammar used on every page */
+/* Eyebrow — the section header grammar used on every page.
+   Tracking calibrated for proportional sans uppercased: 0.08em is the
+   sweet spot. (Was 0.16em for mono — proportional needs about half.) */
 .eyebrow {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  font-family: var(--font-stack-mono);
+  font-family: var(--font-stack-sans);
   font-size: 10px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
@@ -119,18 +127,18 @@ a { color: inherit; text-decoration: none; }
 
 /* Plate corner microtype */
 .plate-mark {
-  font-family: var(--font-stack-mono);
+  font-family: var(--font-stack-sans);
   font-size: 9px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 
-/* Mono prose — narrow measure, generous line-height for readability */
+/* Sans prose — narrow measure, generous line-height for readability */
 .prose {
-  font-family: var(--font-stack-mono);
-  font-size: 13px;
-  line-height: 1.85;
+  font-family: var(--font-stack-sans);
+  font-size: 14px;
+  line-height: 1.7;
   letter-spacing: 0;
   color: var(--ink-2);
   max-width: var(--measure-narrow);
@@ -139,9 +147,9 @@ a { color: inherit; text-decoration: none; }
 
 /* Metadata labels */
 .meta {
-  font-family: var(--font-stack-mono);
+  font-family: var(--font-stack-sans);
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
@@ -151,7 +159,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── OpenType discipline ────────────────────────────────────────────────── */
 
-/* Old-style figures in prose (Gambetta serif — case-study body only) */
+/* Old-style figures in serif prose (Newsreader — case-study body, notes detail) */
 .case__prose,
 .case__prose--lead,
 .case__prose--step {
@@ -160,19 +168,10 @@ a { color: inherit; text-decoration: none; }
   text-wrap: pretty;
 }
 
-/* Tabular lining numerals in grids, ledgers, stats, dates */
-.tabular,
-.case__ledger-row,
-.case__stat-val,
-.shelf__row-year {
-  font-feature-settings: "tnum" on, "lnum" on;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
 /* ─── Unified hover vocabulary ──────────────────────────────────────────── */
 
 /* Underline-color fade — default for inline links and meaningful handles.
-   .shelf__row-link is omitted on purpose: it's a grid row whose real
+   .bookmarks__row-link is omitted on purpose: it's a grid row whose real
    hover signal is a ghost background, and underlining its text children
    would stack an unintended line across the title column. */
 a.link, .prose a,
@@ -192,8 +191,7 @@ a.link:hover, .prose a:hover,
 
 /* Hairline underline slide — editorial inline links draw a 1px line in
    from the left on hover, paired with the color fade. Only on .prose a
-   so that nav, captions, and microtype are not affected. The brushstroke
-   register: a line completing itself, not a flash. */
+   so that nav, captions, and microtype are not affected. */
 .prose a {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0 100%;
@@ -246,9 +244,7 @@ a.link:hover, .prose a:hover,
 
 /* Cover morph: the home tile cover image continues into the case-study
    hero plate position via shared-element view-transition. Per-slug names
-   prevent collision on the home grid where multiple covers coexist.
-   Default crossfade blends with the browser-computed position/size
-   animation between snapshots — no filter, no scale, just continuity. */
+   prevent collision on the home grid where multiple covers coexist. */
 ::view-transition-group(work-cover-clouds-at-sea),
 ::view-transition-group(work-cover-gyeol),
 ::view-transition-group(work-cover-pane),
@@ -272,5 +268,3 @@ a.link:hover, .prose a:hover,
     animation: none;
   }
 }
-
-

@@ -1,24 +1,16 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
+import { Newsreader } from "next/font/google";
 import "./globals.css";
 import RouteAnnouncer from "@/components/RouteAnnouncer";
 import NavCoordinates from "@/components/NavCoordinates";
 import PaperGrain from "@/components/PaperGrain";
 
-const fragmentMono = localFont({
-  src: "../fonts/fragment-mono/FragmentMono-Regular.woff2",
-  variable: "--font-mono",
-  weight: "400",
-  display: "swap",
-  preload: true,
-});
-
-const gambetta = localFont({
-  src: "../fonts/gambetta/Gambetta-Variable.woff2",
+const newsreader = Newsreader({
+  subsets: ["latin"],
   variable: "--font-serif",
-  weight: "300 800",
+  weight: ["400", "500", "600"],
   display: "swap",
-  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -47,7 +39,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fragmentMono.variable} ${gambetta.variable}`}>
+      <body className={`${GeistSans.variable} ${newsreader.variable}`}>
         <PaperGrain />
         <RouteAnnouncer />
         <NavCoordinates />

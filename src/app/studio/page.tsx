@@ -104,7 +104,7 @@ export default function StudioPage() {
           </header>
           <div className="studio__prose">
             <p>
-              Set in Fragment Mono and Gambetta. Modular type scale on a
+              Set in Geist Sans and Newsreader. Modular type scale on a
               Perfect Fourth ratio. Paper-and-ink palette — no second hue.
               Motion sits in a 120–400 ms window with one approved easing
               catalog; nothing animates on idle. Built with Next.js 16 and
@@ -139,7 +139,7 @@ export default function StudioPage() {
 
         .studio__head { display: grid; gap: 18px; }
         .studio__title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: clamp(28px, 3.4vw, 42px);
           line-height: 1.15;
@@ -148,7 +148,7 @@ export default function StudioPage() {
           margin: 0;
         }
         .studio__lede {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 13px;
           line-height: 1.7;
           color: var(--ink-2);
@@ -165,16 +165,16 @@ export default function StudioPage() {
           border-bottom: 1px solid var(--ink);
         }
         .studio__section-label {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.26em;
+          letter-spacing: 0.10em;
           text-transform: uppercase;
           color: var(--ink);
         }
         .studio__section-count {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
@@ -182,7 +182,7 @@ export default function StudioPage() {
         .studio__prose {
           display: grid;
           gap: 1em;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 13px;
           line-height: 1.85;
           color: var(--ink-2);
@@ -210,14 +210,14 @@ export default function StudioPage() {
           align-items: baseline;
         }
         .studio__timeline-period {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
         .studio__timeline-role {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 12px;
           color: var(--ink);
           margin: 0;
@@ -234,14 +234,14 @@ export default function StudioPage() {
           align-items: baseline;
         }
         .studio__contact-key {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
         .studio__handle {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 12px;
           color: var(--ink);
         }
@@ -255,9 +255,9 @@ export default function StudioPage() {
           gap: 10px;
           padding-top: 16px;
           border-top: 1px solid var(--ink-hair);
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }

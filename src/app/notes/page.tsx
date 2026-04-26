@@ -87,7 +87,7 @@ export default function NotesIndexPage() {
 
         .notes__head { display: grid; gap: 18px; }
         .notes__title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-weight: 400;
           font-size: clamp(22px, 2.4vw, 30px);
           line-height: 1.35;
@@ -106,16 +106,16 @@ export default function NotesIndexPage() {
           border-bottom: 1px solid var(--ink);
         }
         .notes__group-label {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.26em;
+          letter-spacing: 0.10em;
           text-transform: uppercase;
           color: var(--ink);
         }
         .notes__group-count {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
@@ -133,26 +133,26 @@ export default function NotesIndexPage() {
         }
         .notes__row-link:hover { background: var(--ink-ghost); }
         .notes__row-num {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-4);
         }
         .notes__row-date {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.04em;
           color: var(--ink-3);
         }
         .notes__row-title {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 13px;
           letter-spacing: 0;
           color: var(--ink);
         }
         .notes__row-arrow {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 12px;
           color: var(--ink-3);
           text-align: right;
@@ -164,9 +164,9 @@ export default function NotesIndexPage() {
           gap: 10px;
           padding-top: 16px;
           border-top: 1px solid var(--ink-hair);
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }

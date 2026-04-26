@@ -155,13 +155,13 @@ export default function Home() {
           gap: 4px;
         }
         .home__tile-name {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 12px;
           letter-spacing: 0.005em;
           color: var(--ink);
         }
         .home__tile-meta {
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 11px;
           letter-spacing: 0.005em;
           color: var(--ink-3);
@@ -176,9 +176,9 @@ export default function Home() {
           align-items: baseline;
           padding-top: clamp(16px, 2.5vh, 24px);
           border-top: 1px solid var(--ink-hair);
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
         }
         .home__mail { color: var(--ink); }

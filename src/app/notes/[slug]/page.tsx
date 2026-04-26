@@ -113,9 +113,9 @@ export default function NoteDetailPage() {
           display: flex;
           gap: 10px;
           padding: 8px 0;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 9px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
           background: linear-gradient(to bottom, var(--paper) 60%, transparent 100%);
@@ -164,9 +164,9 @@ export default function NoteDetailPage() {
           display: inline-flex;
           align-items: baseline;
           gap: 10px;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink-3);
         }

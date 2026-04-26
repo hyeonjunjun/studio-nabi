@@ -93,9 +93,9 @@ export default function NavCoordinates() {
           display: inline-flex;
           align-items: baseline;
           gap: 10px;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: var(--ink);
           transition: opacity 180ms var(--ease);
@@ -114,9 +114,9 @@ export default function NavCoordinates() {
           display: flex;
           gap: 22px;
           align-items: baseline;
-          font-family: var(--font-stack-mono);
+          font-family: var(--font-stack-sans);
           font-size: 10px;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           margin: 0;
           padding: 0;
@@ -130,8 +130,8 @@ export default function NavCoordinates() {
 
         @media (max-width: 640px) {
           .nav { top: 14px; left: 16px; right: 16px; }
-          .nav__mark { font-size: 9px; letter-spacing: 0.18em; }
-          .nav__list { gap: 14px; font-size: 9px; letter-spacing: 0.18em; }
+          .nav__mark { font-size: 9px; letter-spacing: 0.06em; }
+          .nav__list { gap: 14px; font-size: 9px; letter-spacing: 0.06em; }
         }
       `}</style>
     </nav>
