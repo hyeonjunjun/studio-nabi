@@ -1,8 +1,21 @@
 # Stage & Paper — Dual-Register Design Spec
 
 **Date:** 2026-04-24
-**Status:** Draft — pending user review
+**Reconciled:** 2026-04-30
+**Status:** Reconciled — current direction. Type system, home mechanic, and route names updated to match shipped state. All other locks preserved.
 **Extends:** [2026-04-22-taste-polish-design.md](./2026-04-22-taste-polish-design.md)
+
+---
+
+## Reconciliation Notes — 2026-04-30
+
+Three things evolved between the 2026-04-24 draft and the reconciled spec:
+
+1. **Type system retired Fragment Mono.** The spec's two-face discipline holds, but the faces are now **Geist Sans + Newsreader**. Tabular figures come from Geist's OpenType `tnum` feature, not from a mono register. Tracking has been recalibrated for proportional sans (0.06–0.08em vs. the prior 0.16–0.22em mono). §8 (Type) and V3 (verification) rewritten below.
+2. **Home mechanic shifted from GutterStrip mirror-index to Wang Zhi-Hong / Daikoku / nendo 2-column 1:1 grid.** The cathydolle wheel-snap is gone. The grid lives at `max-width: 600px`, ~290px tiles, 1:1 frames, museum-label captions. Per-slug `viewTransitionName` wiring is preserved (the slug-named `work-cover-{slug}` covers carry the shared-element morph into the case study). §13 Phase 2 rewritten.
+3. **Routes consolidated.** `/about` + `/contact` + `/colophon` collapsed into `/studio` per Pawson's stopping rule (three half-populated pages → one substantive page). `/shelf` renamed `/bookmarks`. Paper routes are now `/studio`, `/bookmarks`, `/notes`, `/notes/[slug]`. References below updated.
+
+All other locks (Stage palette, motion grammar, `!` moment practice, cinematic entrance, signature dialect) preserved as drafted.
 
 ---
 
@@ -44,17 +57,17 @@ The neighbours this creates, and the conversation this invites, are listed in §
 - Luminous media with halation — object-as-altar photography, the perfume-bottle reference
 - Data-annotation scaffold around every artifact (the Andrew Quinn workshop poster is the reference)
 - Path-blur motion — trace, smear, long-exposure arrival
-- Gambetta at high weight for hero titles (on dark, the serif reads as cinematic rather than editorial)
+- Newsreader at high weight for hero titles (on dark, the serif reads as cinematic rather than editorial)
 
-### Paper — mono-first, editorial, Hara-lineage
-**Routes:** `/about`, `/shelf`, `/colophon`, `/notes`, `/notes/[slug]`
+### Paper — sans-first, editorial, Hara-lineage
+**Routes:** `/studio`, `/bookmarks`, `/notes`, `/notes/[slug]`
 
 **What it's for:** thinking, reading, archiving. Studio writing.
 
-**Visual vocabulary:** unchanged from the taste-polish spec. Paper ground, mono-first, Gambetta at reading weight in prose only, existing ease curves, existing reveal hook, existing folio.
+**Visual vocabulary:** unchanged from the taste-polish spec in stance. Paper ground, sans-first (Geist), Newsreader at reading weight in long-form prose only, existing ease curves, existing reveal hook, existing folio.
 
-### `/contact` — judgment call, flagged as open question
-`/contact` is currently paper. It could arguably move to stage (the contact page is a gallery plate — one object, one moment). Recommendation: **keep paper.** The card-as-composition already works, and moving it would double the stage footprint without doubling the value. Flagged in §15.
+### `/contact` and `/colophon` — consolidated, no separate routes
+Both have been folded into `/studio` per Pawson's stopping rule. `/studio` carries: bio → engagements → contact (email + networks) → optional colophon footer. The card-as-composition impulse from the prior `/contact` survives as the contact cluster inside `/studio`.
 
 ---
 
@@ -103,7 +116,7 @@ The current microtype vocabulary (`HKJ / §04 / 2026`, `№NN`, tabular counts, 
 - **Every annotation must be real.** No lorem. `θ = 0.567408` is a fake on the workshop poster; ours are actual parameters of the real artifact. If Gyeol's b-roll runs at 30fps with a specific grade, the annotation says that. Otherwise it's performance.
 - **Annotations sit in `--glow-2`** (damped glow) — present, not shouting.
 - **Never more than 4 annotations per plate.** Beyond that it reads as VJ chrome.
-- **Fragment Mono at 9px / 0.22em tracking** — the existing folio metric extended.
+- **Geist Sans at 9px / 0.08em tracking** — the existing folio metric extended (proportional-sans calibration; was 0.22em on the retired mono register).
 
 ### What this replaces
 The plate marks (`.plate-mark`) and eyebrow (`.eyebrow`) on Stage routes. On Paper, those keep their current styling.
@@ -134,14 +147,14 @@ Section arrives with a subtle lateral drift (±4px) + opacity fade, not the curr
 Budget: 360ms, 60ms stagger capped at 5. Reduced-motion: instant.
 
 #### Navigation within Stage (`/` → `/work/[slug]` or `/work/x` → `/work/y`)
-The existing view-transition shared-element on `.cd__name` / `.case__title` stays. Root crossfade is extended to 420ms (was 300ms) because the darker ground needs a longer beat to feel cinematic rather than abrupt. The shared-title morph gains a **motion blur during transit** — a real `filter: blur(2px)` at midpoint that resolves to clean at end — which is the "path-blur in transit" that makes the whole thing read as a camera move, not a fade.
+The existing view-transition shared-element wiring (per-slug `work-cover-{slug}` on tiles + hero plate, `work-title-{slug}` on tile name + case-study h1) stays. Root crossfade is extended to 420ms (was 300ms) because the darker ground needs a longer beat to feel cinematic rather than abrupt. The shared-title morph gains a **motion blur during transit** — a real `filter: blur(2px)` at midpoint that resolves to clean at end — which is the "path-blur in transit" that makes the whole thing read as a camera move, not a fade.
 
 Budget: 420ms root + 480ms title morph. Reduced-motion: instant.
 
-#### Navigation within Paper (`/about` ↔ `/shelf` ↔ `/notes` etc.)
+#### Navigation within Paper (`/studio` ↔ `/bookmarks` ↔ `/notes` etc.)
 Unchanged from prior spec: 300ms root crossfade on `var(--ease)`. No shared-element morphs between Paper routes.
 
-#### Cross-register navigation (e.g. `/` → `/about`, or `/shelf` → `/work/gyeol`)
+#### Cross-register navigation (e.g. `/` → `/studio`, or `/bookmarks` → `/work/gyeol`)
 A register shift *is* a scene change. The grammar acknowledges it as an intentional hard cut, not a soft blend — but softened just enough not to strobe:
 
 - **Root crossfade duration:** 420ms (matches the longer of the two registers — the destination's duration if destination is Stage, else the source's).
@@ -206,26 +219,26 @@ This lock is **conditional on a photograph-production commitment.** C requires f
 
 ## Type
 
-### Current
-Fragment Mono (9–13px, all UI chrome, titles on Paper) + Gambetta (17px prose body only, `/work/[slug]` case studies, `/notes/[slug]` detail).
+### Current (reconciled 2026-04-30)
+**Geist Sans + Newsreader.** Two faces, both proportional. Mono retired entirely.
 
-### Question
-Does Stage need a third face for hero titles?
+- **Geist Sans** — chrome face. All UI text 9–15px (eyebrow, plate-mark, nav, folio, captions, body short-form). Calibrated for both microtype and reading. Tabular figures via OpenType `tnum` (no separate mono needed for alignment).
+- **Newsreader** — body serif. Long-form prose only: case-study editorial sections, `/notes/[slug]` detail body. Variable weight 200–800, optical-size, screen-optimized.
 
-### Options
-- **Add a chunky display sans.** Candidates: Migra, Pangram Sans Rounded, GT Maru, Söhne Breit. One weight, hero use only.
-- **Push Gambetta to high weight on Stage.** Gambetta is variable — 700–800 weight on dark ground reads as cinematic serif, not editorial serif. Zero new font loads.
-- **Stay with Fragment Mono at large sizes.** The current mono-first discipline held all the way up. Test at 48–88px on dark before assuming it fails.
+### Why mono retired
+Fragment Mono carried all UI from the taste-polish spec. It worked, but at small sizes on screen the mono register was *louder* than the editorial voice the site was settling into. Geist Sans's humanist proportions, calibrated tracking (0.06–0.08em uppercased vs. mono's 0.16–0.22em), and `tnum` feature give the same chrome legibility with less visual claim. The site reads quieter without losing the data-spec character of the microtype.
 
-### Lock: Gambetta at weight 700 on Stage hero titles
-The existing `Gambetta-Variable.woff2` is loaded in `layout.tsx` with `weight: "300 800"` — 700 is confirmed inside the axis range. No new font load. No new file. Reasons:
+### Stage hero face
+**Newsreader at high weight (locked at 600, may dial to 700 in implementation).**
 
-1. Stays inside the 2-face discipline.
-2. Gambetta at high weight on a dark warm ground reads as *cinematic title card*, not *editorial serif*. One face, two registers, two voices — exactly what dual-register wants.
-3. Preserves continuity with `/notes/[slug]` (Gambetta body), so each face keeps a single role across both registers.
-4. A display sans would be the easy move and would date fast. Gambetta at 700 on dark will age better.
+The existing variable file covers 200–800 — no new load. Reasons:
 
-Pairs with Fragment Mono at existing sizes for all microtype (annotations, folio, nav). No change on Paper.
+1. Stays inside the two-face discipline.
+2. Newsreader at high weight on warm dark ground reads as *cinematic title card*, not *editorial serif*. One face, two roles — what dual-register wants.
+3. Preserves continuity with `/notes/[slug]` body (Newsreader at reading weight), so each face keeps a single role across both registers.
+4. A third display face (Migra / GT Maru / Söhne Breit) would be the easy move and would date fast. Newsreader at 600 on dark will age better.
+
+Pairs with Geist Sans at existing sizes for all microtype (annotations, folio, nav). No change on Paper.
 
 ---
 
@@ -243,13 +256,13 @@ One **specific, hidden, unexpected detail per page** — Nendo's exclamation mar
 | Surface | Candidate `!` moment |
 |---|---|
 | `/` (home) | The active piece's title has a hand-tuned baseline shift of −1px that makes it sit slightly proud of the others, in addition to the opacity shift. Invisible until you notice it. |
-| `/work/gyeol` | The eyebrow's `·` separators are replaced with `結` (Korean character for *gyeol*, meaning texture/grain) — the project's namesake character used as a literal grain of punctuation. |
-| `/work/clouds-at-sea` | The hero's long-exposure still is paired with a coordinate annotation — and the coordinate is the exact location of the horizon line in the photograph. Technical caption as poetry. |
-| `/about` | One paragraph's first letter has a half-line drop cap in Gambetta — hand-placed, invisible systematically, but it makes that paragraph read as the important one. |
-| `/shelf` | One row's `year` field is a range instead of a year (e.g., `1954 – ` for the Butterfly Stool, signaling "still present in my life"). A tiny grammatical move that carries meaning. |
-| `/colophon` | The `Build` SHA is set in Fragment Mono and is actually live — it changes per deploy. A rare small piece of *live* typography. |
-| `/notes/[slug]` | The running-head band shows the note number + title *and* one em-dashed word — the single word that's load-bearing in the essay. A hand-picked keyword, not auto-generated. |
-| `/contact` | The `Availability` cluster's handwritten-style tick is a single tuned glyph the user drew once — it's the only hand-vectored mark on the site, used exactly here. A trace of the person in an otherwise type-only composition. |
+| `/work/gyeol` | The eyebrow's `·` separators are replaced with `結` (Korean character for *gyeol*, meaning texture/grain) — the project's namesake character used as a literal grain of punctuation. **Shipped.** |
+| `/work/clouds-at-sea` | The hero's long-exposure still is paired with a coordinate annotation — and the coordinate is the exact location of the horizon line in the photograph. Technical caption as poetry. **Coord shipped; photograph pending Phase 5.** |
+| `/studio` | One paragraph's first letter has a half-line drop cap in Newsreader — hand-placed, invisible systematically, but it makes that paragraph read as the important one. The argument paragraph (AI-as-collaborator). |
+| `/bookmarks` | One row's `year` field is a range instead of a year (e.g., `1954 –` for the Butterfly Stool, signaling "still present in my life"). A tiny grammatical move that carries meaning. **Shipped.** |
+| `/notes/[slug]` | The running-head band shows the note number + title *and* one em-dashed word — the single word that's load-bearing in the essay. A hand-picked keyword, not auto-generated. **Shipped.** |
+| Colophon (foot of `/studio`) | The `Build` SHA is set live — it changes per deploy. A rare small piece of *live* typography. **Pending.** |
+| Contact cluster (inside `/studio`) | The `Availability` cluster's handwritten-style tick is a single tuned glyph the user drew once — the only hand-vectored mark on the site, used exactly here. A trace of the person in an otherwise type-only composition. **Deferred** — left honest until a specific, non-forced detail is identified. |
 
 These are candidates — the actual `!` moments get decided in implementation, not in the spec. What the spec locks is the **practice**.
 
@@ -302,7 +315,7 @@ t = 1100ms+  sessionStorage.setItem('hkj.entered', '1');
 
 **Register crossfade at the tail.** If the destination route is a Paper route, the overlay at t=850ms→1100ms doesn't fade straight from `--stage` to transparent — it crossfades from `--stage` through neutral to `--paper-transparent`, so the first Paper impression isn't preceded by a hard flash from dark to light. Destination Stage routes skip this step; the overlay fades straight to transparent.
 
-**Entrance-complete flag gates view-transitions.** The navigation-layer (CommandPalette, Link clicks) must check `window.__hkjEntranceComplete === true` before triggering a view-transition. If the user clicks a Link during the entrance (1.1s window), navigation is queued and fires immediately after the entrance resolves. Prevents the VT from firing against a page still mid-reveal.
+**Entrance-complete flag gates view-transitions.** The navigation-layer (Link clicks today; future CommandPalette) must check `window.__hkjEntranceComplete === true` before triggering a view-transition. If the user clicks a Link during the entrance (1.1s window), navigation is queued and fires immediately after the entrance resolves. Prevents the VT from firing against a page still mid-reveal.
 
 > The *mechanism* of click-queuing (captured document-level handler, Link component wrapper, or a lightweight router patch) is a **plan-level decision**, not a spec-level one. `writing-plans` picks an approach and the task includes the decision. Leaning: a captured handler on `document` that short-circuits navigation until the flag flips is the smallest surface.
 
@@ -320,16 +333,16 @@ t = 1100ms+  sessionStorage.setItem('hkj.entered', '1');
 
 ## Preservation — what we keep from the prior session
 
-Non-negotiable. Everything from `2026-04-22-taste-polish-design.md` remains:
+Non-negotiable. The locks below survive the 2026-04-30 reconciliation.
 
-- **Fragment Mono + Gambetta** (2 faces). Gambetta gains a weight-700 usage for Stage hero titles; axis range already loaded.
+- **Two-face discipline** — Geist Sans + Newsreader. Newsreader gains a weight-600 usage for Stage hero titles; axis range already loaded.
 - **Approved easing catalog:** `cubic-bezier(.4,0,.2,1)` / `(.22,1,.36,1)` / `(.33,.12,.15,1)` / `(.41,.1,.13,1)` — no additions.
 - **Paper-and-ink token system** — untouched. All Paper routes render pixel-identical after Phase 1.
-- **`/notes`, `/colophon`, `/shelf`, `/about`, `/contact`** — Paper register, unchanged.
-- **`GutterStrip` wheel-snap mechanics** — unchanged. Media treatment (halation, luminous framing) shifts in Phase 2.
-- **CommandPalette (cmdk, `⌘K`)** — keeps its Paper-backed dialog identity in both registers (writing-style tool). But the overlay behind it is *register-aware*: `--palette-overlay` token that is `rgba(17,17,16,0.18)` on Paper routes and `rgba(248,245,236,0.12)` on Stage routes, so the veil remains perceptible on either ground. Dialog content itself (Paper background, ink text) never changes.
+- **`/studio`, `/bookmarks`, `/notes`, `/notes/[slug]`** — Paper register, unchanged.
+- **Home grid (Wang Zhi-Hong / Daikoku / nendo)** — 2-column 1:1 grid, max-width 600px, ~290px tiles, museum-label captions. Per-slug `viewTransitionName` wiring preserved. The Stage skin lands on this grid; the mechanic is not relitigated.
+- **CommandPalette (cmdk, `⌘K`)** — *not yet built.* Spec hold. When the palette ships, it keeps a Paper-backed dialog identity in both registers (writing-style tool). The overlay behind it is *register-aware*: `--palette-overlay` token at `rgba(17,17,16,0.18)` on Paper routes and `rgba(248,245,236,0.12)` on Stage routes. Dialog content itself (Paper background, ink text) never changes. Out of scope for Phases 1–5 unless the surface is needed.
 - **View-transitions API wiring** — extended: Stage-internal navigation uses the new 420ms + blur-in-transit treatment; Paper-internal unchanged; cross-register gets the explicit hard-cut rule from §6.
-- **`useSectionReveal` hook** — stays as a generic observer mechanism. Currently only consumed by `CaseStudy.tsx` (on `.case__section`), which is moving to Stage. The hook is unchanged; the CSS that reads `[data-revealed]` is rewritten in Phase 3 to use the Stage motion vocabulary (lateral drift + opacity, alternating direction by index) instead of the current vertical translate + opacity.
+- **`useSectionReveal` hook** — stays as a generic observer mechanism. Currently consumed by `CaseStudy.tsx` (on `.case__section`), which is moving to Stage. The hook is unchanged; the CSS that reads `[data-revealed]` is rewritten in Phase 3 to use the Stage motion vocabulary (lateral drift + opacity, alternating direction by index) instead of the current vertical translate + opacity.
 - **Hover vocabulary** — underline-color fade on links stays on Paper. Stage uses path-blur. `.arrow-glyph` slide stays on both registers — it's a generic primitive.
 - **`NavCoordinates` and `Folio`** — both use ink tokens (`var(--ink)`, `var(--ink-3)`, `var(--ink-4)`) that are invisible on `--stage`. Both components gain register-aware color via CSS:
   ```css
@@ -339,7 +352,7 @@ Non-negotiable. Everything from `2026-04-22-taste-polish-design.md` remains:
   html[data-register="stage"] .nav__mark-role { color: var(--glow-2); }
   ```
   The components themselves don't change; only their inline `<style>` blocks gain a Stage branch.
-- **Existing `!` moments** (⌘K footer hint, notes running-head, etc.) — preserved as features. Phase 5's `!` moment audit revisits whether they still qualify as *the* `!` moment for their surface or whether a stronger one should replace them. No grandfathering.
+- **Existing `!` moments** (gyeol `結`, clouds-at-sea coord, butterfly stool open year, notes running-head keyword) — preserved as features. Phase 5's `!` moment audit revisits whether they still qualify as *the* `!` moment for their surface or whether a stronger one should replace them. No grandfathering.
 
 ---
 
@@ -378,15 +391,17 @@ The portfolio aspires to be legibly of the first group — a design engineer —
 - Home (`/`) shifts to `data-register="stage"`
 - `--paper` references in `src/app/page.tsx` replaced with `--stage`
 - `--ink` references replaced with `--glow`
-- `GutterStrip` media treatment updated: halation, luminous object presentation
-- Path-blur on `.cd__name` hover (direction-aware)
-- Mirror-index mechanic preserved; visual skin only
+- The 2-column 1:1 grid (Wang Zhi-Hong / Daikoku / nendo register) gets a Stage skin: halation on `.home__tile-frame`, glow microtype on `.home__tile-name` and `.home__tile-meta`, hairline on `.home__foot` shifts to `--glow-hair`
+- Path-blur on `.home__tile` hover (direction-aware, desktop-only via `(hover: hover) and (pointer: fine)`, 320ms decay, 2px cap)
+- Per-slug `viewTransitionName` wiring (`work-cover-{slug}`, `work-title-{slug}`) preserved; existing CSS view-transition rules in `globals.css` get a Stage branch only if behavior needs to differ
+- PaperGrain may need a `--stage-grain` companion if mix-blend-multiply at 0.055 reads wrong on `#0E0D09`
 
 ### Phase 3 — `/work/[slug]` stage
 - Case studies shift to `data-register="stage"`
-- `CaseStudy.tsx` gets a dark theme: `--stage` ground, `--glow` body text, Gambetta at weight 700 for h1
-- Hero media gains halation + long-exposure smear on arrival
-- Data-annotation layer: add `case__coord`, `case__param`, `case__signal` primitives
+- `CaseStudy.tsx` gets a dark theme: `--stage` ground, `--glow` body text, Newsreader at weight 600 for h1
+- Hero media gains halation + long-exposure smear on arrival (480ms, sub-768px disabled per perf envelope)
+- Section reveal CSS rewritten: lateral drift (±4px) + opacity, alternating direction by section index. Hook unchanged.
+- Data-annotation layer: `.case__coord` already exists; add `.case__param`, `.case__signal`, `.case__module`, `.case__timecode` primitives — Geist Sans 9px, 0.08em tracking, `--glow-2`. Max 4 annotations per plate.
 - Signature dialect (long-exposure still if C is picked) replaces current hero image pattern
 
 ### Phase 4 — Cinematic entrance
@@ -437,9 +452,9 @@ Most of the spec is locked. These are the three real decisions left for the user
 
 ### Locked in spec (no longer open)
 - Signature dialect = C (long-exposure still), fallback B — resolved by Q1 above
-- Type addition = Gambetta at 700 (axis range 300–800 already loaded)
+- Type system = Geist Sans + Newsreader. Stage hero face = Newsreader at 600 (variable axis 200–800 already loaded). Mono retired.
 - `--stage` = `#0E0D09` (warmed near-black)
-- `/contact` = Paper register
+- `/contact` = consolidated into `/studio` (no separate route)
 - `data-register` host = `<html>` (never body or main)
 - Phased rollout (Phases 1–5, each independently shippable)
 - All preservation claims in §11
@@ -452,16 +467,16 @@ Most of the spec is locked. These are the three real decisions left for the user
 
 For the eventual plan derived from this spec:
 
-- **V1:** No tokens added beyond `--stage-*` and `--glow-*`.
+- **V1:** No tokens added beyond `--stage-*`, `--glow-*`, and (if needed) `--stage-grain`.
 - **V2:** No easing curves added beyond the approved four.
-- **V3:** No third typeface loaded (Gambetta at weight 700 reuses the existing variable file).
+- **V3:** Two typefaces — Geist Sans + Newsreader. Mono retired entirely; tabular figures from Geist's OpenType `tnum`. No third face loaded.
 - **V4:** All Paper routes render pixel-identical before and after Phase 1 (token foundation).
 - **V5:** Every Stage route sets `data-register="stage"`; every Paper route sets `data-register="paper"` or no value.
 - **V6:** Cinematic entrance runs ≤ 1× per session via `sessionStorage` flag.
 - **V7:** Reduced-motion disables: entrance, path-blur, long-exposure smear, all filter-based motion. Site still navigates and reads.
 - **V8:** Core Web Vitals: no regression on LCP or INP for Paper routes; Stage routes measured separately with an acceptable degradation budget (≤ 10% on LCP).
 - **V9:** One `!` moment per page, documented in TASKS.md.
-- **V10:** `GutterStrip` wheel-snap mechanics unchanged from current behavior.
-- **V11:** CommandPalette, Folio, `⌘K` hint, view-transitions all preserved and functional across both registers.
+- **V10:** Home grid (2-column, 1:1, max-width 600px, ~290px tiles) renders as Stage on `/`. All per-slug `viewTransitionName` wiring preserved.
+- **V11:** Folio + view-transitions preserved across both registers. CommandPalette deferred — if/when built, it follows the register-aware overlay rule from §11 (preservation).
 
 ---
