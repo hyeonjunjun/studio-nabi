@@ -21,6 +21,11 @@ type Props = {
  * source. Hover (desktop only) swaps to coverAlt if present, falls
  * back to a 1.012 scale otherwise. Preserves per-slug
  * viewTransitionName wiring on cover and title.
+ *
+ * Placeholder mode: when `piece.placeholder === true`, the plate is
+ * rendered as a static reserved cell (no link, no cover, no view
+ * transition) so the home grid keeps its rhythm before real content
+ * lands.
  */
 export default function WorkPlate({ piece, href }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -51,6 +56,134 @@ export default function WorkPlate({ piece, href }: Props) {
   const showAlt = hovered && !reduced && !!piece.coverAlt;
   const activeCover = showAlt ? piece.coverAlt! : piece.cover;
 
+  const styles = (
+    <style>{`
+      .plate {
+        display: grid;
+        gap: clamp(16px, 2.5vh, 24px);
+        color: var(--ink);
+        padding-block-end: 0;
+      }
+      .plate__frame {
+        position: relative;
+        width: 100%;
+        margin-inline: 0;
+        background: var(--paper-2);
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .plate--placeholder .plate__frame {
+        border: 1px solid var(--ink-hair);
+      }
+      .plate--placeholder {
+        cursor: default;
+      }
+      .plate__media {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: opacity 320ms var(--ease), transform 280ms var(--ease);
+      }
+      .plate[data-has-alt="false"]:hover .plate__media {
+        transform: scale(1.012);
+      }
+      .plate__placeholder {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .plate__cap {
+        display: grid;
+        gap: 6px;
+        max-width: 60ch;
+      }
+      .plate--placeholder .plate__cap {
+        color: var(--ink-3);
+      }
+      .plate__num {
+        font-family: var(--font-stack-sans);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--ink-3);
+      }
+      .plate__title {
+        font-family: var(--font-stack-sans);
+        font-size: 15px;
+        letter-spacing: 0.005em;
+        color: var(--ink);
+      }
+      .plate--placeholder .plate__title {
+        color: var(--ink-3);
+      }
+      .plate__role {
+        font-family: var(--font-stack-sans);
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        color: var(--ink-3);
+      }
+      .plate__desc {
+        font-family: var(--font-stack-sans);
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--ink-2);
+      }
+      .plate--placeholder .plate__desc {
+        color: var(--ink-3);
+      }
+      .plate__meta {
+        font-family: var(--font-stack-sans);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--ink-4);
+      }
+
+      @media (max-width: 720px) {
+        .plate__frame {
+          width: var(--cover-width, 100%);
+          margin-inline: auto;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .plate__media { transition: none; }
+        .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
+      }
+
+      @media (hover: none), (pointer: coarse) {
+        .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
+      }
+    `}</style>
+  );
+
+  if (piece.placeholder) {
+    return (
+      <article className="plate plate--placeholder">
+        <div
+          className="plate__frame"
+          style={{
+            aspectRatio: piece.coverAspect ?? "4 / 5",
+            ["--cover-width" as string]: `${piece.coverWidth ?? 100}%`,
+          } as React.CSSProperties}
+        />
+
+        <div className="plate__cap">
+          <span className="plate__num tabular">№{piece.number}</span>
+          <span className="plate__title">{piece.title}</span>
+          <span className="plate__role">
+            <span className="tabular">{piece.year}</span>
+            {" · Coming"}
+          </span>
+          <span className="plate__desc">Coming 2026.</span>
+        </div>
+
+        {styles}
+      </article>
+    );
+  }
+
   return (
     <Link
       href={target}
@@ -63,9 +196,8 @@ export default function WorkPlate({ piece, href }: Props) {
         className="plate__frame"
         style={{
           viewTransitionName: coverVtName,
-          aspectRatio: piece.coverAspect ?? "4 / 3",
-          width: `${piece.coverWidth ?? 100}%`,
-          marginInline: "auto",
+          aspectRatio: piece.coverAspect ?? "4 / 5",
+          ["--cover-width" as string]: `${piece.coverWidth ?? 100}%`,
         } as React.CSSProperties}
       >
         {activeCover?.kind === "video" ? (
@@ -113,82 +245,7 @@ export default function WorkPlate({ piece, href }: Props) {
         {piece.meta && <span className="plate__meta tabular">{piece.meta}</span>}
       </div>
 
-      <style>{`
-        .plate {
-          display: grid;
-          gap: clamp(16px, 2.5vh, 24px);
-          color: var(--ink);
-          padding-block-end: clamp(56px, 12vh, 120px);
-        }
-        .plate__frame {
-          position: relative;
-          width: 100%;
-          background: var(--paper-2);
-          overflow: hidden;
-          isolation: isolate;
-        }
-        .plate__media {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: opacity 320ms var(--ease), transform 280ms var(--ease);
-        }
-        .plate[data-has-alt="false"]:hover .plate__media {
-          transform: scale(1.012);
-        }
-        .plate__placeholder {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          padding: 24px;
-        }
-        .plate__cap {
-          display: grid;
-          gap: 6px;
-          max-width: 60ch;
-        }
-        .plate__num {
-          font-family: var(--font-stack-sans);
-          font-size: 11px;
-          letter-spacing: 0.08em;
-          color: var(--ink-3);
-        }
-        .plate__title {
-          font-family: var(--font-stack-sans);
-          font-size: 15px;
-          letter-spacing: 0.005em;
-          color: var(--ink);
-        }
-        .plate__role {
-          font-family: var(--font-stack-sans);
-          font-size: 13px;
-          letter-spacing: 0.06em;
-          color: var(--ink-3);
-        }
-        .plate__desc {
-          font-family: var(--font-stack-sans);
-          font-size: 15px;
-          line-height: 1.5;
-          color: var(--ink-2);
-        }
-        .plate__meta {
-          font-family: var(--font-stack-sans);
-          font-size: 11px;
-          letter-spacing: 0.08em;
-          color: var(--ink-4);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .plate__media { transition: none; }
-          .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
-        }
-
-        @media (hover: none), (pointer: coarse) {
-          .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
-        }
-      `}</style>
+      {styles}
     </Link>
   );
 }

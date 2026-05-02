@@ -14,7 +14,10 @@ export default function CaseStudy({ piece }: Props) {
   const containerRef = useSectionReveal<HTMLElement>();
 
   const next = useMemo(() => {
-    const sorted = [...PIECES].sort((a, b) => a.order - b.order);
+    // Skip placeholders — they have no destination route.
+    const sorted = [...PIECES]
+      .filter((p) => !p.placeholder)
+      .sort((a, b) => a.order - b.order);
     const idx = sorted.findIndex((p) => p.slug === piece.slug);
     return sorted[(idx + 1) % sorted.length];
   }, [piece.slug]);

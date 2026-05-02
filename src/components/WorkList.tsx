@@ -17,14 +17,24 @@ export default function WorkList({ pieces }: Props) {
     <ol className="worklist" aria-label="Studio catalog index">
       {pieces.map((piece) => (
         <li key={piece.slug} className="worklist__row">
-          <Link href={`/work/${piece.slug}`} className="worklist__link">
-            <span className="worklist__num tabular">№{piece.number}</span>
-            <span className="worklist__title">{piece.title}</span>
-            <span className="worklist__year tabular">{piece.year}</span>
-            <span className="worklist__role">{piece.sector}</span>
-            <span className="worklist__desc">{piece.description}</span>
-            <span className="worklist__arrow" aria-hidden>→</span>
-          </Link>
+          {piece.placeholder ? (
+            <span className="worklist__link worklist__link--placeholder">
+              <span className="worklist__num tabular">№{piece.number}</span>
+              <span className="worklist__title">{piece.title}</span>
+              <span className="worklist__year tabular">{piece.year}</span>
+              <span className="worklist__role">{piece.sector}</span>
+              <span className="worklist__desc">{piece.description}</span>
+            </span>
+          ) : (
+            <Link href={`/work/${piece.slug}`} className="worklist__link">
+              <span className="worklist__num tabular">№{piece.number}</span>
+              <span className="worklist__title">{piece.title}</span>
+              <span className="worklist__year tabular">{piece.year}</span>
+              <span className="worklist__role">{piece.sector}</span>
+              <span className="worklist__desc">{piece.description}</span>
+              <span className="worklist__arrow" aria-hidden>→</span>
+            </Link>
+          )}
         </li>
       ))}
 
@@ -57,6 +67,13 @@ export default function WorkList({ pieces }: Props) {
         }
         .worklist__link:hover {
           background: var(--ink-hair);
+        }
+        .worklist__link--placeholder {
+          cursor: default;
+          color: var(--ink-3);
+        }
+        .worklist__link--placeholder:hover {
+          background: transparent;
         }
         .worklist__num {
           font-family: var(--font-stack-sans);

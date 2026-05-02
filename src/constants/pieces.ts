@@ -40,27 +40,31 @@ export interface Piece {
    * always present.
    */
   meta?: string;
+  /**
+   * When true, the plate renders as a static reserved cell (no link,
+   * no cover, paper-2 fill). Used for "Untitled" placeholders that
+   * hold the grid's rhythm before content lands.
+   */
+  placeholder?: boolean;
 }
 
 export const PIECES: Piece[] = [
   {
-    slug: "clouds-at-sea",
-    title: "Clouds at Sea",
-    type: "experiment",
+    slug: "untitled-01",
+    title: "Untitled",
+    type: "project",
     order: 1,
     number: "01",
-    sector: "WebGL / Generative",
-    description: "Somewhere between water and sky, the horizon dissolves.",
-    status: "shipped",
+    sector: "In development",
+    description: "Coming 2026.",
+    status: "wip",
     year: 2026,
-    cover: { kind: "video", src: "/assets/cloudsatsea.mp4" },
-    coverAspect: "16 / 9",
-    coverWidth: 100,
-    tags: ["webgl", "generative"],
+    tags: [],
+    placeholder: true,
   },
   {
     slug: "gyeol",
-    title: "Gyeol: \uACB0",
+    title: "Gyeol: 결",
     type: "project",
     order: 2,
     number: "02",
@@ -79,19 +83,17 @@ export const PIECES: Piece[] = [
     tags: ["brand", "ecommerce", "3d"],
   },
   {
-    slug: "pane",
-    title: "Pane",
+    slug: "untitled-03",
+    title: "Untitled",
     type: "project",
     order: 3,
     number: "03",
-    sector: "Ambient Computing",
-    description:
-      "A Jarvis-like ambient dashboard — contextual telemetry, focused attention, quiet systems.",
+    sector: "In development",
+    description: "Coming 2026.",
     status: "wip",
     year: 2026,
-    coverAspect: "16 / 10",
-    coverWidth: 86,
-    tags: ["dashboard", "ambient", "ai"],
+    tags: [],
+    placeholder: true,
   },
   {
     slug: "sift",
@@ -109,5 +111,44 @@ export const PIECES: Piece[] = [
     coverAspect: "9 / 16",
     coverWidth: 54,
     tags: ["mobile", "ai", "product"],
+  },
+  {
+    slug: "untitled-05",
+    title: "Untitled",
+    type: "project",
+    order: 5,
+    number: "05",
+    sector: "In development",
+    description: "Coming 2026.",
+    status: "wip",
+    year: 2026,
+    tags: [],
+    placeholder: true,
+  },
+  {
+    slug: "untitled-06",
+    title: "Untitled",
+    type: "project",
+    order: 6,
+    number: "06",
+    sector: "In development",
+    description: "Coming 2026.",
+    status: "wip",
+    year: 2026,
+    tags: [],
+    placeholder: true,
+  },
+  {
+    slug: "untitled-07",
+    title: "Untitled",
+    type: "project",
+    order: 7,
+    number: "07",
+    sector: "In development",
+    description: "Coming 2026.",
+    status: "wip",
+    year: 2026,
+    tags: [],
+    placeholder: true,
   },
 ];

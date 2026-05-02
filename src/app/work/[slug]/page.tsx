@@ -8,7 +8,7 @@ import { PIECES } from "@/constants/pieces";
 
 export default function WorkDetailPage() {
   const params = useParams<{ slug: string }>();
-  const piece = PIECES.find((p) => p.slug === params?.slug);
+  const piece = PIECES.find((p) => p.slug === params?.slug && !p.placeholder);
 
   if (!piece) {
     return (

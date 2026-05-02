@@ -45,21 +45,29 @@ export default function Home() {
             min-height: 100svh;
             background: var(--paper);
             color: var(--ink);
-            padding: clamp(140px, 26vh, 240px) clamp(20px, 4vw, 56px) clamp(56px, 9vh, 88px);
+            padding: clamp(140px, 26vh, 240px) clamp(20px, 5vw, 80px) clamp(56px, 9vh, 88px);
             display: grid;
             gap: clamp(40px, 6vh, 72px);
           }
 
-          /* Gallery widens from the previous 600px (which was sized
-             for two ~290px tile columns) to 720px for single-column
-             plates — single column wants more breathing room before
-             the caption block reaches its 60ch internal cap. */
+          /* 2-column catalog grid. Lars Müller / aino register —
+             uniform plates compose a register, not a stack. The grid
+             scales 2 × n as projects ship; placeholders hold rhythm
+             before content lands. */
           .home__gallery {
-            max-width: 720px;
+            max-width: 1240px;
             margin-inline: auto;
             width: 100%;
             display: grid;
-            gap: 0;
+            grid-template-columns: 1fr 1fr;
+            column-gap: clamp(20px, 3vw, 48px);
+            row-gap: clamp(40px, 6vh, 80px);
+          }
+
+          @media (max-width: 720px) {
+            .home__gallery {
+              grid-template-columns: 1fr;
+            }
           }
 
           .home__list {
