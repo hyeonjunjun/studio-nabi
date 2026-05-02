@@ -1,0 +1,192 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { type Piece } from "@/constants/pieces";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
+type Props = {
+  piece: Piece;
+  /** Optional href override; defaults to /work/{slug}. */
+  href?: string;
+};
+
+/**
+ * WorkPlate — single full-width image + caption block. Used on the
+ * home page (gallery view) and inside case studies for embedded
+ * photographs. Caption block carries the four mandatory metadata
+ * fields per the monograph spec §6: number · title · year+role ·
+ * description, plus optional `meta` line for EXIF / coordinate /
+ * source. Hover (desktop only) swaps to coverAlt if present, falls
+ * back to a 1.012 scale otherwise. Preserves per-slug
+ * viewTransitionName wiring on cover and title.
+ */
+export default function WorkPlate({ piece, href }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const reduced = useReducedMotion();
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || reduced) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, [reduced]);
+
+  const target = href ?? `/work/${piece.slug}`;
+  const coverVtName = `work-cover-${piece.slug}`;
+  const titleVtName = `work-title-${piece.slug}`;
+
+  // Hover-swap source: prefer coverAlt when present + hovered + not reduced.
+  const showAlt = hovered && !reduced && !!piece.coverAlt;
+  const activeCover = showAlt ? piece.coverAlt! : piece.cover;
+
+  return (
+    <Link
+      href={target}
+      className="plate"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      data-has-alt={piece.coverAlt ? "true" : "false"}
+    >
+      <div
+        className="plate__frame"
+        style={{
+          viewTransitionName: coverVtName,
+          aspectRatio: piece.coverAspect ?? "4 / 3",
+        } as React.CSSProperties}
+      >
+        {activeCover?.kind === "video" ? (
+          <video
+            ref={videoRef}
+            className="plate__media"
+            src={activeCover.src}
+            poster={activeCover.poster}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden
+          />
+        ) : activeCover?.kind === "image" ? (
+          <Image
+            src={activeCover.src}
+            alt={`${piece.title} — cover`}
+            fill
+            sizes="(max-width: 720px) 100vw, 720px"
+            className="plate__media"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <div className="plate__placeholder">
+            <span className="plate-mark">In development · {piece.year}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="plate__cap">
+        <span className="plate__num tabular">№{piece.number}</span>
+        <span
+          className="plate__title"
+          style={{ viewTransitionName: titleVtName } as React.CSSProperties}
+        >
+          {piece.title}
+        </span>
+        <span className="plate__role">
+          <span className="tabular">{piece.year}</span>
+          {" · "}
+          {piece.sector}
+        </span>
+        <span className="plate__desc">{piece.description}</span>
+        {piece.meta && <span className="plate__meta tabular">{piece.meta}</span>}
+      </div>
+
+      <style>{`
+        .plate {
+          display: grid;
+          gap: clamp(16px, 2.5vh, 24px);
+          color: var(--ink);
+          padding-block-end: clamp(56px, 12vh, 120px);
+        }
+        .plate__frame {
+          position: relative;
+          width: 100%;
+          background: var(--paper-2);
+          overflow: hidden;
+          isolation: isolate;
+        }
+        .plate__media {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: opacity 320ms var(--ease), transform 280ms var(--ease);
+        }
+        .plate[data-has-alt="false"]:hover .plate__media {
+          transform: scale(1.012);
+        }
+        .plate__placeholder {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+        }
+        .plate__cap {
+          display: grid;
+          gap: 6px;
+          max-width: 60ch;
+        }
+        .plate__num {
+          font-family: var(--font-stack-sans);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: var(--ink-3);
+        }
+        .plate__title {
+          font-family: var(--font-stack-sans);
+          font-size: 15px;
+          letter-spacing: 0.005em;
+          color: var(--ink);
+        }
+        .plate__role {
+          font-family: var(--font-stack-sans);
+          font-size: 13px;
+          letter-spacing: 0.06em;
+          color: var(--ink-3);
+        }
+        .plate__desc {
+          font-family: var(--font-stack-sans);
+          font-size: 15px;
+          line-height: 1.5;
+          color: var(--ink-2);
+        }
+        .plate__meta {
+          font-family: var(--font-stack-sans);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: var(--ink-4);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .plate__media { transition: none; }
+          .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
+        }
+
+        @media (hover: none), (pointer: coarse) {
+          .plate[data-has-alt="false"]:hover .plate__media { transform: none; }
+        }
+      `}</style>
+    </Link>
+  );
+}
