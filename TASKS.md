@@ -1,7 +1,7 @@
 # Portfolio — Tasks & Updates
 
 Working document. Captures the current design direction, what's shipped,
-and what's next. Updated 2026-04-30.
+and what's next. Updated 2026-05-02.
 
 ## Direction
 
