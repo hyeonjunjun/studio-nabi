@@ -144,6 +144,26 @@ export default function CaseStudy({ piece }: Props) {
         </section>
       )}
 
+      {data?.photographs && data.photographs.length > 0 && (
+        <section className="case__photographs" aria-label="Photographs">
+          {data.photographs.map((photo, i) => (
+            <figure
+              key={i}
+              className="case__photograph"
+              style={{ aspectRatio: photo.aspect ?? "3 / 2" } as React.CSSProperties}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photo.src} alt={photo.alt} />
+              {photo.meta && (
+                <figcaption className="case__photograph-meta tabular">
+                  {photo.meta}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </section>
+      )}
+
       {data?.process && (
         <section className="case__section">
           <p className="eyebrow">
@@ -381,6 +401,33 @@ export default function CaseStudy({ piece }: Props) {
           font-weight: 380;
           font-size: 13px;
           color: var(--ink-2);
+        }
+
+        .case__photographs {
+          display: grid;
+          gap: clamp(40px, 8vh, 96px);
+          width: 100%;
+          max-width: 920px;
+          margin-inline: auto;
+          padding-block: clamp(40px, 8vh, 96px);
+        }
+        .case__photograph {
+          margin: 0;
+          display: grid;
+          gap: 12px;
+        }
+        .case__photograph img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          aspect-ratio: inherit;
+        }
+        .case__photograph-meta {
+          font-family: var(--font-stack-sans);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: var(--ink-4);
         }
 
         .case__section {

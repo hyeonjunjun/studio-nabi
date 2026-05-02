@@ -76,6 +76,13 @@ export interface CaseStudy {
         anchorX: number; anchorY: number;
         targetX: number; targetY: number;
     }>;
+    photographs?: Array<{
+        src: string;
+        alt: string;
+        meta?: string;
+        /** Optional aspect ratio override; defaults to "3 / 2". */
+        aspect?: string;
+    }>;
 }
 
 export const CASE_STUDIES: Record<string, CaseStudy> = {
