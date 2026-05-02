@@ -69,7 +69,7 @@ What survives, untouched:
 - The four approved easing curves: `(.4,0,.2,1)`, `(.22,1,.36,1)`, `(.33,.12,.15,1)`, `(.41,.1,.13,1)`
 - `useSectionReveal` hook (vertical translate + opacity)
 - Underline-color fade on `.prose a` links
-- View transitions on route change (300–420ms crossfade, no blur, no shared-element morph beyond the existing per-slug `work-cover-{slug}` and `work-title-{slug}` wiring)
+- View transitions on route change (300ms crossfade, no blur, no shared-element morph beyond the existing per-slug `work-cover-{slug}` and `work-title-{slug}` wiring)
 - `Folio` running head
 - `PaperGrain` static SVG turbulence at 0.055 opacity multiply
 - `NavCoordinates` in tracked Geist Sans 10–11px all-caps
@@ -364,7 +364,7 @@ All motion has a reduced-motion path. Hover image swaps become instant (or absen
 - `GutterStrip.tsx` — already deleted
 - `CatalogFrame.tsx` — already deleted
 - `AmbientAscii.tsx`, `CornerStamp.tsx`, `AmbientGarden.tsx`, `MarqueeStrip.tsx` — already deleted
-- `RegisterController.tsx` — never built; will not be built
+- `RegisterController.tsx` — removed in the prior subtraction pass; will not be reintroduced
 - `CinematicEntrance.tsx` — never built; will not be built
 - The current home grid composition in `src/app/page.tsx` — replaced with `WorkPlate` × N + `WorkList` + `ViewToggle`
 
