@@ -158,7 +158,7 @@ Spec: [2026-05-02-monograph-direction-design.md](docs/superpowers/specs/2026-05-
 ## `!` Moments — one per page, do not remove casually
 
 Each hand-placed per
-[monograph spec §7](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
+the [monograph spec — `!` moment practice section](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
 Discoverable to a careful reader, invisible to a scroller. Documenting
 here so refactors don't silently drop them.
 
