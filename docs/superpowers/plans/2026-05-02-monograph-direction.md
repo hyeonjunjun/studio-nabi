@@ -225,20 +225,41 @@ grep -rnE "data-register|dataset\.register" src/ || echo "CLEAN"
 
 Expected: `CLEAN`.
 
-### Task 1.3: Verify no Newsreader-600 declarations
+### Task 1.3: Verify no Newsreader-600 hero face
 
 **Files:**
 - Read-only across `src/` and `src/app/globals.css`
 
-- [ ] **Step 1: Search for weight 600 with Newsreader / serif**
+The spec retires Newsreader 600 specifically as a *display / hero face* (§3, §10). It does **not** retire the existing `::first-letter` drop-cap on `/notes/[slug]` body prose, which uses `font-weight: 600` for its single ornamental character — that surface is on the V11 "render unchanged" list and the drop-cap is a typographic ornament, not a hero register.
+
+- [ ] **Step 1: Search for weight 600**
 
 Run:
 ```bash
 grep -rnE "font-weight:\s*600" src/ || echo "CLEAN"
-grep -rnE "(Newsreader|var\(--font-serif\)).*600|600.*(Newsreader|var\(--font-serif\))" src/ || echo "CLEAN"
 ```
 
-Expected: `CLEAN` for both. If a `font-weight: 600` declaration exists somewhere on serif body type, remove it (per spec §10 — Newsreader stays at reading weight, no display register).
+Expected outcome:
+- **Acceptable:** exactly one match — `src/app/notes/[slug]/page.tsx` inside the `.note__body p:first-child::first-letter` rule. Leave this match alone.
+- **Not acceptable:** any match in `page.tsx` (home), `WorkPlate.tsx` (when it ships), `WorkList.tsx`, `CaseStudy.tsx`, or anywhere outside a `::first-letter` rule. Those would be a leaked Stage hero face — remove them.
+
+- [ ] **Step 2: Confirm the one match is the drop-cap**
+
+If Step 1 found a single match, verify it's the drop-cap by running:
+```bash
+grep -B 2 "font-weight:\s*600" src/app/notes/\[slug\]/page.tsx
+```
+
+Expected: the `::first-letter` selector appears in the preceding lines.
+
+- [ ] **Step 3: Search for serif tokens used at weight 600**
+
+Run:
+```bash
+grep -rnE "(Newsreader|var\(--font-stack-serif\)).*\b600\b|\b600\b.*(Newsreader|var\(--font-stack-serif\))" src/ || echo "CLEAN"
+```
+
+Note the token name is `--font-stack-serif` (not `--font-serif`). Expected: `CLEAN`. The drop-cap rule does not co-locate the weight and the family on the same line, so it won't match this stricter regex.
 
 ### Task 1.4: Type-check and lint clean
 
@@ -298,6 +319,17 @@ Extract the existing `Tile` inline component from `src/app/page.tsx` into a stan
 **Files:**
 - Modify: `src/constants/pieces.ts`
 
+**Spec-vs-code mapping (worth reading before editing):**
+
+The spec §6 describes a prescriptive `WorkPlate` TypeScript shape with fields `role: string`, `medium?: string`, and `coverAlt?: string`. The actual `Piece` type in this codebase has `sector: string` (no separate `role` / `medium`), and `cover?: CatalogCover` (a discriminated union for video/image). The plan **does not** churn the existing data model. Instead:
+
+- **`piece.sector` fills the spec's "Role" slot.** Existing data is good — `sector: "Material Science"` for Gyeol, `"WebGL / Generative"` for Clouds at Sea, etc. The 4-mandatory-field rule still holds (number · title · year · sector · description).
+- **No `medium` slot is added.** The spec's `medium?` was an optional fifth slot; we already cover the 4 mandatory fields without it. If a real future need surfaces, add then.
+- **`coverAlt` is typed as a `CatalogCover`-shaped union, not a plain `string`.** Symmetry with `cover` (video or image), and lets `coverAlt` reuse the existing render branch in `WorkPlate`. This is a deliberate enrichment over the spec's `string`.
+- **`meta` is a plain `string`** — exactly as the spec specifies for the optional 5th caption line (EXIF, coordinate, source).
+
+Document this mapping inline so the executor doesn't try to "fix" the divergence.
+
 - [ ] **Step 1: Read current `Piece` interface**
 
 Read `src/constants/pieces.ts` lines 1–28.
@@ -307,9 +339,20 @@ Read `src/constants/pieces.ts` lines 1–28.
 In the `Piece` interface, add (above the closing brace):
 
 ```ts
-  /** Optional alternate cover frame; revealed on hover. */
-  coverAlt?: { kind: "video"; src: string; poster?: string } | { kind: "image"; src: string };
-  /** Optional caption microtype: EXIF, coordinate, location, source. Renders as caption line 4. */
+  /**
+   * Optional alternate cover frame; revealed on hover. Same shape as
+   * `cover` (video or image discriminated union) so the renderer can
+   * reuse the existing branch. Diverges intentionally from spec §6's
+   * `coverAlt?: string` for symmetry with `cover`.
+   */
+  coverAlt?: CatalogCover;
+  /**
+   * Optional caption microtype: EXIF, coordinate, location, source.
+   * Renders as the 5th caption line per spec §9 (`Geist Sans 11px,
+   * 0.08em tracking, var(--ink-4)`). The 4 mandatory fields above
+   * (slug → number, title, year, sector → role, description) are
+   * always present.
+   */
   meta?: string;
 ```
 
@@ -707,7 +750,7 @@ Create `src/hooks/__tests__/useHomeView.test.ts`:
 
 ```ts
 import { describe, it, expect, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import { useHomeView } from "../useHomeView";
 
 describe("useHomeView", () => {
@@ -716,17 +759,18 @@ describe("useHomeView", () => {
     delete document.documentElement.dataset.homeView;
   });
 
-  it("defaults to gallery when storage is empty", () => {
+  it("defaults to gallery when storage is empty", async () => {
     const { result } = renderHook(() => useHomeView());
-    expect(result.current.view).toBe("gallery");
+    await waitFor(() => expect(result.current.view).toBe("gallery"));
   });
 
-  it("reads list from localStorage on mount", () => {
+  it("reads list from localStorage on mount", async () => {
     window.localStorage.setItem("hkj.home.view", "list");
     const { result } = renderHook(() => useHomeView());
-    // First render returns the SSR default; effect syncs to stored.
-    // Wait one effect tick by re-rendering.
-    expect(result.current.view).toBe("list");
+    // The hook returns "gallery" synchronously on first render and
+    // syncs to stored value inside a useEffect. waitFor flushes
+    // effects deterministically across React versions.
+    await waitFor(() => expect(result.current.view).toBe("list"));
   });
 
   it("setView writes to localStorage and the data attribute", () => {
@@ -736,19 +780,19 @@ describe("useHomeView", () => {
     expect(document.documentElement.dataset.homeView).toBe("list");
   });
 
-  it("toggle flips between gallery and list", () => {
+  it("toggle flips between gallery and list", async () => {
     const { result } = renderHook(() => useHomeView());
-    expect(result.current.view).toBe("gallery");
+    await waitFor(() => expect(result.current.view).toBe("gallery"));
     act(() => result.current.toggle());
     expect(result.current.view).toBe("list");
     act(() => result.current.toggle());
     expect(result.current.view).toBe("gallery");
   });
 
-  it("ignores invalid storage values, defaults to gallery", () => {
+  it("ignores invalid storage values, defaults to gallery", async () => {
     window.localStorage.setItem("hkj.home.view", "garbage");
     const { result } = renderHook(() => useHomeView());
-    expect(result.current.view).toBe("gallery");
+    await waitFor(() => expect(result.current.view).toBe("gallery"));
   });
 });
 ```
@@ -779,13 +823,13 @@ default, persistence, toggle, and invalid-storage handling."
 **Files:**
 - Create: `src/components/HomeViewInit.tsx`
 
+**Why a plain `<script>` element instead of `next/script`:** `next/script` with `strategy="beforeInteractive"` is only valid in `app/layout.tsx`. Since `HomeViewInit` is page-scoped (rendered from `src/app/page.tsx`, the home route only), `next/script` is the wrong tool here. A plain `<script dangerouslySetInnerHTML>` rendered by a server component is the canonical theme-flash mitigation pattern — Next.js renders it inline in the HTML output during SSR, so the script executes before client hydration.
+
 - [ ] **Step 1: Write the component**
 
 Create `src/components/HomeViewInit.tsx`:
 
 ```tsx
-import Script from "next/script";
-
 /**
  * Inline blocking script that runs before paint and reads
  * localStorage('hkj.home.view'), then sets
@@ -793,28 +837,18 @@ import Script from "next/script";
  * correct composition (gallery vs list) without a hydration flash.
  *
  * Pairs with useHomeView. Mounted only on the home route — its
- * behavior is page-local, not app-global.
+ * behavior is page-local, not app-global. Renders as a plain
+ * <script> element with dangerouslySetInnerHTML; this is a server
+ * component (no "use client" directive) so the script appears in the
+ * SSR HTML output and runs before hydration.
  *
- * Pattern: theme-flash mitigation (same shape Next.js documents for
- * theme persistence). The script is tiny, side-effect-only, and
- * runs once before first paint.
+ * Pattern: theme-flash mitigation (same shape used widely for
+ * dark-mode persistence). The script is tiny, synchronous, and runs
+ * once before first paint.
  */
 export default function HomeViewInit() {
-  const code = `
-    try {
-      var v = localStorage.getItem('hkj.home.view');
-      document.documentElement.dataset.homeView = (v === 'list') ? 'list' : 'gallery';
-    } catch (e) {
-      document.documentElement.dataset.homeView = 'gallery';
-    }
-  `;
-  return (
-    <Script
-      id="hkj-home-view-init"
-      strategy="beforeInteractive"
-      dangerouslySetInnerHTML={{ __html: code }}
-    />
-  );
+  const code = `(function(){try{var v=localStorage.getItem('hkj.home.view');document.documentElement.dataset.homeView=(v==='list')?'list':'gallery';}catch(e){document.documentElement.dataset.homeView='gallery';}})();`;
+  return <script dangerouslySetInnerHTML={{ __html: code }} />;
 }
 ```
 
@@ -1176,6 +1210,10 @@ export default function Home() {
             gap: clamp(40px, 6vh, 72px);
           }
 
+          /* Gallery widens from the previous 600px (which was sized
+             for two ~290px tile columns) to 720px for single-column
+             plates — single column wants more breathing room before
+             the caption block reaches its 60ch internal cap. */
           .home__gallery {
             max-width: 720px;
             margin-inline: auto;
@@ -1292,9 +1330,12 @@ While in `gallery` view, reload. Verify:
 
 - [ ] **Step 5: Test view transitions to /work/[slug]**
 
-From the gallery view, click a piece's plate. Verify:
+From the **gallery** view, click a piece's plate. Verify:
 - The cover and title morph into the case-study page (existing per-slug viewTransitionName wiring).
 - Navigate back. Cover/title morph back.
+
+From the **list** view, click a row. Verify:
+- Plain 300ms crossfade — no shared-element morph. *This is intentional, not a regression.* The list has no images, so there's no cover element to share with the destination. The case-study cover crossfades in normally.
 
 - [ ] **Step 6: Test reduced motion**
 
