@@ -34,8 +34,10 @@ describe("useHomeView", () => {
     await waitFor(() => expect(result.current.view).toBe("gallery"));
     act(() => result.current.toggle());
     expect(result.current.view).toBe("list");
+    expect(window.localStorage.getItem("hkj.home.view")).toBe("list");
     act(() => result.current.toggle());
     expect(result.current.view).toBe("gallery");
+    expect(window.localStorage.getItem("hkj.home.view")).toBe("gallery");
   });
 
   it("ignores invalid storage values, defaults to gallery", async () => {
