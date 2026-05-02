@@ -15,8 +15,8 @@ import { PIECES } from "@/constants/pieces";
  * data-home-view on <html>, set before paint by HomeViewInit.
  */
 export default function Home() {
-  // PIECES is sorted by `order` already; no client-side sort needed.
-  const pieces = [...PIECES].sort((a, b) => a.order - b.order);
+  // PIECES is authored in display order; render directly.
+  const pieces = PIECES;
 
   return (
     <>

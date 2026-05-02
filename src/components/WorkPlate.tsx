@@ -64,6 +64,8 @@ export default function WorkPlate({ piece, href }: Props) {
         style={{
           viewTransitionName: coverVtName,
           aspectRatio: piece.coverAspect ?? "4 / 3",
+          width: `${piece.coverWidth ?? 100}%`,
+          marginInline: "auto",
         } as React.CSSProperties}
       >
         {activeCover?.kind === "video" ? (
