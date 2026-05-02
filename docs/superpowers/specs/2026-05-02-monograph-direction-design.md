@@ -57,7 +57,7 @@ The studio-catalog spec from 2026-04-24 already retired Stage once; it was reins
 - **Path-blur, long-exposure smear, lateral-drift section reveal** — all Stage-grammar motion. Retired. Section reveal stays at the existing vertical translate + opacity hook.
 - **Newsreader 600 hero face.** Newsreader stays at body weight only.
 - **`--stage*`, `--glow*`, `--palette-overlay` tokens** — never added.
-- **`RegisterController` + `data-register` system** — with one register, the mechanism is unnecessary.
+- **`RegisterController` + `data-register` system** — removed in the prior subtraction pass; will not be reintroduced. (The `data-home-view` attribute used by `ViewToggle` is unrelated — local to one page, visibility-only, never crosses routes.)
 - **Aino-derived 2-up cinematic plates.**
 - **Cross-register navigation rules.**
 - **Per-slug `viewTransitionName` blur-in-transit.** View transitions stay; blur is retired.
@@ -149,7 +149,7 @@ The signature primitive. Used on home (gallery view) and inside case studies for
 
 - **Default:** image at full opacity, caption at full ink hierarchy.
 - **Hover (desktop only, `(hover: hover) and (pointer: fine)`):** image swaps to alternate frame if the project provides one in `case-studies.ts` as `coverAlt`. If no alternate, image scales to 1.012 over 280ms on the existing `--ease`. Caption remains static.
-- **Reduced motion:** no image swap, no scale. Hover affects only the cursor coordinate readout (see `Cursor` below).
+- **Reduced motion:** no image swap, no scale. Hover is a no-op visually.
 - **View transition:** the plate's image element carries `viewTransitionName: work-cover-{slug}`. The plate's title in the caption block carries `viewTransitionName: work-title-{slug}`. Existing wiring; no blur-in-transit.
 
 ### TypeScript shape
@@ -234,7 +234,10 @@ The toggle does NOT use the View Transitions API for this — view transitions i
 
 `localStorage.setItem('hkj.home.view', 'gallery' | 'list')` on toggle.
 On mount, the home page reads `localStorage.getItem('hkj.home.view')`; defaults to `gallery` when absent or `null`.
-Server-rendered HTML always renders `gallery` (the default) to avoid hydration mismatch; client effect updates after hydration.
+
+**SSR / hydration rule.** To avoid hydration mismatch *and* the brief flash of `gallery` for returning visitors who prefer `list`, the page uses the **theme-flash mitigation pattern**: an inline blocking script in `<head>` reads `localStorage.getItem('hkj.home.view')` before paint and sets `document.documentElement.dataset.homeView = 'gallery' | 'list'`. CSS scopes `[data-home-view="list"] .home__gallery { display: none }` and `[data-home-view="gallery"] .home__list { display: none }`. Both compositions render to DOM (server renders both, no JS-only branch), and only the active one is visible. The toggle switches the attribute. This is the same pattern Next.js documents for theme persistence; it shifts the cost from a hydration flash to a tiny inline script in `<head>`.
+
+This is the only `data-*` attribute the spec writes to `<html>`. It is not the same mechanism as the retired `data-register` system — it is local to one page, governs visibility only, and never crosses route boundaries.
 
 ### Why this primitive earns its place
 
@@ -278,9 +281,7 @@ When present, `meta` sits as a fourth visual line in microtype 11px ink-4, with 
 - Microtype small: **11px** (number, year+role, meta line)
 - Body short: **15px** (title, description)
 - Tracking: 0.06em on body (`title`, `description`); 0.08em on microtype small (`number`, `year+role`, `meta`)
-- Capitalization: lowercase for description, `№NN` form for number, sentence case for title and year, all-caps for role tags only when the role is a tag-form (e.g., `IDENTITY`, `CONCEPT`) — sentence case otherwise.
-
-The spec defaults to sentence case for role; ALL-CAPS is reserved for true tag taxonomy and only if a future content model introduces a strict tag set. Until then: sentence case.
+- Capitalization: sentence case for title, year, and description; `№NN` form for number; sentence case for role until a strict tag taxonomy exists. ALL-CAPS is not used in caption text. (If a future content model introduces tag-form roles, ALL-CAPS becomes available — but not in this spec.)
 
 ---
 
@@ -313,13 +314,14 @@ If the photograph commitment slips, the fallback is **not** option B (ASCII as d
 - **Underline-color fade** on `.prose a` (180ms, `--ease`)
 - **`.arrow-glyph` slide** on `:hover` (200ms, `--ease`)
 - **Section reveal** via `useSectionReveal` (280ms, vertical translate + opacity, 60ms stagger capped at 5)
-- **View transitions** on route change: 300ms root crossfade for paper-internal navigation, 420ms root crossfade for case-study navigation (preserve existing wiring), per-slug `work-cover-{slug}` + `work-title-{slug}` shared morph at 420ms — **without** the blur-in-transit treatment from the retired Stage spec.
+- **View transitions** on route change: **300ms root crossfade across all paper-internal navigation, including home → case-study and case-study → case-study.** Per-slug `work-cover-{slug}` + `work-title-{slug}` shared morph at 300ms — **without** the blur-in-transit treatment from the retired Stage spec. (The prior Stage spec extended this to 420ms because the dark ground demanded a longer beat. With one register, that justification is gone; uniform 300ms restores the "one voice" rule.)
 - **Folio reveal** on first paint
 - **Easing catalog:** `cubic-bezier(.4,0,.2,1)` / `(.22,1,.36,1)` / `(.33,.12,.15,1)` / `(.41,.1,.13,1)` — no additions
 
 ### New motion (this spec adds)
 
-- **`WorkPlate` hover image swap** — desktop only, `(hover: hover) and (pointer: fine)`, opacity crossfade between `cover` and `coverAlt` over 320ms on `--ease`. If `coverAlt` absent: scale to 1.012 over 280ms. Reduced motion: instant.
+- **`WorkPlate` hover image swap** — desktop only, `(hover: hover) and (pointer: fine)`, opacity crossfade between `cover` and `coverAlt` over 320ms on `--ease`. Reduced motion: no-op.
+- **`WorkPlate` hover scale fallback** (when `coverAlt` is absent) — image scales to 1.012 over 280ms on `--ease`. Genuinely new motion grammar — the rest of the site uses opacity-fade hovers only. Earns its place because a static hover on a plate-sized surface reads as broken; scale + opacity crossfade are both legitimate "settling" responses to user proximity. Reduced motion: no-op.
 - **`ViewToggle` swap** — opacity-only crossfade between gallery and list views. 200ms out, 280ms in, 80ms overlap. Reduced motion: instant.
 
 ### Retired motion (will not be added)
@@ -355,7 +357,7 @@ All motion has a reduced-motion path. Hover image swaps become instant (or absen
 - `NavCoordinates.tsx` — top nav, all-caps tracked sans
 - `PaperGrain.tsx` — static SVG turbulence
 - `CopyEmailLink.tsx` — click-to-copy email primitive
-- `CaseStudy.tsx` — case-study renderer (gets `WorkPlate` integration for embedded photographs in Phase 2)
+- `CaseStudy.tsx` — case-study renderer (gets `WorkPlate` integration for embedded photographs in Phase 5)
 
 ### Retired (this spec confirms)
 
@@ -413,10 +415,10 @@ The `!` moment practice from the prior spec holds. The list of moments is update
 
 - **`/` (home)** — the **`ViewToggle` itself** is the home `!` moment. Its existence is discoverable but never announced. A visitor who doesn't toggle never notices it; one who does discovers a second composition of the same catalog. The toggle is hand-tuned (Geist Sans 10–11px, lowercased, ` / ` separator at 0.08em tracking) and specific to the home page.
 - **`/work/gyeol`** — **shipped.** Eyebrow separator `·` becomes `結` (project's namesake character). Preserved.
-- **`/work/clouds-at-sea`** — **partial.** `.case__coord` line `40°43′N 73°59′W · horizon dissolve` shipped. The pairing photograph arrives when the photograph commitment lands. If the user wants to revive the ASCII move, this is the *one* page where it earns a place — as a **single static ASCII rendering of the long-exposure photograph**, captioned with source + conversion parameters, beneath the photograph itself. No animation. No transition. A frozen translation, not a performance. Still TBD; not committed in this spec.
+- **`/work/clouds-at-sea`** — **partial.** `.case__coord` line `40°43′N 73°59′W · horizon dissolve` shipped. The pairing photograph arrives when the photograph commitment lands. The page already has its `!` (the coord line); the photograph completes the existing moment, it does not introduce a second one. (The earlier sessions explored an ASCII rendering of the long-exposure as an alternate `!`; per the profile, ASCII-as-decoration is retired, and the page does not need a second moment. The coord line stays as the surface's only `!`.)
 - **`/work/pane`** — **pending content.** A `!` moment requires substantive prose first; deferred until the case study has body.
 - **`/work/sift`** — **pending content.** Same as above.
-- **`/studio`** — **pending.** The argument paragraph (AI-as-collaborator) gets a Newsreader `::first-letter` drop cap. Recently retired in `df3f939`; consider whether it returns under the monograph direction. Decision: **do not return** — drop caps read as performative on a single-paragraph essay. The studio page's `!` becomes the colophon Build SHA going live (see below).
+- **`/studio`** — **pending.** The argument paragraph (AI-as-collaborator) drop cap was retired in the prior subtraction pass. Decision: **do not return** — drop caps read as performative on a single-paragraph essay. The studio page's `!` becomes the colophon Build SHA going live (see below).
 - **`/bookmarks`** — **shipped.** Butterfly Stool year `1954 –` (open-ended range). Preserved.
 - **`/notes/[slug]`** — **shipped.** Running-head keyword reveal. Preserved.
 - **Colophon** (foot of `/studio`) — **pending.** Build SHA goes live via `NEXT_PUBLIC_BUILD_SHA`. The genuinely live piece of typography that distinguishes the site as a built object. Reactivated as the studio-page `!`.
@@ -434,8 +436,8 @@ Each phase ships independently. No phase regresses earlier phases.
 
 ### Phase 0 — Spec retirements (this commit)
 
-- Retire the Stage and Stage-and-Paper spec entries from TASKS.md.
-- Update `MEMORY.md` to point to this spec as the current direction.
+- Retire the Stage and Stage-and-Paper spec entries from TASKS.md (repo-side).
+- *(User action, outside the implementation plan):* update the user's auto-memory `MEMORY.md` to point to this spec as the current direction. The planner does not have write access to the user's memory directory and should not include this in its task list.
 - No code changes.
 
 ### Phase 1 — Token + type audit
@@ -467,13 +469,13 @@ Each phase ships independently. No phase regresses earlier phases.
 ### Phase 4 — Replace home composition
 
 - `src/app/page.tsx` rewritten: removes the 2-col 1:1 grid; mounts `WorkPlate` × N + `WorkList` + `ViewToggle`.
-- The four current case studies (Sift, Gyeol, Pane, Clouds at Sea) get extended `case-studies.ts` entries with `coverAlt` (where available) and `meta`.
+- The four current case studies (Sift, Gyeol, Pane, Clouds at Sea) get extended `case-studies.ts` entries with `coverAlt` (where available) and `meta`. **Schema change is purely additive at the top level** — adds two optional fields (`coverAlt: string | undefined`, `meta: string | undefined`) to the existing `CaseStudy` type. Phase 5 will further extend the same type with a separate optional nested field; the two extensions do not collide.
 - Existing `viewTransitionName` per-slug wiring preserved.
 - Verification: home page renders; toggle works; navigating into a case study triggers the existing shared-element morph (cover + title only, no blur).
 
 ### Phase 5 — Case-study photograph integration
 
-- `CaseStudy.tsx` gains an optional `photographs` array in the `case-studies.ts` shape.
+- `CaseStudy.tsx` gains an optional `photographs` array in the `case-studies.ts` shape. **Additive over Phase 4's extension** — `photographs` is a new optional nested array of `{ src, alt, meta }` entries, parallel to (not in tension with) the top-level `coverAlt` and `meta` fields added in Phase 4.
 - Each photograph entry uses the `WorkPlate` shape (image + caption block, reused component).
 - Photographs render between editorial sections at the position specified by the case-study content.
 - Verification: Clouds at Sea renders with the `40°43′N 73°59′W` coordinate caption present; long-exposure photograph slot is visible (placeholder if image not yet shot).
@@ -495,11 +497,11 @@ Each phase ships independently. No phase regresses earlier phases.
 - **V5:** No `filter: blur()` declarations exist in any CSS file. No `mix-blend-mode` declarations beyond `multiply` on `PaperGrain`.
 - **V6:** No `CinematicEntrance` component, no `sessionStorage('hkj.entered')` flag, no entrance overlay. The site loads as itself.
 - **V7:** Home page renders as `WorkPlate` × N (gallery) or `WorkList` (list), based on `localStorage('hkj.home.view')`. `ViewToggle` is fixed to the top-right margin.
-- **V8:** Each `WorkPlate` caption carries ≥ 4 of the 5 metadata fields (number, title, year, role, description). `meta` is optional but appears on photographic plates.
+- **V8:** Each `WorkPlate` caption carries all 4 mandatory metadata fields (number, title, year+role, description). `meta` is optional and appears on photographic plates.
 - **V9:** `prefers-reduced-motion`: section reveal instant; image swap absent; toggle instant; view transitions resolve to crossfade-only.
 - **V10:** `prefers-reduced-data`: `coverAlt` not loaded; `PaperGrain` not mounted.
 - **V11:** All Paper routes (`/studio`, `/bookmarks`, `/notes`, `/notes/[slug]`) render unchanged from current state.
-- **V12:** View transitions on route change preserve existing per-slug `work-cover-{slug}` and `work-title-{slug}` shared-element morph at 420ms, without blur.
+- **V12:** View transitions on route change preserve existing per-slug `work-cover-{slug}` and `work-title-{slug}` shared-element morph at 300ms, without blur.
 - **V13:** Core Web Vitals: LCP and INP not regressed from current state. The reductions in this spec (no entrance, no blur, no Stage) should improve LCP, not degrade it.
 - **V14:** Each surface has ≤ 1 `!` moment, hand-tuned, documented in TASKS.md.
 
@@ -521,23 +523,15 @@ Each phase ships independently. No phase regresses earlier phases.
 
 ## Open questions for user
 
-The spec locks most decisions. These are the genuine open questions:
+The spec locks most decisions. These are the genuine open questions left for the user:
 
-1. **Default view: `gallery` or `list`?** Spec defaults to `gallery` because the brief is "media visible." Confirm — or flip default to `list` if the user prefers the index-first read on first visit.
-
-2. **Caption metadata for the four current works.** The spec mandates ≥ 4 fields per plate. Drafting — confirm the data:
+1. **Caption metadata for the four current works.** The spec mandates 4 mandatory fields per plate. Drafting below — confirm the data, or rewrite in the user's own voice before Phase 4 ships:
    - **Sift:** `№01 · Sift · 2023 · Tooling, Concept · Browse less, choose better.`
    - **Gyeol:** `№02 · Gyeol · 2024 · Identity, Service Design · A music app for resonant texture.`
    - **Pane:** `№03 · Pane · 2024 · Concept · A reading surface for slow attention.`
    - **Clouds at Sea:** `№04 · Clouds at Sea · 2025 · Photography, Concept · The horizon dissolves into its own data.`
 
-   The descriptions are placeholders — the user may want to write these in their own voice before Phase 4 ships.
-
-3. **The home `!` moment.** Spec proposes the `ViewToggle` itself. Alternative: a hand-tuned cursor coordinate readout near plate hover (Rauno-adjacent). Confirm which is the home `!`, or hold both — but the rule is one per page.
-
-4. **Phase 5 photograph commitment.** Independent of register, are the four long-exposure photographs still planned? If yes, by when? If no, fallback is fewer plates with more prose, per spec §10.
-
-5. **The ASCII move on `/work/clouds-at-sea`.** Spec leaves the option open: a single static ASCII rendering of the long-exposure photograph, captioned with source + conversion parameters, beneath the photograph itself. Commit, defer, or retire?
+2. **Phase 5 photograph commitment.** Independent of register, are the four long-exposure photographs still planned? If yes, by when? If no, fallback is fewer plates with more prose, per spec §10.
 
 ---
 
@@ -545,15 +539,18 @@ The spec locks most decisions. These are the genuine open questions:
 
 - Single warm-paper register (no Stage, no dark mode)
 - Composition: single-column scrolling plates on home, with dual list/gallery toggle
+- **Default home view: `gallery`** (visitors who set `list` get persistence via `localStorage` + the theme-flash mitigation rendering pattern)
 - `--paper #FBFAF6` + `--ink*` tokens (no new tokens)
 - Geist Sans + Newsreader (no new faces, Newsreader at reading weight only)
 - Four-curve easing catalog (no additions)
-- View transitions on route change (no blur, no shared-element morph beyond `work-cover-{slug}` + `work-title-{slug}`)
+- **Uniform 300ms view transitions across all paper-internal navigation** — no 420ms case-study extension, no blur, no shared-element morph beyond `work-cover-{slug}` + `work-title-{slug}`
 - No cinematic entrance; site loads as itself
-- No ASCII→video preloader
+- No ASCII→video preloader; no ASCII as decoration anywhere
 - No path-blur, long-exposure smear, lateral-drift section reveal
 - `WorkPlate`, `WorkList`, `ViewToggle` as the new component primitives
-- Caption rigor: ≥ 4 metadata fields per plate, glyph discipline (`·`, `—`, `№`, `→`)
+- Caption rigor: 4 mandatory metadata fields per plate (number, title, year+role, description), `meta` optional, glyph discipline (`·`, `—`, `№`, `→`)
+- **Home `!` moment = `ViewToggle` itself** (no cursor coordinate readout; no second moment)
+- **`/work/clouds-at-sea` `!` = the existing `40°43′N 73°59′W` coord line** (the photograph completes this moment when it ships; it does not introduce a second one)
 - Phased rollout (Phases 0–6, each independently shippable)
 - All retirements in §3
 - All preserved primitives in §3
