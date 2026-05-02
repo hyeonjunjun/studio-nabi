@@ -1259,7 +1259,7 @@ export default function Home() {
 }
 ```
 
-Note: this file is **not** marked `"use client"` because the page itself is a server component. The client components inside (`ViewToggle`, `WorkPlate`, `CopyEmailLink`) carry their own `"use client"` directives. `HomeViewInit` uses `next/script`, which is server-rendered.
+Note: this file is **not** marked `"use client"` because the page itself is a server component. The client components inside (`ViewToggle`, `WorkPlate`, `CopyEmailLink`) carry their own `"use client"` directives. `HomeViewInit` is a server component that renders a plain `<script>` tag with `dangerouslySetInnerHTML`; Next.js inlines it in the SSR HTML so it executes before client hydration.
 
 - [ ] **Step 3: Type check + lint**
 
