@@ -97,46 +97,55 @@ export default function WorkPlate({ piece, href }: Props) {
       }
       .plate__cap {
         display: grid;
-        gap: 6px;
+        gap: 8px;
         max-width: 60ch;
       }
       .plate--placeholder .plate__cap {
         color: var(--ink-3);
       }
-      .plate__num {
+      .plate__index {
         font-family: var(--font-stack-sans);
-        font-size: 11px;
-        letter-spacing: 0.08em;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
         color: var(--ink-3);
       }
       .plate__title {
         font-family: var(--font-stack-sans);
-        font-size: 15px;
-        letter-spacing: 0.005em;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        line-height: 1.2;
         color: var(--ink);
+        margin-block-start: 2px;
       }
       .plate--placeholder .plate__title {
         color: var(--ink-3);
+        font-weight: 400;
       }
       .plate__role {
         font-family: var(--font-stack-sans);
-        font-size: 13px;
-        letter-spacing: 0.06em;
+        font-size: 11px;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
         color: var(--ink-3);
       }
       .plate__desc {
         font-family: var(--font-stack-sans);
-        font-size: 15px;
-        line-height: 1.5;
+        font-size: 14px;
+        line-height: 1.55;
         color: var(--ink-2);
+        max-width: 42ch;
+        margin-block-start: 4px;
       }
       .plate--placeholder .plate__desc {
         color: var(--ink-3);
       }
       .plate__meta {
         font-family: var(--font-stack-sans);
-        font-size: 11px;
-        letter-spacing: 0.08em;
+        font-size: 10px;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
         color: var(--ink-4);
       }
 
@@ -170,13 +179,14 @@ export default function WorkPlate({ piece, href }: Props) {
         />
 
         <div className="plate__cap">
-          <span className="plate__num tabular">№{piece.number}</span>
-          <span className="plate__title">{piece.title}</span>
-          <span className="plate__role">
+          <span className="plate__index">
+            <span className="tabular">№{piece.number}</span>
+            {" / "}
             <span className="tabular">{piece.year}</span>
-            {" · Coming"}
           </span>
-          <span className="plate__desc">Coming 2026.</span>
+          <span className="plate__title">{piece.title}</span>
+          <span className="plate__role">{piece.sector}</span>
+          <span className="plate__desc">{piece.description}</span>
         </div>
 
         {styles}
@@ -229,20 +239,20 @@ export default function WorkPlate({ piece, href }: Props) {
       </div>
 
       <div className="plate__cap">
-        <span className="plate__num tabular">№{piece.number}</span>
+        <span className="plate__index">
+          <span className="tabular">№{piece.number}</span>
+          {" / "}
+          <span className="tabular">{piece.year}</span>
+        </span>
         <span
           className="plate__title"
           style={{ viewTransitionName: titleVtName } as React.CSSProperties}
         >
           {piece.title}
         </span>
-        <span className="plate__role">
-          <span className="tabular">{piece.year}</span>
-          {" · "}
-          {piece.sector}
-        </span>
+        <span className="plate__role">{piece.sector}</span>
         <span className="plate__desc">{piece.description}</span>
-        {piece.meta && <span className="plate__meta tabular">{piece.meta}</span>}
+        {piece.meta && <span className="plate__meta">{piece.meta}</span>}
       </div>
 
       {styles}
