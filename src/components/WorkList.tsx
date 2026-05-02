@@ -19,7 +19,7 @@ export default function WorkList({ pieces }: Props) {
         <li key={piece.slug} className="worklist__row">
           {piece.placeholder ? (
             <span className="worklist__link worklist__link--placeholder">
-              <span className="worklist__num tabular">№{piece.number}</span>
+              <span className="worklist__num tabular">{piece.number}</span>
               <span className="worklist__title">{piece.title}</span>
               <span className="worklist__year tabular">{piece.year}</span>
               <span className="worklist__role">{piece.sector}</span>
@@ -27,7 +27,7 @@ export default function WorkList({ pieces }: Props) {
             </span>
           ) : (
             <Link href={`/work/${piece.slug}`} className="worklist__link">
-              <span className="worklist__num tabular">№{piece.number}</span>
+              <span className="worklist__num tabular">{piece.number}</span>
               <span className="worklist__title">{piece.title}</span>
               <span className="worklist__year tabular">{piece.year}</span>
               <span className="worklist__role">{piece.sector}</span>
@@ -78,8 +78,7 @@ export default function WorkList({ pieces }: Props) {
         .worklist__num {
           font-family: var(--font-stack-sans);
           font-size: 11px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
+          letter-spacing: 0.02em;
           color: var(--ink-3);
         }
         .worklist__title {

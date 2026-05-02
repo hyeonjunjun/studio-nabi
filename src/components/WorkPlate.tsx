@@ -106,8 +106,7 @@ export default function WorkPlate({ piece, href }: Props) {
       .plate__index {
         font-family: var(--font-stack-sans);
         font-size: 11px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+        letter-spacing: 0.02em;
         color: var(--ink-3);
       }
       .plate__title {
@@ -179,8 +178,8 @@ export default function WorkPlate({ piece, href }: Props) {
 
         <div className="plate__cap">
           <span className="plate__index">
-            <span className="tabular">№{piece.number}</span>
-            {" / "}
+            <span className="tabular">{piece.number}</span>
+            {" — "}
             <span className="tabular">{piece.year}</span>
           </span>
           <span className="plate__title">{piece.title}</span>
