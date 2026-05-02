@@ -5,37 +5,26 @@ and what's next. Updated 2026-04-30.
 
 ## Direction
 
-**Stage & Paper — dual-register portfolio.** Locked in
-[2026-04-24-stage-and-paper-design.md](docs/superpowers/specs/2026-04-24-stage-and-paper-design.md)
-(reconciled 2026-04-30). The portfolio splits into two registers:
+**Monograph — single warm-paper register.** Locked in
+[2026-05-02-monograph-direction-design.md](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
+The portfolio is one register, one voice, one composition rule. Single
+warm-paper ground throughout. Home composition: single-column scrolling
+plates with a dual gallery/list view toggle. Three new components
+(`WorkPlate`, `WorkList`, `ViewToggle`) compose the catalog; the rest
+of the site is preserved.
 
-- **Stage** (`/`, `/work/[slug]`) — dark, luminous, generative-adjacent.
-  The work as objects on warm dark paper.
-- **Paper** (`/studio`, `/bookmarks`, `/notes`, `/notes/[slug]`) —
-  editorial, sans-first, Hara-lineage. Studio writing.
+**Retired (do not re-propose):** Stage register, dark mode, cinematic
+entrance, ASCII→video preloader, path-blur / long-exposure-smear motion
+grammar, lateral-drift section reveal, Newsreader-600 hero face, second
+register architecture, `RegisterController` / `data-register` system,
+shared-element morph blur in transit. See spec §3 for the full list.
 
-Two registers, never mixed within a page. Crossing is the tell.
-Positioning: A/V-inspired *design engineer*, not A/V studio.
+**Anchored to:** the user's recorded taste profile (warm restraint,
+monograph composition, natural motion, reduction-as-conviction).
 
-**Reference lineage** (from [/bookmarks](src/app/bookmarks/page.tsx)):
-
-- Kenya Hara — *Designing Design* — emptiness as active material
-- Morrison & Fukasawa — *Super Normal* — documentary equality
-- Dieter Rams / Vitsœ — restraint as the hardest design move
-- Rauno Freiberg — craft in 40×40px details
-- Emil Kowalski — shipped components over packaging
-- Cathy Dolle — mirrored numbered index (the home mechanic)
-- Muji / Teenage Engineering — manual-design discipline
-- Craig Mod — scholarly-journal cadence on a personal site
-
-**Principle**: every animation is triggered by a user action or a
-first-paint event, never on idle. 120–400ms windows. Respect
+**Principle**: every animation is triggered by a user action, scroll,
+or first-paint. Never on idle. 120–400ms windows. Respect
 `prefers-reduced-motion`.
-
-**Voice**: simple, minimalist, confident. The shelf title sets the
-register — *"A list of resources I refer to."* Same grammar across
-pages: an article, a noun, a first-person verb. Not poetic, not
-performative. No adjectives where a noun will do.
 
 ---
 
@@ -112,89 +101,44 @@ idle is cut. Motion is reserved for user-triggered micro-states
 
 ---
 
-## Roadmap — Stage & Paper Phases
+## Roadmap — Monograph Phases
 
-Spec: [2026-04-24-stage-and-paper-design.md](docs/superpowers/specs/2026-04-24-stage-and-paper-design.md)
-(reconciled 2026-04-30).
+Spec: [2026-05-02-monograph-direction-design.md](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
 
-- [ ] **Phase 1 — Stage tokens + register attribute.** Add `--stage`,
-  `--stage-2`, `--stage-3`, `--glow`, `--glow-2`, `--glow-hair`,
-  `--palette-overlay` to [globals.css](src/app/globals.css). Build
-  `RegisterController` that writes `data-register` to `<html>` based on
-  pathname. Add `html[data-register="stage" | "paper"]` scope rules.
-  Zero visual change — foundation only.
-- [ ] **Phase 2 — Home goes Stage.** Skin the existing 2-column 1:1
-  grid for Stage: `--stage` ground, `--glow` microtype, halation on
-  `.home__tile-frame`, direction-aware path-blur on tile hover
-  (desktop-only, 320ms decay, 2px cap). `viewTransitionName` wiring
-  preserved. Decide on `--stage-grain` if PaperGrain reads wrong on
-  dark.
-- [ ] **Phase 3 — Case study goes Stage.** `CaseStudy.tsx` gets dark
-  theme, Newsreader at 600 for h1, halation + long-exposure smear on
-  hero arrival (480ms, sub-768px disabled). Section reveal CSS
-  rewritten for lateral drift. Add `.case__param`, `.case__signal`,
-  `.case__module`, `.case__timecode` annotation primitives.
-- [ ] **Phase 4 — Cinematic entrance.** New `CinematicEntrance.tsx` per
-  spec §10: 1.1s timeline, transparent overlay above destination
-  (LCP-safe), `sessionStorage` gate, register crossfade at tail for
-  Paper destinations, navigation queueing during the entrance window.
-- [ ] **Phase 5 — Signature dialect commitment.** Decide:
-  long-exposure photographs (lock C, 4 photos in 8 weeks) vs.
-  real-data ASCII fallback (B). Affects every case-study hero.
-- [ ] **Phase 6 — `!` moment audit.** Walk every page once Stage has
-  landed. Confirm one and only one `!` per surface. Update §
-  [`!` Moments](#-moments--one-per-page-do-not-remove-casually).
-
-### Open questions surfaced by the spec
-
-- **Grain over Stage.** PaperGrain at 0.055 opacity multiply works on
-  paper. On `#0E0D09` it likely needs a separate `--stage-grain` with
-  `mix-blend-mode: screen` or a damped glow value. Validate in Phase 2.
-- **`--glow` accent confirmation.** Spec locks warm moonlight `#F8F5EC`.
-  Confirm before Phase 1.
-- **Cinematic entrance philosophy.** Confirm: 1.1s budget; entrance
-  always runs vs. skipped on Paper first-hits; wordmark identity
-  (`HKJ` vs. `Hyeonjoon Jun · design engineer` vs. third option).
-- **Photograph-production commitment.** Real call to make before
-  Phase 5 starts.
-
-### Content
-
-- [ ] Fill or remove `pane` in [case-studies.ts](src/constants/case-studies.ts).
-- [ ] Fill or remove `clouds-at-sea` in [case-studies.ts](src/constants/case-studies.ts).
-- [ ] Sift in [case-studies.ts](src/constants/case-studies.ts) is
-  partially populated — bring to Gyeol parity or trim.
-- [ ] Rewrite Gyeol + Sift editorial copy in the new voice. Current
-  prose is a hold-over from the observation-log era and reads
-  performative ("Sift elevates your digital consumption…"). Should
-  match the bookmarks register: *"A list of resources I refer to."*
-- [ ] `/studio` body — review the bio paragraphs for final voice.
-- [ ] Bookmarks: KEEP / WATCH / VISIT verticals are present in
-  [shelf.ts](src/constants/shelf.ts) but suppressed in the page filter.
-  Return them when each has volume.
-
-### Already shipped (struck from prior backlog)
-
-- ~~Hairline underline slide on external links~~ — shipped in
-  [globals.css:192-210](src/app/globals.css#L192-L210).
-- ~~View transitions on route change~~ — shipped in
-  [globals.css:220-269](src/app/globals.css#L220-L269) with per-slug
-  `work-cover-{slug}` and `work-title-{slug}` morphs.
-- ~~Case study section reveal~~ — shipped via
-  [useSectionReveal.ts](src/hooks/useSectionReveal.ts).
-- ~~Folio (running head)~~ — shipped as
-  [Folio.tsx](src/components/Folio.tsx); used on every route.
-- ~~CatalogFrame dead code~~ — already deleted.
+- [x] **Phase 0 — Spec retirements.** TASKS.md updated; `MEMORY.md`
+  pointer is a separate user-side action (outside planner scope).
+- [ ] **Phase 1 — Token + type + CSS audit.** Confirm no `--stage*`,
+  `--glow*`, `--palette-overlay` tokens; no `RegisterController` /
+  `data-register` writes; no `Newsreader-600` declarations; no
+  `filter: blur()` declarations. All routes render unchanged.
+- [ ] **Phase 2 — Build `WorkPlate.tsx`.** Extract from current
+  inline `Tile` in `page.tsx`. Caption block per spec §6. Hover image
+  swap with `coverAlt`; scale fallback. Reduced-motion path. Per-slug
+  `viewTransitionName` wiring preserved.
+- [ ] **Phase 3 — Build `WorkList.tsx` + `ViewToggle.tsx`.**
+  `useHomeView` hook + `HomeViewInit` head-script for hydration-safe
+  persistence via `localStorage('hkj.home.view')`. Crossfade between
+  views per spec §8.
+- [ ] **Phase 4 — Replace home composition.** Rewrite `src/app/page.tsx`:
+  remove 2-col grid, mount `<HomeViewInit>` + `<ViewToggle>` +
+  `<WorkPlate>` × N + `<WorkList>`. Preserve per-slug
+  `viewTransitionName` wiring.
+- [ ] **Phase 5 — Case-study photograph integration.**
+  `CaseStudy.tsx` gains optional `photographs` array. Each photograph
+  rendered as a `WorkPlate`-shaped block between editorial sections.
+- [ ] **Phase 6 — `!` moment audit + colophon SHA.** Walk every
+  surface, confirm one `!` per page. Wire
+  `NEXT_PUBLIC_BUILD_SHA?.slice(0, 7)` into `/studio` colophon.
 
 ---
 
 ## Principles to hold against
 
 1. **No ambient motion.** Anything that moves on idle gets cut.
-2. **Two faces, both proportional.** Geist Sans is the chrome face
-   (9–15px, all UI). Newsreader is the body serif (long-form prose only;
-   weight 600 reserved for Stage hero titles). Mono retired entirely;
-   tabular figures via Geist's OpenType `tnum`.
+2. **One face.** Geist Sans is the primary face (9–15px, all UI,
+   lowercased interaction text). Newsreader is reserved for long-form
+   prose body only. Mono retired entirely; tabular figures via Geist's
+   OpenType `tnum`.
 3. **Documentary equality.** Every piece treated with the same editorial
    weight — no hero project, no demoted projects.
 4. **Tactility through paper, hairlines, and microtype** — not through
@@ -202,9 +146,9 @@ Spec: [2026-04-24-stage-and-paper-design.md](docs/superpowers/specs/2026-04-24-s
 5. **Trust the type system.** `.eyebrow`, `.plate-mark`, `.prose`, and
    `.meta` primitives in [globals.css](src/app/globals.css) do the
    compositional work; new pages should compose from these, not invent.
-6. **Two registers, never mixed within a page.** Stage (dark, luminous)
-   vs. Paper (editorial). Crossing is the tell. See
-   [2026-04-24-stage-and-paper-design.md](docs/superpowers/specs/2026-04-24-stage-and-paper-design.md).
+6. **Monograph discipline.** One register, one warm-paper ground, one
+   composition rule. See
+   [2026-05-02-monograph-direction-design.md](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
 7. **AI commoditizes technique; taste is the moat.** Every decision is
    a taste decision, not a technical one. Restraint amplifies the work,
    decoration diminishes it.
@@ -214,15 +158,15 @@ Spec: [2026-04-24-stage-and-paper-design.md](docs/superpowers/specs/2026-04-24-s
 ## `!` Moments — one per page, do not remove casually
 
 Each hand-placed per
-[stage-and-paper spec §9](docs/superpowers/specs/2026-04-24-stage-and-paper-design.md).
+[monograph spec §7](docs/superpowers/specs/2026-05-02-monograph-direction-design.md).
 Discoverable to a careful reader, invisible to a scroller. Documenting
 here so refactors don't silently drop them.
 
-- `/` — **pending Phase 2 audit.** The current grid is intentionally
-  uniform — documentary equality. The `!` will be placed once the
-  Stage skin lands; the prior `.cd__name` baseline nudge does not
-  carry to the new home mechanic.
-  ([src/app/page.tsx](src/app/page.tsx))
+- `/` — **planned (Phase 4).** The `ViewToggle` itself is the home `!`
+  moment. Geist Sans 10–11px lowercased `gallery / list`, fixed
+  top-right, persisted via `localStorage`. Discoverable but unannounced.
+  Specific to the home page; no other surface gets a toggle.
+  ([src/components/ViewToggle.tsx](src/components/ViewToggle.tsx))
 - `/work/gyeol` — **shipped.** Second eyebrow separator `·` becomes
   `結`. Project's namesake character (Korean *gyeol* — texture/grain)
   used as one grain of punctuation.
@@ -232,9 +176,8 @@ here so refactors don't silently drop them.
   long-exposure locus of the horizon. The pairing photograph arrives
   in Phase 5.
   ([src/components/CaseStudy.tsx](src/components/CaseStudy.tsx))
-- `/studio` — **pending.** One paragraph (the AI-as-collaborator
-  line) receives a Newsreader `::first-letter` drop cap. The argument
-  paragraph.
+- `/studio` — **Phase 6.** Build SHA goes live in colophon.
+  `NEXT_PUBLIC_BUILD_SHA?.slice(0, 7)` wired to the foot.
   ([src/app/studio/page.tsx](src/app/studio/page.tsx))
 - `/bookmarks` — **shipped.** Butterfly Stool year reads `"1954 –"`
   (open-ended range). "Still present in my life."
