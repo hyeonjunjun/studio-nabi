@@ -77,36 +77,36 @@ export default function WorkList({ pieces }: Props) {
         }
         .worklist__num {
           font-family: var(--font-stack-sans);
-          font-size: 10px;
-          letter-spacing: 0.12em;
+          font-size: 11px;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
         .worklist__title {
           font-family: var(--font-stack-sans);
-          font-size: 16px;
-          font-weight: 500;
-          letter-spacing: -0.005em;
+          font-size: 18px;
+          font-weight: 400;
+          letter-spacing: -0.012em;
           color: var(--ink);
         }
         .worklist__year {
           font-family: var(--font-stack-sans);
           font-size: 11px;
-          letter-spacing: 0.10em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
         .worklist__role {
           font-family: var(--font-stack-sans);
           font-size: 11px;
-          letter-spacing: 0.10em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           color: var(--ink-3);
         }
         .worklist__desc {
           font-family: var(--font-stack-sans);
           font-size: 14px;
-          line-height: 1.55;
+          line-height: 1.6;
           color: var(--ink-2);
         }
         .worklist__arrow {

@@ -51,9 +51,9 @@ export default function Home() {
           }
 
           /* 2-column catalog grid. Lars Müller / aino register —
-             uniform plates compose a register, not a stack. The grid
-             scales 2 × n as projects ship; placeholders hold rhythm
-             before content lands. */
+             uniform plates compose a register, not a stack. Row gap
+             tightened to match aino's 24-32px vertical between tiles
+             — denser presence without losing warm-paper air. */
           .home__gallery {
             max-width: 1240px;
             margin-inline: auto;
@@ -61,7 +61,7 @@ export default function Home() {
             display: grid;
             grid-template-columns: 1fr 1fr;
             column-gap: clamp(20px, 3vw, 48px);
-            row-gap: clamp(40px, 6vh, 80px);
+            row-gap: clamp(32px, 4.5vh, 64px);
           }
 
           @media (max-width: 720px) {
@@ -84,7 +84,7 @@ export default function Home() {
           html:not([data-home-view]) .home__list { display: none; }
 
           .home__foot {
-            max-width: 720px;
+            max-width: 1240px;
             margin-inline: auto;
             width: 100%;
             display: flex;
@@ -93,8 +93,8 @@ export default function Home() {
             padding-top: clamp(16px, 2.5vh, 24px);
             border-top: 1px solid var(--ink-hair);
             font-family: var(--font-stack-sans);
-            font-size: 10px;
-            letter-spacing: 0.06em;
+            font-size: 11px;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
           }
           .home__mail { color: var(--ink); }

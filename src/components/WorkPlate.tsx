@@ -97,7 +97,7 @@ export default function WorkPlate({ piece, href }: Props) {
       }
       .plate__cap {
         display: grid;
-        gap: 8px;
+        gap: 12px;
         max-width: 60ch;
       }
       .plate--placeholder .plate__cap {
@@ -105,46 +105,45 @@ export default function WorkPlate({ piece, href }: Props) {
       }
       .plate__index {
         font-family: var(--font-stack-sans);
-        font-size: 10px;
-        letter-spacing: 0.12em;
+        font-size: 11px;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--ink-3);
       }
       .plate__title {
         font-family: var(--font-stack-sans);
-        font-size: 17px;
-        font-weight: 500;
-        letter-spacing: -0.005em;
+        font-size: 19px;
+        font-weight: 400;
+        letter-spacing: -0.012em;
         line-height: 1.2;
         color: var(--ink);
-        margin-block-start: 2px;
+        margin-block-start: 0;
       }
       .plate--placeholder .plate__title {
         color: var(--ink-3);
-        font-weight: 400;
       }
       .plate__role {
         font-family: var(--font-stack-sans);
         font-size: 11px;
-        letter-spacing: 0.10em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--ink-3);
       }
       .plate__desc {
         font-family: var(--font-stack-sans);
         font-size: 14px;
-        line-height: 1.55;
+        line-height: 1.6;
         color: var(--ink-2);
-        max-width: 42ch;
-        margin-block-start: 4px;
+        max-width: 44ch;
+        margin-block-start: 2px;
       }
       .plate--placeholder .plate__desc {
         color: var(--ink-3);
       }
       .plate__meta {
         font-family: var(--font-stack-sans);
-        font-size: 10px;
-        letter-spacing: 0.10em;
+        font-size: 11px;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--ink-4);
       }
