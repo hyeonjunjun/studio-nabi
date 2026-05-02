@@ -162,38 +162,30 @@ the [monograph spec — `!` moment practice section](docs/superpowers/specs/2026
 Discoverable to a careful reader, invisible to a scroller. Documenting
 here so refactors don't silently drop them.
 
-- `/` — **planned (Phase 4).** The `ViewToggle` itself is the home `!`
-  moment. Geist Sans 10–11px lowercased `gallery / list`, fixed
-  top-right, persisted via `localStorage`. Discoverable but unannounced.
-  Specific to the home page; no other surface gets a toggle.
+- `/` — **shipped (Phase 4).** The `ViewToggle` itself is the home `!`.
+  Geist Sans 11px lowercased `gallery / list`, fixed top-right, persisted
+  via `localStorage('hkj.home.view')` + `data-home-view` on `<html>`.
+  Discoverable but unannounced.
   ([src/components/ViewToggle.tsx](src/components/ViewToggle.tsx))
-- `/work/gyeol` — **shipped.** Second eyebrow separator `·` becomes
-  `結`. Project's namesake character (Korean *gyeol* — texture/grain)
-  used as one grain of punctuation.
+- `/work/gyeol` — **shipped.** Eyebrow separator `·` becomes `結`.
+  Project's namesake character (Korean *gyeol* — texture/grain) used as
+  one grain of punctuation.
   ([src/components/CaseStudy.tsx](src/components/CaseStudy.tsx))
-- `/work/clouds-at-sea` — **partial.** `.case__coord` line reads
-  `40°43′N 73°59′W · horizon dissolve`. Real coordinate; the
-  long-exposure locus of the horizon. The pairing photograph arrives
-  in Phase 5.
+- `/work/clouds-at-sea` — **shipped (coord) / partial (photograph).**
+  `.case__coord` reads `40°43′N 73°59′W · horizon dissolve`. Pairing
+  long-exposure photograph completes the moment when shot; the page does
+  not introduce a second `!`.
   ([src/components/CaseStudy.tsx](src/components/CaseStudy.tsx))
-- `/studio` — **Phase 6.** Build SHA goes live in colophon.
-  `NEXT_PUBLIC_BUILD_SHA?.slice(0, 7)` wired to the foot.
+- `/work/pane`, `/work/sift` — **pending content.** Each `!` requires
+  substantive prose first; deferred until the case study has body.
+- `/studio` — **shipped (Phase 6).** Live build SHA in colophon via
+  `NEXT_PUBLIC_BUILD_SHA`. The genuinely-live piece of typography.
   ([src/app/studio/page.tsx](src/app/studio/page.tsx))
-- `/bookmarks` — **shipped.** Butterfly Stool year reads `"1954 –"`
-  (open-ended range). "Still present in my life."
+- `/bookmarks` — **shipped.** Butterfly Stool year `1954 –`.
   ([src/constants/shelf.ts](src/constants/shelf.ts))
-- `/notes/[slug]` — **shipped.** Running-head band shows a hand-picked
-  essay keyword at full ink alongside the title at ink-3. The word
-  that carries the essay. N-001 → *restraint*.
+- `/notes/[slug]` — **shipped.** Running-head keyword reveal.
   ([src/app/notes/[slug]/page.tsx](src/app/notes/[slug]/page.tsx),
   [src/constants/notes.ts](src/constants/notes.ts))
-- `/notes` (index) — no `!` planned. Index pages are scaffolds, not
-  surfaces; the `!` lives in the entries.
-- Colophon (foot of `/studio`) — **pending.** Build SHA set live
-  (`NEXT_PUBLIC_BUILD_SHA` from Vercel). Rare piece of genuinely live
-  typography.
-- Contact cluster (inside `/studio`) — **deferred.** Intentionally
-  unplaced until a specific, non-forced detail is identified.
-  Candidates: a hand-drawn SVG tick for the availability cluster, a
-  micro-state change on email copy, a shift in the cluster grammar.
-  Left honest rather than filled with ceremony.
+- `/notes` (index) — **no `!` planned.** Index pages are scaffolds.
+- Contact cluster (inside `/studio`) — **deferred.** Held honest until a
+  specific, non-forced detail is identified.

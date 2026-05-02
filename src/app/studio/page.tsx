@@ -113,6 +113,13 @@ export default function StudioPage() {
           </div>
         </section>
 
+        <footer className="colophon">
+          <span className="colophon__year tabular">© 2026 HKJ</span>
+          <span className="colophon__build tabular">
+            Build {process.env.NEXT_PUBLIC_BUILD_SHA?.slice(0, 7) ?? "local"}
+          </span>
+        </footer>
+
         <footer className="studio__foot">
           <span>Hyeonjoon Jun</span>
           <span className="studio__foot-dot" aria-hidden>·</span>
@@ -248,6 +255,20 @@ export default function StudioPage() {
         .studio__handle[data-copied] { color: var(--ink-3); }
 
         .studio__mail { color: var(--ink); }
+
+        .colophon {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          padding-top: clamp(24px, 4vh, 48px);
+          margin-top: clamp(48px, 8vh, 96px);
+          border-top: 1px solid var(--ink-hair);
+          font-family: var(--font-stack-sans);
+          font-size: 10px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--ink-3);
+        }
 
         .studio__foot {
           display: flex;
