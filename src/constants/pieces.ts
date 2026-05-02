@@ -25,6 +25,21 @@ export interface Piece {
   /** Width as a percentage of the strip column (0–100). Defaults to 100. */
   coverWidth?: number;
   tags: string[];
+  /**
+   * Optional alternate cover frame; revealed on hover. Same shape as
+   * `cover` (video or image discriminated union) so the renderer can
+   * reuse the existing branch. Diverges intentionally from spec §6's
+   * `coverAlt?: string` for symmetry with `cover`.
+   */
+  coverAlt?: CatalogCover;
+  /**
+   * Optional caption microtype: EXIF, coordinate, location, source.
+   * Renders as the 5th caption line per spec §9 (`Geist Sans 11px,
+   * 0.08em tracking, var(--ink-4)`). The 4 mandatory fields above
+   * (slug → number, title, year, sector → role, description) are
+   * always present.
+   */
+  meta?: string;
 }
 
 export const PIECES: Piece[] = [
