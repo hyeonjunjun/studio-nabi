@@ -16,12 +16,6 @@ const work: Work = {
   status: "LIVE",
   role: "role",
   media: { type: "placeholder", alt: "Placeholder for Work I", aspectRatio: "portrait" },
-  layout: {
-    desktopColumn: "left",
-    desktopVerticalAnchor: 0,
-    desktopSize: "md",
-    captionPosition: "below",
-  },
 };
 
 describe("TimelineStop", () => {

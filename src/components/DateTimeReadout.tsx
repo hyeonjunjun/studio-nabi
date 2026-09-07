@@ -45,5 +45,5 @@ export default function DateTimeReadout() {
     return () => clearInterval(interval);
   }, []);
 
-  return <span className="font-instrument-sans font-bold text-[13px] tabular-nums text-ws-ink">{value}</span>;
+  return <span className="font-instrument-sans font-medium text-[11px] tracking-[0.02em] tabular-nums text-ws-ink/50">{value}</span>;
 }

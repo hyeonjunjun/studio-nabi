@@ -23,11 +23,11 @@ export default function ArchiveEntry({ entry }: ArchiveEntryProps) {
 
   const content = (
     <div className="flex gap-6">
-      <p className="w-[96px] shrink-0 font-instrument-sans text-[12px] font-bold uppercase tracking-[0.08em] text-ws-ink/40">
+      <p className="w-[96px] shrink-0 font-instrument-sans text-[12px] font-medium uppercase tracking-[0.15em] text-ws-ink/40">
         {formatEntryDate(date)}
       </p>
       <div className="flex min-w-0 flex-col gap-2">
-        <p className="font-instrument-sans text-[10px] font-bold uppercase tracking-[0.08em] text-ws-ink/40">
+        <p className="font-instrument-sans text-[10px] font-medium uppercase tracking-[0.15em] text-ws-ink/40">
           · {type}
         </p>
         {title && <p className="font-instrument-sans text-[18px] font-bold text-ws-ink">{title}</p>}
@@ -69,7 +69,7 @@ export default function ArchiveEntry({ entry }: ArchiveEntryProps) {
                 role="img"
                 aria-label={media.alt}
               >
-                <span className="font-instrument-sans text-[10px] font-bold uppercase tracking-[0.08em] text-ws-ink/40">
+                <span className="font-instrument-sans text-[10px] font-medium uppercase tracking-[0.15em] text-ws-ink/40">
                   Placeholder
                 </span>
               </div>
@@ -77,7 +77,7 @@ export default function ArchiveEntry({ entry }: ArchiveEntryProps) {
           </div>
         )}
         {tags && tags.length > 0 && (
-          <p className="font-instrument-sans text-[10px] font-bold uppercase tracking-[0.08em] text-ws-ink/40">
+          <p className="font-instrument-sans text-[10px] font-medium uppercase tracking-[0.15em] text-ws-ink/40">
             {tags.map((tag) => `#${tag}`).join(", ")}
           </p>
         )}

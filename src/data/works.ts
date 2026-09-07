@@ -1,20 +1,22 @@
 import type { MediaAsset } from "@/lib/types";
 
 export type WorkCategory = "WORK" | "CONCEPT" | "STUDY";
-export type CaptionPosition =
-  | "right"
-  | "above-center"
-  | "above-right"
-  | "above-left"
-  | "below";
 
-/** Desktop poster-composition placement for a single Work tile. */
-export interface WorkLayout {
-  desktopColumn: "left" | "center" | "right";
-  /** Vertical anchor as a percentage (0-100) from the top of the viewport. */
-  desktopVerticalAnchor: number;
-  desktopSize: "sm" | "md" | "lg";
-  captionPosition: CaptionPosition;
+/**
+ * One documentation block on a Work's detail page — a process note, a
+ * supporting image with caption, or both together. Every field is
+ * optional so a section can be pure text, pure image, or a labeled
+ * combination of the two; a Work with no `sections` (or an empty array)
+ * still renders a complete page from just its header + hero, which is
+ * the state every placeholder Work is in today.
+ */
+export interface WorkSection {
+  /** Short quiet label above the section, e.g. "process", "concept" — same microtype as the metadata sidebar, not a heading-sized headline. */
+  heading?: string;
+  body?: string;
+  media?: MediaAsset;
+  /** Shown under `media`, prefixed with an auto-numbered "fig. NN —". */
+  caption?: string;
 }
 
 export interface Work {
@@ -34,13 +36,13 @@ export interface Work {
   status: "LIVE" | "IN DEVELOPMENT" | "CONCEPT";
   role: string;
   media: MediaAsset;
-  layout: WorkLayout;
+  /** Case-study body, rendered below the hero on the Work detail page. See WorkSection. */
+  sections?: WorkSection[];
 }
 
 /**
  * GROWTH STRATEGY (Works room):
- * - Works 1-3 render in the poster composition on the /works index.
- * - Works 4+ overflow to a horizontal strip below the poster.
+ * - /works renders every entry in a plain two-column grid, in array order.
  * - Individual Work pages live at /works/[slug] as long-form case studies.
  * - Add a Work: append an object to this array with a unique slug.
  */
@@ -64,12 +66,18 @@ export const works: Work[] = [
       alt: "Placeholder for Work I",
       aspectRatio: "wide",
     },
-    layout: {
-      desktopColumn: "left",
-      desktopVerticalAnchor: 55,
-      desktopSize: "md",
-      captionPosition: "right",
-    },
+    sections: [
+      {
+        heading: "process",
+        body: "Placeholder process note — a paragraph describing how the work took shape, the constraints it worked within, and the decisions that shaped the outcome.",
+        media: { type: "placeholder", alt: "Process detail for Work I", aspectRatio: "landscape" },
+        caption: "Placeholder caption for a process image.",
+      },
+      {
+        heading: "outcome",
+        body: "Placeholder outcome note — a second paragraph covering what shipped, what it's used for, or what came out of it.",
+      },
+    ],
   },
   {
     id: "work-02",
@@ -89,12 +97,18 @@ export const works: Work[] = [
       alt: "Cherry blossoms against a blue sky",
       aspectRatio: "wide",
     },
-    layout: {
-      desktopColumn: "center",
-      desktopVerticalAnchor: 40,
-      desktopSize: "sm",
-      captionPosition: "above-center",
-    },
+    sections: [
+      {
+        heading: "observation",
+        body: "Placeholder observation note — what prompted the study, and what was being looked at closely.",
+        media: { type: "placeholder", alt: "Study detail for Work II", aspectRatio: "portrait" },
+        caption: "Placeholder caption for a study image.",
+      },
+      {
+        heading: "notes",
+        body: "Placeholder closing note — what the study turned up, or what it fed into afterward.",
+      },
+    ],
   },
   {
     id: "work-03",
@@ -113,12 +127,18 @@ export const works: Work[] = [
       alt: "Placeholder for Work III",
       aspectRatio: "square",
     },
-    layout: {
-      desktopColumn: "right",
-      desktopVerticalAnchor: 30,
-      desktopSize: "lg",
-      captionPosition: "above-right",
-    },
+    sections: [
+      {
+        heading: "concept",
+        body: "Placeholder concept note — the idea being tested and why it seemed worth exploring.",
+        media: { type: "placeholder", alt: "Concept detail for Work III", aspectRatio: "wide" },
+        caption: "Placeholder caption for a concept image.",
+      },
+      {
+        heading: "direction",
+        body: "Placeholder direction note — where the concept could go if it were developed further.",
+      },
+    ],
   },
   {
     id: "work-04",
@@ -137,12 +157,18 @@ export const works: Work[] = [
       alt: "Placeholder for Work IV",
       aspectRatio: "portrait",
     },
-    layout: {
-      desktopColumn: "left",
-      desktopVerticalAnchor: 60,
-      desktopSize: "md",
-      captionPosition: "below",
-    },
+    sections: [
+      {
+        heading: "process",
+        body: "Placeholder process note — how the build was approached and what shaped the early decisions.",
+        media: { type: "placeholder", alt: "Process detail for Work IV", aspectRatio: "square" },
+        caption: "Placeholder caption for a process image.",
+      },
+      {
+        heading: "outcome",
+        body: "Placeholder outcome note — where the work stands now and what's still in progress.",
+      },
+    ],
   },
   {
     id: "work-05",
@@ -161,11 +187,17 @@ export const works: Work[] = [
       alt: "Placeholder for Work V",
       aspectRatio: "landscape",
     },
-    layout: {
-      desktopColumn: "right",
-      desktopVerticalAnchor: 65,
-      desktopSize: "sm",
-      captionPosition: "below",
-    },
+    sections: [
+      {
+        heading: "concept",
+        body: "Placeholder concept note — the premise behind the piece and the question it was asking.",
+        media: { type: "placeholder", alt: "Concept detail for Work V", aspectRatio: "landscape" },
+        caption: "Placeholder caption for a concept image.",
+      },
+      {
+        heading: "notes",
+        body: "Placeholder closing note — open questions or what a next pass might change.",
+      },
+    ],
   },
 ];

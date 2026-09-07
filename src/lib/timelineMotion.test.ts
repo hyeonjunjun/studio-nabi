@@ -77,12 +77,6 @@ describe("sortWorksForTimeline", () => {
     status: "LIVE",
     role: "role",
     media: { type: "placeholder", alt: "alt", aspectRatio: "square" },
-    layout: {
-      desktopColumn: "left",
-      desktopVerticalAnchor: 0,
-      desktopSize: "sm",
-      captionPosition: "below",
-    },
   });
 
   it("sorts newest year first", () => {

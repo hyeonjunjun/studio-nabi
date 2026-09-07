@@ -24,7 +24,7 @@ export default function RoomHeader({ roomLabel, roomCount }: RoomHeaderProps) {
         <Nav items={studio.navItems} />
       </div>
       <div className="mt-12 flex items-baseline justify-between border-b border-ws-ink/10 pb-4">
-        <p className="font-instrument-sans text-[12px] font-bold uppercase tracking-[0.08em] text-ws-ink">
+        <p className="font-instrument-sans text-[11px] font-medium uppercase tracking-[0.15em] text-ws-ink">
           {roomLabel}
           {roomCount !== undefined && <span className="text-ws-ink/40"> · {roomCount}</span>}
         </p>

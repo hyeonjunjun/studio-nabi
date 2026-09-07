@@ -4,8 +4,8 @@ import WorkGrid from "@/components/works/WorkGrid";
 import CornerMark from "@/components/CornerMark";
 
 /**
- * The full catalog, as opposed to home's curated four-tile "look" (see
- * FeaturedGrid's top-of-file comment). Same room-index pattern as
+ * The full catalog, as opposed to home's one-at-a-time player (see
+ * WorkPlayer's top-of-file comment). Same room-index pattern as
  * /archive: RoomHeader chrome, then the room's own content, CornerMark
  * anchoring the page. WorkGrid already existed from before the homepage
  * became the works showcase (see WorkShowcase's "after the /works

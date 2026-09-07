@@ -27,7 +27,7 @@ export default function Clock() {
   }, []);
 
   return (
-    <span className="font-instrument-sans text-[10px] font-bold uppercase tracking-[0.08em] tabular-nums text-ws-ink/50">
+    <span className="font-instrument-sans text-[10px] font-medium uppercase tracking-[0.15em] tabular-nums text-ws-ink/50">
       {time} EST
     </span>
   );

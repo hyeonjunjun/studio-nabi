@@ -1,21 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { MediaAsset } from "@/lib/types";
-import type { Work } from "@/data/works";
-import { delay, duration } from "@/lib/motion";
-import MotionReveal from "../MotionReveal";
-
-/**
- * Desktop media width per `desktopSize`, and its 70%-scaled tablet
- * counterpart. `max-w-full` lets the tile shrink below its nominal width
- * when WorkGrid's defensive per-column `maxWidth` (see its top-of-file
- * comment) is narrower than this at a given viewport.
- */
-const WIDTH_CLASSES: Record<Work["layout"]["desktopSize"], string> = {
-  sm: "w-[126px] max-w-full lg:w-[180px]",
-  md: "w-[182px] max-w-full lg:w-[260px]",
-  lg: "w-[224px] max-w-full lg:w-[320px]",
-};
 
 const ASPECT_RATIO_CSS: Record<MediaAsset["aspectRatio"], string> = {
   portrait: "3 / 4",
@@ -88,7 +72,7 @@ export function MediaRenderer({
 
   return (
     <div
-      className={`flex items-center justify-center border border-ws-ink/20 transition-[filter] duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:brightness-[1.04] ${sizeClasses}`}
+      className={`flex items-center justify-center border border-ws-ink/30 transition-[filter] duration-[240ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:brightness-[1.04] ${sizeClasses}`}
       style={style}
       role="img"
       aria-label={media.alt}
@@ -97,93 +81,5 @@ export function MediaRenderer({
         Content coming soon
       </span>
     </div>
-  );
-}
-
-interface WorkTileProps {
-  work: Work;
-}
-
-export default function WorkTile({ work }: WorkTileProps) {
-  const { slug, romanNumeral, caption, category, media, layout, index } = work;
-  const captionId = `${work.id}-caption`;
-
-  const label = (
-    <p className="font-instrument-sans text-[10px] font-medium uppercase tracking-[0.15em] text-ws-ink/40">
-      • {romanNumeral} / {category}
-    </p>
-  );
-
-  const captionEl = (
-    <p
-      id={captionId}
-      className="mt-1 max-w-[200px] font-instrument-sans text-[16px] italic leading-snug text-ws-ink transition-transform duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px]"
-    >
-      {caption}
-    </p>
-  );
-
-  const captionBlock = (
-    <div>
-      {label}
-      {captionEl}
-    </div>
-  );
-
-  const mediaEl = (
-    <div className={WIDTH_CLASSES[layout.desktopSize]}>
-      <MediaRenderer media={media} />
-    </div>
-  );
-
-  let inner: React.ReactNode;
-  if (layout.captionPosition === "right") {
-    inner = (
-      <div className="flex flex-row items-start gap-4">
-        {mediaEl}
-        {captionBlock}
-      </div>
-    );
-  } else if (layout.captionPosition === "below") {
-    inner = (
-      <div className="flex flex-col items-start gap-3">
-        {mediaEl}
-        {captionBlock}
-      </div>
-    );
-  } else {
-    const align =
-      layout.captionPosition === "above-center"
-        ? "items-center text-center"
-        : layout.captionPosition === "above-right"
-          ? "items-end text-right"
-          : "items-start text-left";
-    inner = (
-      <div className={`flex flex-col gap-3 ${align}`}>
-        {captionBlock}
-        {mediaEl}
-      </div>
-    );
-  }
-
-  return (
-    <MotionReveal
-      delay={delay.primary + (index - 1) * delay.stagger}
-      duration={duration.reveal}
-    >
-      <article aria-labelledby={captionId}>
-        {/* Deliberately `block`, not `inline-block`: an inline-block wrapper
-            shrink-to-fits its children, which breaks percentage-based
-            max-width (like WIDTH_CLASSES' `max-w-full`) from ever resolving
-            against WorkGrid's definite per-column cap — percentages need a
-            definite ancestor width, and shrink-to-fit boxes never provide
-            one. The tile's own footprint is still governed by
-            mediaEl/captionBlock's own widths, so this doesn't change how
-            big the tile looks when unconstrained. */}
-        <Link href={`/works/${slug}`} className="group block rounded-sm">
-          {inner}
-        </Link>
-      </article>
-    </MotionReveal>
   );
 }
